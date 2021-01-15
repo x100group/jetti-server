@@ -20,6 +20,7 @@ import { riseUpdateMetadataEvent } from './models/Dynamic/dynamic.common';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 import { getIndexedOperationById } from './models/indexedOperation';
 import { createDocument } from './models/documents.factory';
+import * as iconv from 'iconv-lite';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 
@@ -105,29 +106,31 @@ export interface JTL {
   };
   util: {
     groupArray: <T>(array: T[], groupField?: string) => T[],
-    formatDate: (date: Date) => string
-    parseDate: (date: string, format: string, delimiter: string) => Date
-    round: (num: number, precision?: number) => number
-    addAttachments: (attachments: CatalogAttachment[], tx: MSSQL) => Promise<any[]>
-    delAttachments: (attachmentsId: Ref[], tx: MSSQL) => Promise<boolean>
-    getAttachmentsByOwner: (ownerId: Ref, withDeleted: boolean, tx: MSSQL) => Promise<CatalogAttachment[]>
-    getAttachmentStorageById: (attachmentId: Ref, tx: MSSQL) => Promise<string>
-    getAttachmentsSettingsByOwner: (ownerId: Ref, tx: MSSQL) => Promise<IAttachmentsSettings[]>
-    salaryCompanyByCompany: (company: Ref, tx: MSSQL) => Promise<string | null>
+    formatDate: (date: Date) => string,
+    parseDate: (date: string, format: string, delimiter: string) => Date,
+    round: (num: number, precision?: number) => number,
+    addAttachments: (attachments: CatalogAttachment[], tx: MSSQL) => Promise<any[]>,
+    delAttachments: (attachmentsId: Ref[], tx: MSSQL) => Promise<boolean>,
+    getAttachmentsByOwner: (ownerId: Ref, withDeleted: boolean, tx: MSSQL) => Promise<CatalogAttachment[]>,
+    getAttachmentStorageById: (attachmentId: Ref, tx: MSSQL) => Promise<string>,
+    getAttachmentsSettingsByOwner: (ownerId: Ref, tx: MSSQL) => Promise<IAttachmentsSettings[]>,
+    salaryCompanyByCompany: (company: Ref, tx: MSSQL) => Promise<string | null>,
     bankStatementUnloadById: (docsID: string[], tx: MSSQL) => Promise<string>,
     adminMode: (mode: boolean, tx: MSSQL) => Promise<void>,
     closeMonth: (company: Ref, date: Date, tx: MSSQL) => Promise<void>,
     // currentUser: () => Promise<void>,
     getUserRoles: (user: CatalogUser) => Promise<string[]>,
     isRoleAvailable: (role: string, tx: MSSQL) => Promise<boolean>,
-    closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>
+    closeMonthErrors: (company: Ref, date: Date, tx: MSSQL) => Promise<{ Storehouse: Ref; SKU: Ref; Cost: number }[] | null>,
     GUID: () => Promise<string>,
-    getObjectPropertyById: (id: string, propPath: string, tx: MSSQL) => Promise<any>
+    getObjectPropertyById: (id: string, propPath: string, tx: MSSQL) => Promise<any>,
     exchangeDB: () => MSSQL,
     taskPoolTx: () => MSSQL,
     jettiPoolTx: () => MSSQL,
-    executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>
-    isEqualObjects: (object1: Object, object2: Object) => boolean
+    executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>,
+    isEqualObjects: (object1: Object, object2: Object) => boolean,
+    decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string,
+    converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string
   };
   queue: {
     insertQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
@@ -213,7 +216,9 @@ export const lib: JTL = {
     taskPoolTx,
     executeGETRequest,
     jettiPoolTx,
-    isEqualObjects
+    isEqualObjects,
+    decodeBase64StringAsUTF8,
+    converStringEncoding,
   },
   queue: {
     insertQueue,
@@ -674,6 +679,16 @@ export function isEqualObjects(object1: Object, object2: Object): boolean {
       object1[keyObj1] !== object2[keyObj1]) return false;
   });
   return true;
+}
+
+function decodeBase64StringAsUTF8(string: string, encodingIn: string): string {
+  const buff = new Buffer(string, 'base64');
+  return iconv.decode(Buffer.from(buff), encodingIn).toString();
+}
+
+function converStringEncoding(string: string, encodingIn: string, ecnodingOut: string) {
+  const buff = Buffer.from(string, encodingIn as any);
+  return iconv.decode(buff, ecnodingOut).toString();
 }
 
 export function getAdminTX(): MSSQL {
