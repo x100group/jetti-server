@@ -100,9 +100,16 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.Contract = contractId!.id;
         return this.onValueChanged('Contract', { id: this.Contract }, tx);
       case 'Contract':
-        if (!value.id) { this.CashRecipientBankAccount = null; return this; }
+        if (!value.id) {
+          this.CashRecipientBankAccount = null;
+          this.ResponsiblePerson = null;
+          return this;
+        }
         const CatalogContractObject = await lib.doc.byIdT<CatalogContract>(value.id, tx);
-        if (!CatalogContractObject || !CatalogContractObject.BankAccount) { this.CashRecipientBankAccount = null; return this; }
+        if (CatalogContractObject) this.ResponsiblePerson = CatalogContractObject.ResponsiblePerson;
+        if (!CatalogContractObject || !CatalogContractObject.BankAccount) {
+          this.CashRecipientBankAccount = null; return this;
+        }
         if (this.Operation === 'Оплата ДС в другую организацию') {
           this.CashOrBankIn = CatalogContractObject.BankAccount;
         } else {

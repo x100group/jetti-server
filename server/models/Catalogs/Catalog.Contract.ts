@@ -60,6 +60,9 @@ export class CatalogContract extends DocumentBase {
   @Props({ type: 'Catalog.Manager', required: false })
   Manager: Ref = null;
 
+  @Props({ type: 'Catalog.Person' })
+  ResponsiblePerson: Ref = null;
+
   @Props({ type: 'boolean', required: false })
   isDefault = false;
 

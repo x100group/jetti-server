@@ -343,9 +343,14 @@ export class DocumentCashRequest extends DocumentBase {
   tempSalaryKind = 'PAID';
 
   @Props({
-    type: 'Catalog.User', label: 'Ответственный'
+    type: 'Catalog.User', label: 'Менеджер'
   })
   Manager: Ref = null;
+
+  @Props({
+    type: 'Catalog.Person', label: 'Ответственный', isAdditional: true
+  })
+  ResponsiblePerson: Ref = null;
 
   @Props({
     type: 'table', required: false, order: 1,
