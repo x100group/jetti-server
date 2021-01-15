@@ -1,0 +1,1 @@
+{"version":3,"file":"Types.UserOrGroup.js","sourceRoot":"","sources":["../../../../server/models/Types/Types.UserOrGroup.ts"],"names":[],"mappings":";;;AAAA,4DAA4F;AAC5F,2CAAwC;AACxC,MAAa,gBAAiB,SAAQ,qBAAS;IAE7C,QAAQ;QACN,OAAO,4CAAwB,CAAC,IAAI,CAAC,EAAE,CAAC,CAAC,cAAc,EAAE,oBAAoB,CAAC,CAAC,QAAQ,CAAC,IAAI,CAAC,CAAC,CAAC;IACjG,CAAC;CACF;AALD,4CAKC"}

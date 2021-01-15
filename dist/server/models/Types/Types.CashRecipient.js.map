@@ -1,0 +1,1 @@
+{"version":3,"file":"Types.CashRecipient.js","sourceRoot":"","sources":["../../../../server/models/Types/Types.CashRecipient.ts"],"names":[],"mappings":";;;AAAA,4DAAgE;AAChE,2CAAwC;AAExC,MAAa,kBAAmB,SAAQ,qBAAS;IAE/C,QAAQ;QACN,OAAO,4CAAwB,CAAC,IAAI,CAAC,EAAE,CACrC,CAAC,iBAAiB,EAAE,uBAAuB,EAAE,gBAAgB,CAAC;aAC3D,QAAQ,CAAC,IAAI,CAAC,CAAC,CAAC;IACvB,CAAC;CAEF;AARD,gDAQC"}

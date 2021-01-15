@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+#nginx.ingress.kubernetes.io/ssl-redirect: true
+    nginx.org/websocket-services: "smv, jetti, sm, is"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+  labels:
+    app: ingress
+spec:
+  tls:
+    - hosts:
+      - smv.jetti-app.com  
+      - cl.jetti-app.com
+      - sm.jetti-app.com    
+      secretName: jetti-ssl
+  rules:
+    - host: smv.jetti-app.com
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: smv
+            servicePort: 8080
+    - host: sm.jetti-app.com
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: sm
+            servicePort: 8080
+    - host: is.jetti-app.com
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: is
+            servicePort: 8080

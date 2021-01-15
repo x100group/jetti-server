@@ -1,0 +1,9 @@
+//pkgs.dev.azure.com/x100group/_packaging/x100-packages/npm/registry/:username=x100group
+//pkgs.dev.azure.com/x100group/_packaging/x100-packages/npm/registry/:_password="bWlsc2g1d2p0dXRkaWtrZGFoazRyb2N0MnliZ2Fhd2JsZW5uamJnNXp1czN1eG03NHZjcQ=="
+//pkgs.dev.azure.com/x100group/_packaging/x100-packages/npm/registry/:email=npm requires email to be set but doesn't use the value
+@TishchenkoAlex:registry=https://npm.pkg.github.com
+registry.npmjs.org/:_authToken=3062303bfcb4bcfb53de6c50655682fafc808483
+// e9cf2b45-8328-4f63-af16-7f2a37367ff8=true
+https://npm.pkg.github.com=
+
+//npm.pkg.github.com/:_authToken=TOKEN

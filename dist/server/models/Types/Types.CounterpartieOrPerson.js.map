@@ -1,0 +1,1 @@
+{"version":3,"file":"Types.CounterpartieOrPerson.js","sourceRoot":"","sources":["../../../../server/models/Types/Types.CounterpartieOrPerson.ts"],"names":[],"mappings":";;;AAAA,4DAAgE;AAChE,2CAAwC;AAExC,MAAa,0BAA2B,SAAQ,qBAAS;IAEvD,QAAQ;QACN,OAAO,4CAAwB,CAAC,IAAI,CAAC,EAAE,CAAC,CAAC,uBAAuB,EAAE,gBAAgB,CAAC,CAAC,QAAQ,CAAC,IAAI,CAAC,CAAC,CAAC;IACtG,CAAC;CACF;AALD,gEAKC"}
