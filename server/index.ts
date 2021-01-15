@@ -5,7 +5,6 @@ import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import * as fs from 'fs';
 import * as httpServer from 'http';
-import * as path from 'path';
 import * as os from 'os';
 import 'reflect-metadata';
 
@@ -43,7 +42,6 @@ app.use(compression());
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
-app.use(express.static(path.join(root, 'dist')));
 
 const api = `/api`;
 app.use(api, authHTTP, jettiDB, utils);
@@ -87,6 +85,7 @@ subscriber.on('message', function (channel, message) {
   if (channel === 'updateDynamicMeta') updateDynamicMeta();
 });
 subscriber.subscribe('updateDynamicMeta');
+
 const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}\nCPUs: ${os.cpus().length}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
