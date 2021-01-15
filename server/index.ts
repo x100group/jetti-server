@@ -96,39 +96,40 @@ Global.init().then(e => {
     let script = '';
     const ef = () => { };
 
-    SQLGenegatorMetadata.CreateViewOperations().then(script => fs.writeFile('OperationsView.sql', script, ef));
+    SQLGenegatorMetadata.CreateViewOperations().then(script => fs.writeFile('./sql-metadata-sripts/OperationsView.sql', script, ef));
 
-    SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('OperationsViewIndex.sql', script, ef));
+    // tslint:disable-next-line: max-line-length
+    SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('./sql-metadata-sripts/OperationsViewIndex.sql', script, ef));
 
     script = SQLGenegatorMetadata.CreateViewCatalogsIndex();
-    fs.writeFile('CatalogsViewIndex.sql', script, ef);
+    fs.writeFile('./sql-metadata-sripts/CatalogsViewIndex.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateViewCatalogsIndex(true, true);
-    fs.writeFile('CatalogsViewIndexDynamic.sql', script, ef);
+    fs.writeFile('./sql-metadata-sripts/CatalogsViewIndexDynamic.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateViewCatalogs();
-    fs.writeFile('CatalogsView.sql', script, ef);
+    fs.writeFile('./sql-metadata-sripts/CatalogsView.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateViewCatalogs(true);
-    fs.writeFile('CatalogsViewDynamic.sql', script, ef);
+    fs.writeFile('./sql-metadata-sripts/CatalogsViewDynamic.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateRegisterInfoViewIndex();
-    fs.writeFile('RegisterInfoViewIndex.sql', script, ef);
+    fs.writeFile('./sql-metadata-sripts/RegisterInfoViewIndex.sql', script, ef);
 
     script = SQLGenegatorMetadata.RegisterAccumulationClusteredTables();
-    fs.writeFile('RegisterAccumulationClusteredTables.sql', script, ef);
+    fs.writeFile('./sql-metadata-sripts/RegisterAccumulationClusteredTables.sql', script, ef);
 
     script = SQLGenegatorMetadata.RegisterAccumulationView();
-    fs.writeFile('RegisterAccumulationView.sql', script, ef);
+    fs.writeFile('./sql-metadata-sripts/RegisterAccumulationView.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTO();
-    fs.writeFile('CreateTableRegisterAccumulationTotals.sql', script, ef);
+    fs.writeFile('./sql-metadata-sripts/CreateTableRegisterAccumulationTotals.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTOv2();
-    fs.writeFile('CreateTableRegisterAccumulationTotalsv2.sql', script, ef);
+    fs.writeFile('./sql-metadata-sripts/CreateTableRegisterAccumulationTotalsv2.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateRegisterAccumulationViewIndex();
-    fs.writeFile('CreateRegisterAccumulationViewIndex.sql', script, ef);
+    fs.writeFile('./sql-metadata-sripts/CreateRegisterAccumulationViewIndex.sql', script, ef);
 
   }
 });

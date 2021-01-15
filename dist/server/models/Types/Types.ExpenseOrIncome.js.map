@@ -1,1 +1,0 @@
-{"version":3,"file":"Types.ExpenseOrIncome.js","sourceRoot":"","sources":["../../../../server/models/Types/Types.ExpenseOrIncome.ts"],"names":[],"mappings":";;;AAAA,4DAAgE;AAChE,2CAAwC;AAExC,MAAa,oBAAqB,SAAQ,qBAAS;IAEjD,QAAQ;QACN,OAAO,4CAAwB,CAAC,IAAI,CAAC,EAAE,CAAC,CAAC,iBAAiB,EAAE,gBAAgB,CAAC,CAAC,QAAQ,CAAC,IAAI,CAAC,CAAC,CAAC;IAChG,CAAC;CAEF;AAND,oDAMC"}

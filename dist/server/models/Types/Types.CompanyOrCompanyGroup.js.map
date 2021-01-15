@@ -1,1 +1,0 @@
-{"version":3,"file":"Types.CompanyOrCompanyGroup.js","sourceRoot":"","sources":["../../../../server/models/Types/Types.CompanyOrCompanyGroup.ts"],"names":[],"mappings":";;;AAAA,4DAAgE;AAChE,2CAAwC;AAExC,MAAa,0BAA2B,SAAQ,qBAAS;IAEvD,QAAQ;QACN,OAAO,4CAAwB,CAAC,IAAI,CAAC,EAAE,CACrC,CAAC,iBAAiB,EAAE,uBAAuB,CAAC;aACzC,QAAQ,CAAC,IAAI,CAAC,CAAC,CAAC;IACvB,CAAC;CAEF;AARD,gEAQC"}
