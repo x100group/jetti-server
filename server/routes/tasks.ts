@@ -29,13 +29,13 @@ router.get('/jobsCount', async (req: Request, res: Response, next: NextFunction)
   try {
     res.json(await JQueue.getJobCounts());
   } catch (err) { next(err); }
-})
+});
 
 router.get('/jobsActive', async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.json(await JQueue.getActiveCount());
   } catch (err) { next(err); }
-})
+});
 
 router.get('/jobs', async (req: Request, res: Response, next: NextFunction) => {
   try {
