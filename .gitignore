@@ -2,6 +2,7 @@
 
 # ignore server configuration
 #src/server/env/environment.js
+.env
 
 # compiled output
 /dist
