@@ -34,8 +34,8 @@ router.get('/register/movements/list/:id', async (req, res, next) => {
         const Register = creationFunc({ type: r.type });
         const description = (Register.Prop()).description;
         return ({ type: r.type, description: `${description} [${r.records}]`, kind: r.kind });
-      })
-    }
+      });
+    };
 
     // tslint:disable-next-line: max-line-length
     const result = await sdb.manyOrNone<{ records: number, kind: string, type: RegisterAccumulationTypes | string | string }>(query, [req.params.id]);
@@ -44,8 +44,7 @@ router.get('/register/movements/list/:id', async (req, res, next) => {
     const listAccount = getRegisterFromQueryResult(result, 'Account', _ => ({ description: 'Хозрасчетный' }));
     const reslist = listAccumulation.concat(listInfo, listAccount);
     res.json(reslist);
-  }
-  catch (err) { next(err); }
+  } catch (err) { next(err); }
 });
 
 router.get('/register/account/movements/view/:id', async (req, res, next) => {
@@ -128,10 +127,10 @@ router.post('/register/info/byFilter/:type', async (req: Request, res: Response,
   try {
     const sdb = SDB(req);
     const type = req.params.type as string;
-    let query = createRegisterInfo({ type }).QueryList()
+    let query = createRegisterInfo({ type }).QueryList();
     const filter = req.body;
     let filterText = '';
-    query = query.replace('SELECT', 'SELECT r.document docId, ')
+    query = query.replace('SELECT', 'SELECT r.document docId, ');
     filter.forEach(element => filterText += ` AND ${element.key} = '${element.value}'`);
     await sdb.tx(async tx => {
       const result = await tx.manyOrNone<RegisterInfo>(query + filterText);
