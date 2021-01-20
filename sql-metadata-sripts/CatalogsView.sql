@@ -974,6 +974,8 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([Currency.v].description, '') [Currency.value], d.[Currency] [Currency.id], [Currency.v].type [Currency.type]
+        , d.[Alpha2Code] [Alpha2Code]
+        , d.[PhoneCode] [PhoneCode]
       
         , ISNULL(l5.description, d.description) [Country.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Country.Level4]
@@ -1014,6 +1016,7 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[ShortName] [ShortName]
+        , d.[symbol] [symbol]
       
         , ISNULL(l5.description, d.description) [Currency.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Currency.Level4]

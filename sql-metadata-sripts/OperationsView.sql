@@ -101,7 +101,7 @@ GO
         , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , ISNULL([UserId.v].description, '') [UserId.value], d.[UserId] [UserId.id], [UserId.v].type [UserId.type]
-        , d.[SashShiftNumber] [SashShiftNumber]
+        , d.[CashShiftNumber] [CashShiftNumber]
         , d.[AccountingDate] [AccountingDate]
         , d.[StartDate] [StartDate]
         , d.[EndDate] [EndDate]

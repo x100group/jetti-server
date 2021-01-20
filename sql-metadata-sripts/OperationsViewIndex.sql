@@ -112,7 +112,7 @@ CREATE OR ALTER VIEW dbo.[Operation.CashShifts.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f3"')) [f3]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."UserId"')) [UserId]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."SashShiftNumber"')), '') [SashShiftNumber]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."CashShiftNumber"')), '') [CashShiftNumber]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.AccountingDate'),127) [AccountingDate]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.StartDate'),127) [StartDate]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]

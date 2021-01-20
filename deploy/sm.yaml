@@ -8,7 +8,7 @@ metadata:
   name: sm
   namespace: default
 spec:
-  replicas: 6
+  replicas: 1
   selector:
     matchLabels:
       app: sm
@@ -57,7 +57,7 @@ spec:
         - name: LOGIC_USECASHREQUESTAPPROVING
           value: "1"
         - name: REFRESH_ID
-          value: "00003"
+          value: "00005"
         - name: NODE_ENV
           value: production
         image: eu.gcr.io/jetti-x100/jetti-api:latest
