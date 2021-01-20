@@ -14,4 +14,10 @@ export class CatalogCountry extends DocumentBase {
   @Props({ type: 'Catalog.Currency' })
   Currency: Ref = null;
 
+  @Props({ type: 'string' })
+  Alpha2Code = '';
+
+  @Props({ type: 'string' })
+  PhoneCode = '';
+
 }

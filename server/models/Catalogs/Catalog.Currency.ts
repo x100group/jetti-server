@@ -16,4 +16,8 @@ export class CatalogCurrency extends DocumentBase {
 
   @Props({ type: 'string', order: 2, required: true, style: { width: '140px' } })
   ShortName = '';
+
+  @Props({ type: 'string' })
+  symbol = '';
+
 }
