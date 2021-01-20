@@ -7,6 +7,9 @@ import { JRegisterInfo, RegisterInfo } from 'jetti-middle';
 })
 export class RegisterInfoCompanyResponsiblePersons extends RegisterInfo {
 
+  @Props({ type: 'Catalog.Role', dimension: true })
+  Role: Ref = null;
+
   @Props({ type: 'Types.CompanyOrCompanyGroup', dimension: true })
   companyOrGroup: Ref = null;
 

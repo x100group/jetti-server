@@ -427,7 +427,7 @@ HAVING SUM(Balance.[Amount]) > 0;
         OperationType: CashRequestObject.Operation,
       }));
     }
-    Registers.Accumulation = Registers.Accumulation.filter((r: RegisterAccumulationCashToPay) => r.Amount > 0);
+    Registers.Accumulation = (Registers.Accumulation as RegisterAccumulationCashToPay[]).filter(r => r.Amount > 0);
     return Registers;
   }
 
