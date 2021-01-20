@@ -21,8 +21,16 @@ import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 import { getIndexedOperationById } from './models/indexedOperation';
 import { createDocument } from './models/documents.factory';
 import * as iconv from 'iconv-lite';
+import { DocumentOperation } from './models/Documents/Document.Operation';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
+export interface FillDocBasedOnParams {
+  base: string; // @required base document id
+  type: string; // @required fillable document type
+  operation: string; // @required fillable document operation id
+  id: string; // @optional fillable document id
+  saveMode: 'post' | 'save' | 'none'; // @optional fillable save mode (default: 'none')
+}
 
 export interface JTL {
   account: {
@@ -71,6 +79,7 @@ export interface JTL {
       opts?: IUpdateInsertDocumentOptions
     ) => Promise<DocumentBaseServer>
     updateDoc: (servDoc: DocumentBaseServer, tx: MSSQL) => Promise<DocumentBaseServer>
+    fillDocBasedOn: (params: FillDocBasedOnParams, tx: MSSQL) => Promise<IFlatDocument | null>
     noSqlDocument: (flatDoc: IFlatDocument) => INoSqlDocument | null;
     flatDocument: (noSqldoc: INoSqlDocument) => IFlatDocument | null;
     docPrefix: (type: string, tx: MSSQL) => Promise<string>
@@ -166,6 +175,7 @@ export const lib: JTL = {
     createDoc,
     createDocServer,
     createDocServerById,
+    fillDocBasedOn,
     saveDoc,
     updateDoc,
     historyById,
@@ -351,6 +361,27 @@ async function createDocServerById<T extends DocumentBaseServer>(id: string, tx:
   const flatDoc = await byId(id, tx);
   if (!flatDoc) return null;
   return await createDocServer<T>(flatDoc.type, flatDoc, tx);
+}
+
+async function fillDocBasedOn(params: FillDocBasedOnParams, tx: MSSQL): Promise<IFlatDocument | null> {
+  const { base, type, operation, saveMode, id } = params;
+  const baseDoc = await byId(base, tx);
+  if (!baseDoc) throw new Error(`Document with id '${base}' is not exist`);
+  const group = operation ? (await getObjectPropertyById(operation, 'Group', tx)).id : undefined;
+  let doc: IFlatDocument | DocumentOperation | null = null;
+  if (id) doc = await byId(id, tx);
+  if (!doc) doc = { ...createDocument(type), Operation: operation, Group: group };
+  const ServerDoc = await createDocumentServer(type, doc as IFlatDocument, tx);
+  if (!ServerDoc) throw new Error(`wrong type ${type}`);
+  if (id) ServerDoc.id = id;
+  if (!ServerDoc.baseOn) throw new Error(`Based on method is not defined`);
+  const resDoc = await ServerDoc.baseOn(base, tx);
+  resDoc.user = tx.user.env.id;
+  if (saveMode === 'save' || saveMode === 'post') {
+    resDoc.posted = saveMode.toLowerCase() === 'post';
+    saveDoc(resDoc, tx);
+  }
+  return noSqlDocument(resDoc);
 }
 
 async function saveDoc(

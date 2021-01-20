@@ -69,7 +69,6 @@ import { DocumentCashRequest } from './Documents/Document.CashRequest';
 import { CatalogLoanTypes } from './Catalogs/Catalog.LoanTypes';
 import { DocumentCashRequestRegistry } from './Documents/Document.CashRequestRegistry';
 import { CatalogJobTitle } from './Catalogs/Catalog.JobTitle';
-import { CatalogBusinessRegion } from './Catalogs/Catalog.BusinessRegion';
 import { CatalogTaxRate } from './Catalogs/Catalog.TaxRates';
 import { CatalogTaxPaymentCode } from './Catalogs/Catalog.TaxPaymentCode';
 import { CatalogTaxPaymentPeriod } from './Catalogs/Catalog.TaxPaymentPeriod';
@@ -216,7 +215,6 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.Bank', Class: CatalogBank },
   { type: 'Catalog.Person.BankAccount', Class: CatalogPersonBankAccount },
   { type: 'Catalog.Person.Contract', Class: CatalogPersonContract },
-  { type: 'Catalog.BusinessRegion', Class: CatalogBusinessRegion },
   { type: 'Catalog.TaxRate', Class: CatalogTaxRate },
   { type: 'Catalog.TaxAssignmentCode', Class: CatalogTaxAssignmentCode },
   { type: 'Catalog.TaxPaymentCode', Class: CatalogTaxPaymentCode },

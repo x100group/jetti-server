@@ -25,6 +25,7 @@ export async function postDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 }
 
 export async function unpostDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
+  if (!serverDoc.isDoc) return;
   const onUnPost: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['onUnPost'];
   if (typeof onUnPost === 'function') await onUnPost(tx);
   if (serverDoc.onUnPost) await serverDoc.onUnPost(tx);
