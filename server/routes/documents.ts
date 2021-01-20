@@ -35,26 +35,7 @@ router.post('/list', async (req: Request, res: Response, next: NextFunction) => 
 
 router.post('/baseon', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const sdb = SDB(req);
-    console.log(req.body);
-    const { base, type, operation, saveMode, id } = req.body;
-    const baseDoc = await lib.doc.byId(base, sdb);
-    if (!baseDoc) throw new Error(`Document with id '${base}' is not exist`);
-    const group = operation ? (await lib.util.getObjectPropertyById(operation, 'Group', sdb)).id : undefined;
-    let doc: IFlatDocument | DocumentOperation | null = null;
-    if (id) doc = await lib.doc.byId(id, sdb);
-    if (!doc) doc = { ...createDocument(type), Operation: operation, Group: group };
-    const ServerDoc = await createDocumentServer(type, doc as IFlatDocument, sdb);
-    if (!ServerDoc) throw new Error(`wrong type ${type}`);
-    if (id) ServerDoc.id = id;
-    if (!ServerDoc.baseOn) throw new Error(`Based on method is not defined`);
-    const resDoc = await ServerDoc.baseOn(base, sdb);
-    resDoc.user = sdb.user.env.id;
-    if (saveMode === 'save' || saveMode === 'post') {
-      resDoc.posted = saveMode.toLowerCase() === 'post';
-      lib.doc.saveDoc(resDoc, sdb);
-    }
-    res.json(lib.doc.noSqlDocument(resDoc));
+    res.json(await lib.doc.fillDocBasedOn(req.body, SDB(req)));
   } catch (err) { next(err); }
 });
 
