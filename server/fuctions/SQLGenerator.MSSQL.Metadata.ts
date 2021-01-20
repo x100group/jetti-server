@@ -45,11 +45,11 @@ export class SQLGenegatorMetadata {
         }
         case 'enum': {
           return `
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
         }
         default: {
           return `
-        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
+        , TRY_CONVERT(NVARCHAR(36), JSON_VALUE(data, '$."${prop}"')) [${prop}]`;
         }
       }
     };
@@ -75,7 +75,7 @@ export class SQLGenegatorMetadata {
       FROM dbo.[Accumulation] WHERE [type] = N'${type}';
     GO
     CREATE UNIQUE CLUSTERED INDEX [${type}.id] ON [${type}.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([id], [kind], [parent], [date], [document], [company], [calculated]${fields});
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [${type}] ON [${type}.v]([date], [document], [company], [calculated], [parent]${fields});
     GO
     CREATE OR ALTER VIEW [${type}] AS SELECT * FROM [${type}.v] WITH (NOEXPAND);
     GO
@@ -444,7 +444,6 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     const simleProperty = (prop: string, type: string) => {
       if (type.includes('.')) return `
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
-
       if (type === 'number') {
         return `
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."${prop}"')) * IIF(kind = 1, 1, -1), 0)) [${prop}]
@@ -453,8 +452,12 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
       }
       if (type === 'boolean') return `
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
+      if (type === 'datetime') return `
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."${prop}"'),127) AS [${prop}]`;
+      if (type === 'date') return `
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."${prop}"'),127) AS [${prop}]`;
       return `
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."${prop}"')) AS [${prop}]`;
     };
 
     let query = '';
@@ -612,20 +615,6 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
     const query = `
     RAISERROR('${type} start', 0 ,1) WITH NOWAIT;
     GO
-    DROP TABLE IF EXISTS [${type}];
-    DROP VIEW IF EXISTS [${type}];
-    DROP VIEW IF EXISTS [${type}.v];
-    SELECT
-      r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate${fields}
-    INTO [${type}]
-    FROM [Accumulation] r
-    CROSS APPLY OPENJSON (data, N'$')
-    WITH (
-      exchangeRate NUMERIC(15,10) N'$.exchangeRate'${select}
-    ) AS d
-    WHERE r.type = N'${type}';
-    GO
     CREATE OR ALTER TRIGGER [${type}.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -646,6 +635,20 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
         ) AS d
         WHERE r.type = N'${type}';
     END
+    GO
+    DROP TABLE IF EXISTS [${type}];
+    DROP VIEW IF EXISTS [${type}];
+    DROP VIEW IF EXISTS [${type}.v];
+    SELECT
+      r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
+      d.exchangeRate${fields}
+    INTO [${type}]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'${select}
+    ) AS d
+    WHERE r.type = N'${type}';
     GO
     GRANT SELECT,INSERT,DELETE ON [${type}] TO JETTI;
     GO

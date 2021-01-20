@@ -102,6 +102,7 @@ GO
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , ISNULL([UserId.v].description, '') [UserId.value], d.[UserId] [UserId.id], [UserId.v].type [UserId.type]
         , d.[SashShiftNumber] [SashShiftNumber]
+        , d.[AccountingDate] [AccountingDate]
         , d.[StartDate] [StartDate]
         , d.[EndDate] [EndDate]
         , d.[ChecksLoaded] [ChecksLoaded]
@@ -151,8 +152,9 @@ GO
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
         , ISNULL([Storehouse.v].description, '') [Storehouse.value], d.[Storehouse] [Storehouse.id], [Storehouse.v].type [Storehouse.type]
         , d.[DiscountDoc] [DiscountDoc]
-        , d.[TypeDocument] [TypeDocument]
         , d.[NumCashShift] [NumCashShift]
+        , d.[TypeDocument] [TypeDocument]
+        , d.[PrintTime] [PrintTime]
         , d.[counterpartyId] [counterpartyId]
         , d.[orderId] [orderId]
       FROM [Operation.CHECK_JETTI_FRONT.v] d WITH (NOEXPAND)
