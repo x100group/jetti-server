@@ -11,7 +11,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.AccountablePersons');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AccountablePersons');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AccountablePersons');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.AccountablePersons] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AccountablePersons');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.AccountablePersons') = 0 RETURN;
 
@@ -85,7 +85,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.PaymentBatch');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.PaymentBatch] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PaymentBatch');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.PaymentBatch] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PaymentBatch');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.PaymentBatch] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PaymentBatch');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.PaymentBatch') = 0 RETURN;
 
@@ -163,7 +163,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Investment.Analytics');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Investment.Analytics] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Investment.Analytics');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Investment.Analytics] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Investment.Analytics');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Investment.Analytics] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Investment.Analytics');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Investment.Analytics') = 0 RETURN;
 
@@ -253,7 +253,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.OrderPayment');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.OrderPayment] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.OrderPayment');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.OrderPayment] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.OrderPayment');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.OrderPayment] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.OrderPayment');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.OrderPayment') = 0 RETURN;
 
@@ -331,7 +331,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.AP');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AP');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.AP] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AP');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.AP] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AP');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.AP') = 0 RETURN;
 
@@ -409,7 +409,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.AR');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AR');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.AR] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AR');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.AR] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.AR');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.AR') = 0 RETURN;
 
@@ -487,7 +487,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Bank');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Bank');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Bank] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Bank');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Bank] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Bank');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Bank') = 0 RETURN;
 
@@ -555,7 +555,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Balance');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Balance');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Balance] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Balance');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Balance] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Balance');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Balance') = 0 RETURN;
 
@@ -615,7 +615,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Balance.RC');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Balance.RC] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Balance.RC');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Balance.RC] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Balance.RC');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Balance.RC] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Balance.RC');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Balance.RC') = 0 RETURN;
 
@@ -685,7 +685,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Balance.Report');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Balance.Report] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Balance.Report');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Balance.Report] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Balance.Report');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Balance.Report] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Balance.Report');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Balance.Report') = 0 RETURN;
 
@@ -755,7 +755,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Cash');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Cash');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Cash] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Cash');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Cash] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Cash');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Cash') = 0 RETURN;
 
@@ -823,7 +823,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Cash.Transit');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Cash.Transit');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Cash.Transit');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Cash.Transit] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Cash.Transit');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Cash.Transit') = 0 RETURN;
 
@@ -893,7 +893,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.EmployeeTimekeeping');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.EmployeeTimekeeping] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.EmployeeTimekeeping');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.EmployeeTimekeeping] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.EmployeeTimekeeping');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.EmployeeTimekeeping] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.EmployeeTimekeeping');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.EmployeeTimekeeping') = 0 RETURN;
 
@@ -961,7 +961,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Inventory');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Inventory');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Inventory] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Inventory');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Inventory] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Inventory');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Inventory') = 0 RETURN;
 
@@ -1043,7 +1043,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Loan');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Loan');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Loan] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Loan');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Loan] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Loan');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Loan') = 0 RETURN;
 
@@ -1121,7 +1121,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.PL');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PL');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.PL] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PL');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.PL] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PL');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.PL') = 0 RETURN;
 
@@ -1183,7 +1183,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.PL.RC');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.PL.RC] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PL.RC');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.PL.RC] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PL.RC');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.PL.RC] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PL.RC');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.PL.RC') = 0 RETURN;
 
@@ -1253,7 +1253,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Sales');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Sales');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Sales] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Sales');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Sales] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Sales');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Sales') = 0 RETURN;
 
@@ -1365,7 +1365,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Salary');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Salary] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Salary');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Salary] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Salary');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Salary] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Salary');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Salary') = 0 RETURN;
 
@@ -1447,7 +1447,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Depreciation');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Depreciation');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Depreciation] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Depreciation');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Depreciation] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Depreciation');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Depreciation') = 0 RETURN;
 
@@ -1517,7 +1517,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.CashToPay');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.CashToPay');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.CashToPay] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.CashToPay');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.CashToPay] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.CashToPay');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.CashToPay') = 0 RETURN;
 
@@ -1597,7 +1597,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.BudgetItemTurnover');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.BudgetItemTurnover');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.BudgetItemTurnover');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.BudgetItemTurnover] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.BudgetItemTurnover');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.BudgetItemTurnover') = 0 RETURN;
 
@@ -1683,7 +1683,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Intercompany');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Intercompany] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Intercompany');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Intercompany] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Intercompany');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Intercompany] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Intercompany');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Intercompany') = 0 RETURN;
 
@@ -1757,7 +1757,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.Acquiring');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.Acquiring] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Acquiring');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.Acquiring] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Acquiring');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.Acquiring] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.Acquiring');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.Acquiring') = 0 RETURN;
 
@@ -1843,7 +1843,7 @@
     BEGIN
       SET NOCOUNT ON;
       DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.StaffingTable');
-      IF (@COUNT_D) > 0 DELETE FROM [Register.Accumulation.StaffingTable] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.StaffingTable');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.StaffingTable] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.StaffingTable');
       IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.StaffingTable] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.StaffingTable');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.StaffingTable') = 0 RETURN;
 
