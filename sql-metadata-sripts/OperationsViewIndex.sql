@@ -112,7 +112,8 @@ CREATE OR ALTER VIEW dbo.[Operation.CashShifts.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f3"')) [f3]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."UserId"')) [UserId]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."SashShiftNumber"')), '') [SashShiftNumber]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."CashShiftNumber"')), '') [CashShiftNumber]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.AccountingDate'),127) [AccountingDate]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.StartDate'),127) [StartDate]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."ChecksLoaded"')), 0) [ChecksLoaded]
@@ -166,8 +167,9 @@ CREATE OR ALTER VIEW dbo.[Operation.CHECK_JETTI_FRONT.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Manager"')) [Manager]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Storehouse"')) [Storehouse]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."DiscountDoc"')), 0) [DiscountDoc]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."TypeDocument"')), '') [TypeDocument]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."NumCashShift"')), '') [NumCashShift]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."TypeDocument"')), '') [TypeDocument]
+      , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.PrintTime'),127) [PrintTime]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."counterpartyId"')), '') [counterpartyId]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."orderId"')), '') [orderId]
       FROM dbo.[Documents]
@@ -488,5 +490,51 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
       RAISERROR('Operation.LotModelsVsDepartment finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.LotModelsVsDepartment ------------------------------
+
+      
+------------------------------ BEGIN Operation.OnlineSalesManagementSettings ------------------------------
+
+      RAISERROR('Operation.OnlineSalesManagementSettings start', 0 ,1) WITH NOWAIT;
+      
+      BEGIN TRY
+        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.OnlineSalesManagementSettings.v];
+      END TRY
+      BEGIN CATCH
+      END CATCH
+GO
+CREATE OR ALTER VIEW dbo.[Operation.OnlineSalesManagementSettings.v] WITH SCHEMABINDING AS 
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Operation"')) [Operation]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Amount"')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f1"')) [f1]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f2"')) [f2]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f3"')) [f3]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessRegion"')) [BusinessRegion]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."RetailNetwork"')) [RetailNetwork]
+      , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.DateBegin'),127) [DateBegin]
+      , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.DateEnd'),127) [DateEnd]
+      FROM dbo.[Documents]
+      WHERE JSON_VALUE(doc, N'$."Operation"') = '12917090-5CCB-11EB-AAD1-616C53FDF9AB'
+; 
+GO
+CREATE UNIQUE CLUSTERED INDEX [Operation.OnlineSalesManagementSettings.v] ON [Operation.OnlineSalesManagementSettings.v](id);
+      CREATE UNIQUE NONCLUSTERED INDEX[Operation.OnlineSalesManagementSettings.v.date] ON[Operation.OnlineSalesManagementSettings.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.OnlineSalesManagementSettings.v.parent] ON [Operation.OnlineSalesManagementSettings.v](parent,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.OnlineSalesManagementSettings.v.deleted] ON [Operation.OnlineSalesManagementSettings.v](deleted,date,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.OnlineSalesManagementSettings.v.code] ON [Operation.OnlineSalesManagementSettings.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.OnlineSalesManagementSettings.v.user] ON [Operation.OnlineSalesManagementSettings.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.OnlineSalesManagementSettings.v.company] ON [Operation.OnlineSalesManagementSettings.v](company,id);
+      
+GO
+GRANT SELECT ON dbo.[Operation.OnlineSalesManagementSettings.v]TO jetti; 
+GO
+ALTER SECURITY POLICY[rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.OnlineSalesManagementSettings.v];
+      RAISERROR('Operation.OnlineSalesManagementSettings finish', 0 ,1) WITH NOWAIT;
+      
+------------------------------ BEGIN Operation.OnlineSalesManagementSettings ------------------------------
 
       

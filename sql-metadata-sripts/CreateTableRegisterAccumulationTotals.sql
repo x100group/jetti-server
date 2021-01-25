@@ -48,7 +48,7 @@
       SELECT
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PaymentsKind"')) AS [PaymentsKind]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."PaymentsKind"')) AS [PaymentsKind]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"')) AS [Counterpartie]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ProductPackage"')) AS [ProductPackage]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) AS [Product]
@@ -71,7 +71,7 @@
       GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PaymentsKind"'))
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."PaymentsKind"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Counterpartie"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ProductPackage"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"'))
@@ -93,7 +93,7 @@
       SELECT
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."SourceTransaction"')) AS [SourceTransaction]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."SourceTransaction"')) AS [SourceTransaction]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CreditTransaction"')) AS [CreditTransaction]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) AS [OperationType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Investor"')) AS [Investor]
@@ -122,7 +122,7 @@
       GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."SourceTransaction"'))
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."SourceTransaction"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CreditTransaction"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Investor"'))
@@ -150,7 +150,7 @@
       SELECT
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PaymantKind"')) AS [PaymantKind]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."PaymantKind"')) AS [PaymantKind]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"')) AS [Customer]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccount"')) AS [BankAccount]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashRegister"')) AS [CashRegister]
@@ -171,7 +171,7 @@
       GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PaymantKind"'))
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."PaymantKind"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccount"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashRegister"'))
@@ -498,8 +498,8 @@
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) AS [isActive]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PeriodMonth"')) AS [PeriodMonth]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."KindTimekeeping"')) AS [KindTimekeeping]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."PeriodMonth"'),127) AS [PeriodMonth]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."KindTimekeeping"')) AS [KindTimekeeping]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) AS [Employee]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) AS [Person]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingTable"')) AS [StaffingTable]
@@ -515,8 +515,8 @@
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"'))
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."PeriodMonth"'))
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."KindTimekeeping"'))
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."PeriodMonth"'),127)
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."KindTimekeeping"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingTable"'))
@@ -743,11 +743,11 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) AS [Person]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) AS [Employee]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."SalaryKind"')) AS [SalaryKind]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."SalaryKind"')) AS [SalaryKind]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) AS [Analytics]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PL"')) AS [PL]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PLAnalytics"')) AS [PLAnalytics]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."Status"')) AS [Status]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."Status"')) AS [Status]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1), 0)) [Amount]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, null), 0)) [Amount.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null, 1), 0)) [Amount.Out]
@@ -767,11 +767,11 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"'))
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."SalaryKind"'))
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."SalaryKind"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PL"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PLAnalytics"'))
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."Status"'))
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."Status"'))
       GO
       CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Salary.TO] ON [dbo].[Register.Accumulation.Salary.TO.v] ([date], [company], [currency], [KorrCompany], [Department], [Person], [Employee], [SalaryKind], [Analytics], [PL], [PLAnalytics], [Status]);
       GO
@@ -832,7 +832,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) AS [Contract]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccountPerson"')) AS [BankAccountPerson]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."OperationType"')) AS [OperationType]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."OperationType"')) AS [OperationType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) AS [Loan]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashOrBank"')) AS [CashOrBank]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashRecipient"')) AS [CashRecipient]
@@ -853,7 +853,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccountPerson"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
-        , TRY_CONVERT(VARCHAR(64), JSON_VALUE(data, N'$."OperationType"'))
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."OperationType"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashOrBank"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashRecipient"'))

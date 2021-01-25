@@ -65,6 +65,10 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[Population] [Population]
         , d.[isDevelopmentRegion] [isDevelopmentRegion]
+        , d.[isActive] [isActive]
+        , ISNULL([Country.v].description, '') [Country.value], d.[Country] [Country.id], [Country.v].type [Country.type]
+        , d.[Longitude] [Longitude]
+        , d.[Latitude] [Latitude]
       
         , ISNULL(l5.description, d.description) [BusinessRegion.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BusinessRegion.Level4]
@@ -82,6 +86,7 @@ GO
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.BusinessRegion] TO jetti;
