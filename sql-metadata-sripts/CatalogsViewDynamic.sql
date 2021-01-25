@@ -65,6 +65,7 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[Population] [Population]
         , d.[isDevelopmentRegion] [isDevelopmentRegion]
+        , d.[isActive] [isActive]
         , ISNULL([Country.v].description, '') [Country.value], d.[Country] [Country.id], [Country.v].type [Country.type]
         , d.[Longitude] [Longitude]
         , d.[Latitude] [Latitude]
