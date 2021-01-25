@@ -2206,6 +2206,12 @@ CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$."Order"')), 0) [Order]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."RetailNetwork"')) [RetailNetwork]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isDesktop"')), 0) [isDesktop]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isWeb"')), 0) [isWeb]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$."isMobile"')), 0) [isMobile]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."Presentation"')), '') [Presentation]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$."LocalURL"')), '') [LocalURL]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.ProductCategory'
 ;

@@ -2500,6 +2500,12 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[Order] [Order]
+        , ISNULL([RetailNetwork.v].description, '') [RetailNetwork.value], d.[RetailNetwork] [RetailNetwork.id], [RetailNetwork.v].type [RetailNetwork.type]
+        , d.[isDesktop] [isDesktop]
+        , d.[isWeb] [isWeb]
+        , d.[isMobile] [isMobile]
+        , d.[Presentation] [Presentation]
+        , d.[LocalURL] [LocalURL]
       
         , ISNULL(l5.description, d.description) [ProductCategory.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ProductCategory.Level4]
@@ -2517,6 +2523,7 @@ GO
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.RetailNetwork.v] [RetailNetwork.v] WITH (NOEXPAND) ON [RetailNetwork.v].id = d.[RetailNetwork]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.ProductCategory] TO jetti;
