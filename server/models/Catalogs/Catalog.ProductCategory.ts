@@ -16,6 +16,9 @@ export class CatalogProductCategory extends DocumentBase {
   @Props({ type: 'number' })
   Order = 0;
 
+  @Props({ type: 'string' })
+  Presentation = '';
+
   @Props({ type: 'Catalog.RetailNetwork', required: true })
   RetailNetwork: Ref = null;
 
@@ -27,9 +30,6 @@ export class CatalogProductCategory extends DocumentBase {
 
   @Props({ type: 'boolean' })
   isMobile = false;
-
-  @Props({ type: 'string' })
-  Presentation = '';
 
   @Props({ type: 'string' })
   LocalURL = '';

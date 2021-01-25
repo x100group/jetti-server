@@ -15,7 +15,7 @@ export class CatalogDocuments extends DocumentBase {
 
 
   QueryList() {
-    const select = RegisteredDocumentsTypes(el => Type.isDocument(el.type))
+    const select = RegisteredDocumentsTypes(type => Type.isDocument(type))
       .map(type => ({ type, description: (<DocumentOptions>(createDocument(type).Prop())).description }));
 
     return buildSubcountQueryList(select);
