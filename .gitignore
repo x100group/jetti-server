@@ -46,3 +46,10 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+sql-metadata-sripts/CatalogsView.sql
+sql-metadata-sripts/CatalogsViewDynamic.sql
+sql-metadata-sripts/CatalogsViewIndex.sql
+sql-metadata-sripts/CatalogsViewIndexDynamic.sql
+sql-metadata-sripts/OperationsView.sql
+sql-metadata-sripts/OperationsViewIndex.sql
+sql-metadata-sripts/RegisterInfoViewIndex.sql
