@@ -39,6 +39,12 @@ router.post('/baseon', async (req: Request, res: Response, next: NextFunction) =
   } catch (err) { next(err); }
 });
 
+router.post('/executecommand', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.json(await lib.doc.executeCommand(req.body, SDB(req)));
+  } catch (err) { next(err); }
+});
+
 const viewAction = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
