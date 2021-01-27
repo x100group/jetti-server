@@ -5,7 +5,8 @@ import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
   description: 'ЦФО',
   icon: 'fa fa-list',
   menu: 'ЦФО',
-  hierarchy: 'folders'
+  hierarchy: 'folders',
+  module: `{const onOpen = async () => {this.readonly = this.readonly || !this.auth.isRoleAvailableResponsibilityCenterEditor()}; return {onOpen};}`,
 })
 export class CatalogResponsibilityCenter extends DocumentBase {
 
@@ -18,7 +19,7 @@ export class CatalogResponsibilityCenter extends DocumentBase {
   @Props({ type: 'Catalog.Person', order: 2, required: true })
   ResponsiblePerson: Ref = null;
 
-  @Props({ type: 'Catalog.Currency', required: true, isProtected: true})
+  @Props({ type: 'Catalog.Currency', required: true, isProtected: true })
   Currency: Ref = null;
 
   @Props({ type: 'string', required: true, order: 2, style: { width: '135px' }, isProtected: true })

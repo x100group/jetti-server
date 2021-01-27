@@ -40,11 +40,20 @@ export class CatalogOperation extends DocumentBase {
   @Props({ type: 'Catalog.Configuration', storageType: 'elements' })
   Configuration: Ref = null;
 
-  @Props({ type: 'javascript', required: true, hiddenInList: true, style: { height: '50vh' }, value: '' })
+  @Props({ type: 'javascript', hiddenInList: true, style: { height: '50vh' }, value: '' })
   script = '';
+
+  @Props({ type: 'javascript', hiddenInList: true, style: { height: '50vh' }, value: '' })
+  scriptAccounting = '';
 
   @Props({ type: 'javascript', hiddenInList: true, style: { height: '50vh' } })
   module = '';
+
+  @Props({ type: 'boolean' })
+  isManagment = '';
+
+  @Props({ type: 'boolean' })
+  isAccounting = '';
 
   @Props({ type: 'table', required: true })
   Parameters: Parameter[] = [new Parameter()];

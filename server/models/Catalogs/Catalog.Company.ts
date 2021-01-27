@@ -14,6 +14,7 @@ import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
     { name: 'Storehouses', type: 'Catalog.Storehouse', field: 'company' },
     { name: 'Responsible persons', type: 'Register.Info.CompanyResponsiblePersons', field: 'companyOrGroup.id' },
   ],
+  module: `{const onOpen = async () => {this.readonly = this.readonly || !this.auth.isRoleAvailableCompanyEditor()}; return {onOpen};}`,
 })
 export class CatalogCompany extends DocumentBase {
 

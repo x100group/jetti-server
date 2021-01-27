@@ -9,48 +9,6 @@ import { x100DATA_POOL } from '../../sql.pool.x100-DATA';
 export class CatalogOperationServer extends CatalogOperation implements IServerDocument {
 
     async onCreate(tx: MSSQL) {
-        if (!this.script)
-            this.script = `/*
-// Account
-Registers.Account.push({
-    debit: { account: lib.account.byCode('50.01'), subcounts: [$.CashRegister, lib.doc.byCode('Catalog.CashFlow', 'IN.CUSTOMER', tx)] },
-    kredit: { account: lib.account.byCode('62.01'), subcounts: [$.Customer] },
-    sum: AmountInBalance
-});
-
-// Balance
-Registers.Accumulation.push({
-    kind: false,
-    type: "Register.Accumulation.Balance",
-    data: {
-        Department: $.Department,
-        Balance: lib.doc.byCode('Catalog.Balance', 'AR', tx),
-        Analytics: $.Customer,
-        Amount: AmountInBalance
-    }
-});
-
-Registers.Accumulation.push({
-    kind: true,
-    type: "Register.Accumulation.Balance",
-    data: {
-        Department: $.Department,
-        Balance: lib.doc.byCode('Catalog.Balance', 'CASH', tx),
-        Analytics: $.CashRegister,
-        Amount: AmountInBalance
-    }
-});
-
-// PL
-Registers.Accumulation.push({
-    kind: true,
-    type: "Register.Accumulation.PL",
-    data: {
-        Department: $.Department,
-        PL: $.Expense,
-        Analytics: $.Analytics,
-        Amount: $.Amount,
-    }`;
         return this;
     }
 
@@ -67,7 +25,7 @@ Registers.Accumulation.push({
         if (!this.shortName) throw Error('"shortName" is not defined!');
         const err = await tx.metaSequenceCreate(`Sq.Operation.${this.shortName}`);
         if (err) throw Error(err);
-      }
+    }
 
     async updateSQLViewsX100DATA() {
         await lib.meta.updateSQLViewsByOperationId(this.id as any, new MSSQL(x100DATA_POOL), false);
