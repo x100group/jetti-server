@@ -50,20 +50,39 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
 
-    if (this.posted && !this.deleted) {
-      const query = `
-        SELECT (SELECT "script" FROM OPENJSON(doc) WITH ("script" NVARCHAR(MAX) '$."script"')) "script"
-        FROM "Documents" WHERE id = @p1`;
-      const Operation = await tx.oneOrNone<{ script: string }>(query, [this.Operation]);
-      const exchangeRate = await lib.info.exchangeRate(this.date, this.company, this.currency, tx);
-      const settings = await lib.info.sliceLast<RegisterInfoSettings>('Settings', this.date, this.company, {}, tx);
-      const accountingCurrency = settings && settings.accountingCurrency || this.currency;
-      const exchangeRateAccounting = await lib.info.exchangeRate(this.date, this.company, accountingCurrency, tx);
+    if (!this.posted || this.deleted || !this.Operation) return Registers;
+
+    const query = `
+      SELECT
+        IIF(ISNULL("isManagment", 0) = 0, 'script', "script") "scriptManagment",
+        IIF(ISNULL("isAccounting", 0) = 0, '', "scriptAccounting") "scriptAccounting"
+      FROM "Documents"
+      CROSS APPLY OPENJSON (doc, N'$')
+      WITH
+        (
+          "isManagment" BIT '$."isManagment"',
+          "isAccounting" BIT '$."isAccounting"',
+          "script" NVARCHAR(MAX) '$."script"',
+          "scriptAccounting" NVARCHAR(MAX) '$."scriptAccounting"'
+        )
+      WHERE id = @p1`;
+
+    const postSettings = await tx.oneOrNone<{ scriptManagment: string, scriptAccounting: string }>(query, [this.Operation]);
+
+    if (!postSettings || (!postSettings.scriptManagment && !postSettings.scriptAccounting)) return Registers;
+
+    const exchangeRate = await lib.info.exchangeRate(this.date, this.company, this.currency, tx);
+    const settings = await lib.info.sliceLast<RegisterInfoSettings>('Settings', this.date, this.company, {}, tx);
+    const accountingCurrency = settings && settings.accountingCurrency || this.currency;
+    const exchangeRateAccounting = await lib.info.exchangeRate(this.date, this.company, accountingCurrency, tx);
+
+    const executePostScript = async (postScript: string) => {
+      if (!postScript) return;
       const script = `
       let exchangeRateBalance = exchangeRate;
       let AmountInBalance = doc.Amount / exchangeRate;
       let AmountInAccounting = doc.Amount / exchangeRateAccounting;
-      ${ Operation!.script
+      ${postScript
           .replace(/\$\./g, 'doc.')
           .replace(/tx\./g, 'await tx.')
           .replace(/lib\./g, 'await lib.')
@@ -72,7 +91,10 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
       const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
       const func = new AsyncFunction('doc, Registers, tx, lib, settings, exchangeRate, exchangeRateAccounting', script);
       await func(this, Registers, tx, lib, settings, exchangeRate, exchangeRateAccounting);
-    }
+    };
+
+    await executePostScript(postSettings.scriptManagment);
+    await executePostScript(postSettings.scriptAccounting);
 
     return Registers;
   }
@@ -92,7 +114,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
         this.company = doc.company;
         this.currency = doc.currency;
         this.parent = doc.id;
-        ${ Rule.script
+        ${Rule.script
             .replace(/\$\./g, 'doc.')
             .replace(/tx\./g, 'await tx.')
             .replace(/lib\./g, 'await lib.')

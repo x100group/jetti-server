@@ -309,6 +309,11 @@ export class SQLGenegatorMetadata {
       let name = '';
       for (let i = 1; i < typeSplit.length; i++) name += typeSplit[i];
       select = select.replace(`FROM [${type}.v] d WITH (NOEXPAND)`, `
+        , ISNULL(l5.id, d.id) [${name}.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [${name}.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [${name}.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [${name}.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [${name}.Level1.id]
         , ISNULL(l5.description, d.description) [${name}.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [${name}.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [${name}.Level3]
