@@ -171,17 +171,11 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
 
         if (options.commands) {
           for (const command of options.commands) {
-            if (docServer[command]) {
-              try {
-                await docServer[command]();
-              } catch (ex) {
-                res.json(`Error on executing "${command}"`);
-                return;
-              }
-            } else {
-              res.json(`Unknow command "${command}"`);
-              return;
-            }
+            // command execution
+            const docModule: () => Promise<void> = docServer['serverModule'][command];
+            if (typeof docModule !== 'function') throw new Error(`Bad arguments: command "${command}" is not exist`);
+            await docModule();
+            if (docServer.onCommand) await docServer.onCommand(command, undefined, tx);
           }
         }
 
@@ -192,8 +186,15 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
           { withExchangeInfo: !!(docServer['ExchangeBase'] || docServer['ExchangeCode']) }
         );
 
-        const docByKeys = Object.keys(docServer['doc']).map(key => ({ key: key, value: docServer!['doc'][key] }));
-        delete docServer['doc'];
+        let docByKeys: any[] = [];
+
+        if (docServer['doc']) {
+          delete docServer['doc']['workflow'];
+          delete docServer['doc']['serverModule'];
+          docByKeys = Object.keys(docServer['doc']).map(key => ({ key: key, value: docServer!['doc'][key] }));
+          delete docServer['doc'];
+        }
+
         res.statusCode = 200;
         const noSqlDoc = await lib.doc.noSqlDocument(docServer);
         noSqlDoc!.docByKeys = docByKeys;
