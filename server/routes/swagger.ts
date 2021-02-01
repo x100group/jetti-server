@@ -30,6 +30,7 @@ router.get('/document/:id', async (req: Request, res: Response, next: NextFuncti
     if (flatDoc) {
       noSqlDoc = await lib.doc.noSqlDocument(flatDoc);
       delete noSqlDoc!.doc['serverModule'];
+      if (noSqlDoc!['operation'] && noSqlDoc!['Operation']) delete noSqlDoc!['operation'];
       noSqlDoc!.docByKeys = Object.keys(noSqlDoc!.doc)
         .map(key => ({ key: key, value: noSqlDoc!.doc[key] }));
       if (req.query.asArray === 'true') res.json(Object.entries(flatDoc));
@@ -126,10 +127,11 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
         const propsKeys = Object.keys(props);
 
         const excludedProps = ['doc', 'docByKey', 'serverModule'];
+        const commonProps = ['ExchangeCode', 'ExchangeBase', 'version', 'operation'];
 
         if (document.docByKeys) {
           const unknowKeys = document.docByKeys
-            .filter(keyVal => !propsKeys.includes(keyVal.key))
+            .filter(keyVal => !propsKeys.includes(keyVal.key) && !commonProps.includes(keyVal.key))
             .map(keyVal => `${keyVal.key}`)
             .join(',');
 
@@ -143,7 +145,7 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
 
         } else if (document.doc) {
           const unknowKeys = Object.keys(document.doc)
-            .filter(key => !propsKeys.includes(key))
+            .filter(key => !propsKeys.includes(key) && !commonProps.includes(key))
             .map(key => `${key}`)
             .join(',');
 
@@ -171,17 +173,11 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
 
         if (options.commands) {
           for (const command of options.commands) {
-            if (docServer[command]) {
-              try {
-                await docServer[command]();
-              } catch (ex) {
-                res.json(`Error on executing "${command}"`);
-                return;
-              }
-            } else {
-              res.json(`Unknow command "${command}"`);
-              return;
-            }
+            // command execution
+            const docModule: () => Promise<void> = docServer['serverModule'][command];
+            if (typeof docModule !== 'function') throw new Error(`Bad arguments: command "${command}" is not exist`);
+            await docModule();
+            if (docServer.onCommand) await docServer.onCommand(command, undefined, tx);
           }
         }
 
@@ -192,8 +188,17 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
           { withExchangeInfo: !!(docServer['ExchangeBase'] || docServer['ExchangeCode']) }
         );
 
-        const docByKeys = Object.keys(docServer['doc']).map(key => ({ key: key, value: docServer!['doc'][key] }));
-        delete docServer['doc'];
+        let docByKeys: any[] = [];
+
+        if (docServer['doc']) {
+          delete docServer['doc']['workflow'];
+          delete docServer['doc']['serverModule'];
+          docByKeys = Object.keys(docServer['doc']).map(key => ({ key: key, value: docServer!['doc'][key] }));
+          delete docServer['doc'];
+        }
+
+        if (docServer['operation'] && docServer['Operation']) delete docServer['operation'];
+
         res.statusCode = 200;
         const noSqlDoc = await lib.doc.noSqlDocument(docServer);
         noSqlDoc!.docByKeys = docByKeys;

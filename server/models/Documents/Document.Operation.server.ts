@@ -54,7 +54,7 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
 
     const query = `
       SELECT
-        IIF(ISNULL("isManagment", 0) = 0, 'script', "script") "scriptManagment",
+        IIF(ISNULL("isManagment", 0) = 0, "script", "script") "scriptManagment",
         IIF(ISNULL("isAccounting", 0) = 0, '', "scriptAccounting") "scriptAccounting"
       FROM "Documents"
       CROSS APPLY OPENJSON (doc, N'$')
