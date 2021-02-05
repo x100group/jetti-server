@@ -14,7 +14,7 @@ import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { CatalogBankAccount } from '../Catalogs/Catalog.BankAccount';
 import { CatalogContract } from '../Catalogs/Catalog.Contract';
 import { DeleteProcess } from '../../routes/bp';
-import { updateDocument, insertDocument } from '../../routes/utils/post';
+import { upsertDocument, insertDocument } from '../../routes/utils/post';
 import { CatalogTaxOffice } from '../Catalogs/Catalog.TaxOffice';
 import { TypesCashRecipient } from '../Types/Types.CashRecipient';
 import { CatalogPerson } from '../Catalogs/Catalog.Person';
@@ -248,7 +248,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       }
     }
     this.Status = 'PREPARED';
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
   }
   async CloseCashRequest(tx: MSSQL) {
 
@@ -273,7 +273,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       await lib.doc.postById(OperationServer.id, tx);
     }
     this.Status = 'CLOSED';
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
   }
 
   async FillSalaryBalance(tx: MSSQL, byPersons: boolean, withCurrentMonth: boolean) {
@@ -410,7 +410,7 @@ ORDER BY
       this.workflowID = '';
     }
     this.Status = 'PREPARED';
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
     return this;
   }
 

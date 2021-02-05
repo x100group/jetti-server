@@ -1,4 +1,4 @@
-import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
+import { JDocument, DocumentBase, Props, Ref } from 'jetti-middle';
 
 @JDocument({
   type: 'Document.CashRequest',

@@ -6,7 +6,6 @@ import { lib } from '../std.lib';
 import { createDocument, RegisteredDocumentType } from './../models/documents.factory';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationServer } from './Catalogs/Catalog.Operation.server';
-import { calculateDescription, RefValue, DocumentBase, DocumentOptions, Ref, IFlatDocument } from 'jetti-middle';
 import { DocumentExchangeRatesServer } from './Documents/Document.ExchangeRates.server';
 import { DocumentInvoiceServer } from './Documents/Document.Invoce.server';
 import { DocumentOperation } from './Documents/Document.Operation';
@@ -24,6 +23,7 @@ import { CatalogProductKindServer } from './Catalogs/Catalog.ProductKind.server'
 import { CatalogProductServer } from './Catalogs/Catalog.Product.server';
 import { CatalogProductCategoryServer } from './Catalogs/Catalog.ProductCategory.server';
 import { CatalogLoanServer } from './Catalogs/Catalog.Loan.server';
+import { Ref, DocumentBase, IFlatDocument, DocumentOptions, RefValue, calculateDescription } from 'jetti-middle';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;

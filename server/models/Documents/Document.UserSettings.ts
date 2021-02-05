@@ -1,4 +1,5 @@
-import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
+import { Ref } from 'jetti-middle';
+import { DocumentBase, JDocument, Props } from 'jetti-middle/dist/common/models/document';
 
 @JDocument({
   type: 'Document.UserSettings',
