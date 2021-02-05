@@ -127,6 +127,90 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
   return serverDoc;
 }
 
+export async function upsertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, opts?: IUpdateInsertDocumentOptions) {
+
+  await beforeSaveDocument(serverDoc, tx);
+
+  const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
+  const jsonDoc = JSON.stringify(noSqlDocument);
+  const withExchangeInfo = (opts && opts.withExchangeInfo) || serverDoc['ExchangeBase'];
+
+  let response: INoSqlDocument;
+  response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
+  DECLARE @DocId UNIQUEIDENTIFIER;
+
+  SELECT @DocId = id FROM Documents WHERE id = @p2;
+
+  IF @DocId IS NULL
+  BEGIN
+  INSERT INTO Documents(
+        [id], [type], [date], [code], [description], [posted], [deleted],
+        [parent], [isfolder], [company], [user], [info], [doc] ${withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''})
+      SELECT
+        [id], [type], [date], [code], [description], [posted], [deleted],
+        [parent], [isfolder], [company], [user], [info], [doc]
+        ${withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''}
+      FROM OPENJSON(@p1) WITH (
+        [id] UNIQUEIDENTIFIER,
+        [date] DATETIME,
+        [type] NVARCHAR(100),
+        [code] NVARCHAR(36),
+        [description] NVARCHAR(150),
+        [posted] BIT,
+        [deleted] BIT,
+        [parent] UNIQUEIDENTIFIER,
+        [isfolder] BIT,
+        [company] UNIQUEIDENTIFIER,
+        [user] UNIQUEIDENTIFIER,
+        [info] NVARCHAR(max),
+        [doc] NVARCHAR(max) N'$.doc' AS JSON
+        ${withExchangeInfo ? `
+        ,[ExchangeCode] NVARCHAR(50)
+        ,[ExchangeBase] NVARCHAR(50)` : ''}
+      );
+  END
+
+  IF NOT @DocId IS NULL
+  BEGIN
+    UPDATE Documents
+        SET
+          type = i.type, parent = i.parent,
+          date = i.date, code = i.code, description = i.description,
+          posted = i.posted, deleted = i.deleted, isfolder = i.isfolder,
+          "user" = i."user", company = i.company, info = i.info, timestamp = GETDATE(), doc = i.doc
+          ${withExchangeInfo ? ',ExchangeCode = i.ExchangeCode,  ExchangeBase = i.ExchangeBase' : ''}
+        FROM (
+          SELECT *
+          FROM OPENJSON(@p1) WITH (
+            [id] UNIQUEIDENTIFIER,
+            [date] DATETIME,
+            [type] NVARCHAR(100),
+            [code] NVARCHAR(36),
+            [description] NVARCHAR(150),
+            [posted] BIT,
+            [deleted] BIT,
+            [isfolder] BIT,
+            [company] UNIQUEIDENTIFIER,
+            [user] UNIQUEIDENTIFIER,
+            [info] NVARCHAR(max),
+            [parent] UNIQUEIDENTIFIER,
+            [doc] NVARCHAR(max) N'$.doc' AS JSON
+            ${withExchangeInfo ? `
+            ,[ExchangeCode] NVARCHAR(50)
+            ,[ExchangeBase] NVARCHAR(50)` : ''}
+          )
+        ) i
+      WHERE Documents.id = i.id;
+  END
+
+  SELECT * FROM Documents WHERE id = @p2`, [jsonDoc, serverDoc.id]);
+
+  await afterSaveDocument(serverDoc, tx);
+
+  serverDoc.map(response);
+  return serverDoc;
+}
+
 export async function setPostedSate(id: Ref, tx: MSSQL) {
   const doc = await tx.oneOrNone<INoSqlDocument>(`
     UPDATE Documents SET posted = 1 WHERE id = @p1 and deleted = @p2 and posted = @p3;
