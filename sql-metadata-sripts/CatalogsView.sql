@@ -1175,6 +1175,7 @@ GO
         , ISNULL([BusinessCalendar.v].description, '') [BusinessCalendar.value], d.[BusinessCalendar] [BusinessCalendar.id], [BusinessCalendar.v].type [BusinessCalendar.type]
         , ISNULL([ResponsibilityCenter.v].description, '') [ResponsibilityCenter.value], d.[ResponsibilityCenter] [ResponsibilityCenter.id], [ResponsibilityCenter.v].type [ResponsibilityCenter.type]
         , d.[OpeningDate] [OpeningDate]
+        , d.[OpeningDatePlanned] [OpeningDatePlanned]
         , d.[ClosingDate] [ClosingDate]
         , ISNULL([TaxOffice.v].description, '') [TaxOffice.value], d.[TaxOffice] [TaxOffice.id], [TaxOffice.v].type [TaxOffice.type]
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
