@@ -44,6 +44,9 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'date', label: 'Opening date' })
   OpeningDate = new Date();
 
+  @Props({ type: 'date', label: 'Planned opening date' })
+  OpeningDatePlanned = new Date();
+
   @Props({ type: 'date', label: 'Closing date' })
   ClosingDate = new Date();
 

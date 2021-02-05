@@ -147,6 +147,7 @@ export interface JTL {
     taskPoolTx: () => MSSQL,
     jettiPoolTx: () => MSSQL,
     executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>,
+    executePOSTRequest: (opts: { url: string, data: any, config?: any }) => Promise<any>,
     isEqualObjects: (object1: Object, object2: Object) => boolean,
     decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string,
     converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string
@@ -236,6 +237,7 @@ export const lib: JTL = {
     exchangeDB,
     taskPoolTx,
     executeGETRequest,
+    executePOSTRequest,
     jettiPoolTx,
     isEqualObjects,
     decodeBase64StringAsUTF8,
@@ -706,6 +708,11 @@ function taskPoolTx(): MSSQL {
 async function executeGETRequest(opts: { baseURL: string, query: string }): Promise<any> {
   const instance = axios.create({ baseURL: opts.baseURL });
   return await instance.get(opts.query);
+}
+
+async function executePOSTRequest(opts: { url: string, data: any, config?: any }): Promise<any> {
+  const instance = axios.create({ baseURL: opts.url });
+  return await instance.post(opts.url, opts.data, opts.config);
 }
 
 async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
