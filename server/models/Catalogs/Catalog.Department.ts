@@ -42,13 +42,13 @@ export class CatalogDepartment extends DocumentBase {
   ResponsibilityCenter: Ref = null;
 
   @Props({ type: 'date', label: 'Opening date' })
-  OpeningDate = new Date();
+  OpeningDate = null;
 
   @Props({ type: 'date', label: 'Planned opening date' })
-  OpeningDatePlanned = new Date();
+  OpeningDatePlanned = null;
 
   @Props({ type: 'date', label: 'Closing date' })
-  ClosingDate = new Date();
+  ClosingDate = null;
 
   @Props({ type: 'Catalog.TaxOffice', hiddenInList: true })
   TaxOffice: Ref = null;
