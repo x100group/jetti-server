@@ -253,7 +253,7 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
     await sdb.tx(async tx => {
       const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
       if (doc && doc.deleted) throw new Error('Can\'t POST deleted document');
-      if (!Type.isDocument(doc.type)) throw new Error('Can\'t POST NOT document');
+      // if (!Type.isDocument(doc.type)) throw new Error('Can\'t POST NOT document');
       doc.posted = true;
       await lib.util.adminMode(true, tx);
       try {
