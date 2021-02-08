@@ -6,7 +6,6 @@ import { lib } from '../../std.lib';
 import { IServerDocument, DocumentBaseServer, createDocumentServer } from '../documents.factory.server';
 import { MSSQL } from '../../mssql';
 import { PostResult } from '../post.interfaces';
-import { Ref } from 'jetti-middle';
 import { DocumentCashRequest } from './Document.CashRequest';
 import { RegisterAccumulationAP } from '../Registers/Accumulation/AP';
 import { RegisterAccumulationCashToPay } from '../Registers/Accumulation/CashToPay';
@@ -22,6 +21,7 @@ import { createDocument } from '../documents.factory';
 import { DocumentOperation } from './Document.Operation';
 import { x100 } from '../../x100.lib';
 import { getPersonContract } from '../Catalogs/Catalog.Person.Contract.server';
+import { Ref } from 'jetti-middle';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
@@ -395,6 +395,7 @@ ORDER BY
   }
 
   async beforeSave(tx: MSSQL): Promise<this> {
+    if (this.PayDay && this.PayDay < this.date) throw new Error(`Дата платежа не может быть раньше даты документа`);
     if (this.Amount < 0.01) throw new Error(`${this.description} неверно указана сумма`);
     if (!this.CashKind) throw new Error(`${this.description} не указан тип платежа`);
     return this;

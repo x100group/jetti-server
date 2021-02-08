@@ -937,6 +937,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BusinessCalendar')) [BusinessCalendar]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ResponsibilityCenter')) [ResponsibilityCenter]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpeningDate'),127) [OpeningDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpeningDatePlanned'),127) [OpeningDatePlanned]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.ClosingDate'),127) [ClosingDate]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.TaxOffice')) [TaxOffice]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Manager')) [Manager]

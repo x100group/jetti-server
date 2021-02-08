@@ -7,7 +7,7 @@ import { configSchema } from './models/config';
 import { DocumentBase, Ref, IFlatDocument, INoSqlDocument, RefValue, RegisterAccumulation, Type, RegisterInfo } from 'jetti-middle';
 import { createDocumentServer, DocumentBaseServer } from './models/documents.factory.server';
 import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
-import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate, insertDocument, IUpdateInsertDocumentOptions } from './routes/utils/post';
+import { adminMode, postDocument, unpostDocument, setPostedSate, IUpdateInsertDocumentOptions, upsertDocument } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
 import { BankStatementUnloader } from './fuctions/BankStatementUnloader';
@@ -147,6 +147,7 @@ export interface JTL {
     taskPoolTx: () => MSSQL,
     jettiPoolTx: () => MSSQL,
     executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>,
+    executePOSTRequest: (opts: { url: string, data: any, config?: any }) => Promise<any>,
     isEqualObjects: (object1: Object, object2: Object) => boolean,
     decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string,
     converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string
@@ -236,6 +237,7 @@ export const lib: JTL = {
     exchangeDB,
     taskPoolTx,
     executeGETRequest,
+    executePOSTRequest,
     jettiPoolTx,
     isEqualObjects,
     decodeBase64StringAsUTF8,
@@ -439,8 +441,7 @@ async function saveDoc(
   const isPostedAfter = Type.isDocument(servDoc.type) && servDoc.posted;
   if (isPostedBefore) await unpostDocument(servDoc, tx);
   if (!servDoc.code) servDoc.code = await lib.doc.docPrefix(servDoc.type, tx);
-  if (!servDoc.timestamp) servDoc = await insertDocument(servDoc, tx, opts);
-  else servDoc = await updateDocument(servDoc, tx, opts);
+  await upsertDocument(servDoc, tx, opts);
   if (isPostedAfter) {
     if (queuePostFlow) await lib.queuePost.addId(servDoc.id, queuePostFlow, tx);
     else await postDocument(servDoc, tx);
@@ -449,7 +450,7 @@ async function saveDoc(
 }
 
 async function updateDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseServer> {
-  return await updateDocument(servDoc, tx);
+  return await upsertDocument(servDoc, tx);
 }
 
 async function isDocumentUsedInAccumulationWithPropValueById(docId: string, tx: MSSQL): Promise<boolean> {
@@ -692,7 +693,7 @@ export async function unPostById(id: Ref, tx: MSSQL) {
     // if (!doc.posted) return serverDoc;
     serverDoc.posted = false;
     await unpostDocument(serverDoc, tx);
-    await updateDocument(serverDoc, tx);
+    await upsertDocument(serverDoc, tx);
     return serverDoc;
   } catch (ex) { throw new Error(ex); }
   finally { await lib.util.adminMode(false, tx); }
@@ -706,6 +707,11 @@ function taskPoolTx(): MSSQL {
 async function executeGETRequest(opts: { baseURL: string, query: string }): Promise<any> {
   const instance = axios.create({ baseURL: opts.baseURL });
   return await instance.get(opts.query);
+}
+
+async function executePOSTRequest(opts: { url: string, data: any, config?: any }): Promise<any> {
+  const instance = axios.create({ baseURL: opts.url });
+  return await instance.post(opts.url, opts.data, opts.config);
 }
 
 async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
@@ -919,7 +925,7 @@ async function delAttachments(attachmentsId: Ref[], tx: MSSQL): Promise<boolean>
     if (!ob || ob.deleted) continue;
     ob.Storage = '';
     ob.deleted = true;
-    await updateDocument(ob, tx);
+    await upsertDocument(ob, tx);
   }
   return true;
 }

@@ -400,10 +400,13 @@
     SELECT
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Role"')) [Role]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) [OperationType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."companyOrGroup"')) [companyOrGroup]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) [Loan]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) [User]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) [Employee]
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.CompanyResponsiblePersons';
     GO
@@ -462,9 +465,17 @@
     AS
     SELECT
       id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) [OperationType]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CompanyGroup"')) [CompanyGroup]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."SharePrice"')) [SharePrice]
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."ShareQty"')) [ShareQty]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) [Qty]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Price"')) [Price]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) [Amount]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Share"')) [Share]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."ShareAmount"')) [ShareAmount]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.ShareEmission';
     GO
     GRANT SELECT,DELETE ON [Register.Info.ShareEmission] TO JETTI;
