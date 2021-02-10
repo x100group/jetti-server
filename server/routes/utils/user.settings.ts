@@ -4,83 +4,60 @@ import { MSSQL } from '../../mssql';
 export class UserSettingsManager {
 
     static async getSettings(settings: IUserSettings, tx: MSSQL): Promise<IUserSettings[] | null> {
-        const res = await tx.manyOrNone<IUserSettings>(`
+        return await tx.manyOrNone<IUserSettings>(`
       SELECT *
       FROM [dbo].[UserSettings]
       WHERE
       1 = 1 AND
-      ${settings.id ? 'id = @p1' : `[user] = @p1 and [type] = @p2 AND (@p3 = '' OR description = @p3)`}
-      ORDER BY description`,
-            settings.id ? [settings.id] : [settings.user || '', settings.type, settings.description || '']);
-        return res.length ? res : null;
-    }
-
-    static async getExistSettingsId(ids: string[], tx: MSSQL): Promise<string[]> {
-        const res = await tx.manyOrNone<{ id: string }>(`
-      SELECT id
-      FROM [dbo].[UserSettings]
-      WHERE
-      id in (${ids.map(el => '\'' + el + '\'').join(',')})`);
-        return res ? res.map(e => e.id) : [];
-    }
-
-    static async getSettingsDefault(type: string, tx: MSSQL): Promise<IUserSettings[] | null> {
-        return this.getSettings({ type }, tx);
+      ${settings.id ? 'id = @p1' : `[user] = @p1 and [type] = @p2`}
+      ORDER BY timestamp desc`,
+            settings.id ? [settings.id] : [settings.user || '', settings.type]);
     }
 
     static async saveSettingsArray(settings: IUserSettings[], tx: MSSQL): Promise<IUserSettings[]> {
-        const existId = await this.getExistSettingsId(settings.map(e => e.id || ''), tx);
         const res: IUserSettings[] = [];
-        for (const id of existId) { res.push(await this.updateSettings(settings.find(set => set.id === id)!, tx)); }
-        const newSettings = settings.filter(e => !e.id || !existId.includes(e.id));
-        for (const set of newSettings) { res.push(await this.insertSettings(set, tx)); }
+        for (const setting of settings) {
+            res.push(await this.saveSettings(setting, tx));
+        }
         return res;
     }
 
     static async saveSettings(settings: IUserSettings, tx: MSSQL) {
-
-        if (!settings.id) {
-            const set = await this.getSettings(settings, tx);
-            if (set && set.length) settings.id = set[0].id;
-        }
-
-        return settings.id ? await this.updateSettings(settings, tx) : await this.insertSettings(settings, tx);
+        return settings.timestamp ? await this.updateSettings(settings, tx) : await this.insertSettings(settings, tx);
     }
 
-    static async insertSettings(settings: IUserSettings, tx: MSSQL) {
-        const id = await tx.oneOrNone<{ id: string }>(`
-      INSERT INTO [dbo].[UserSettings]([id],[type],[kind],[user],[description],[selected],[settings])
-      OUTPUT inserted.id
-      VALUES (@p1,@p2,@p3,@p4,@p5,@p6,@p7)
-      `,
+    static async insertSettings(settings: IUserSettings, tx: MSSQL): Promise<IUserSettings> {
+        const timestamp = await tx.oneOrNone<{ timestamp: Date }>(`
+        INSERT INTO [dbo].[UserSettings]([id],[type],[kind],[user],[description],[settings],[timestamp])
+        OUTPUT inserted.timestamp
+        VALUES (@p1,@p2,@p3,@p4,@p5,@p6, GETDATE())
+        `,
             [settings.id,
             settings.type,
             settings.kind,
             settings.user || '',
             settings.description || '',
-            settings.selected || false,
             JSON.stringify(settings.settings)]);
-        return { ...settings, id: id!.id };
+        return { ...settings, timestamp: timestamp!.timestamp };
     }
 
-    static async updateSettings(settings: IUserSettings, tx: MSSQL) {
-        await tx.none(`
-      UPDATE [dbo].[UserSettings]
-      SET [type] = @p1,
-          [kind] = @p2,
-          [user] = @p3,
-          [description] = @p4,
-          [settings] = @p5,
-          [selected] = @p6
-      WHERE id = @p7;`,
+    static async updateSettings(settings: IUserSettings, tx: MSSQL): Promise<IUserSettings> {
+        return (await tx.oneOrNone<IUserSettings>(`
+        UPDATE [dbo].[UserSettings]
+        SET [type] = @p1,
+            [kind] = @p2,
+            [user] = @p3,
+            [description] = @p4,
+            [settings] = @p5,
+            [timestamp] = GETDATE()
+        WHERE id = @p6;
+        SELECT * FROM [dbo].[UserSettings] WHERE id = @p6`,
             [settings.type,
             settings.kind,
             settings.user || '',
             settings.description || '',
             JSON.stringify(settings.settings || ''),
-            settings.selected || false,
-            settings.id]);
-        return settings;
+            settings.id]))!;
     }
 
     static async deleteSettingsById(id: string, tx: MSSQL) {
