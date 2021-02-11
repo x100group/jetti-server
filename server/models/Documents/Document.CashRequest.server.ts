@@ -395,7 +395,7 @@ ORDER BY
   }
 
   async beforeSave(tx: MSSQL): Promise<this> {
-    if (this.PayDay && this.PayDay < this.date) throw new Error(`Дата платежа не может быть раньше даты документа`);
+    if (this.PayDay && this.PayDay.setHours(0) < this.date.setHours(0, 0, 0, 0)) throw new Error(`Дата платежа не может быть раньше даты документа`);
     if (this.Amount < 0.01) throw new Error(`${this.description} неверно указана сумма`);
     if (!this.CashKind) throw new Error(`${this.description} не указан тип платежа`);
     return this;

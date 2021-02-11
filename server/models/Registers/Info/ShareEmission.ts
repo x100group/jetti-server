@@ -19,6 +19,9 @@ export class RegisterInfoShareEmission extends RegisterInfo {
   @Props({ type: 'Catalog.Company.Group' })
   CompanyGroup: Ref = null;
 
+  @Props({ type: 'Catalog.Loan' })
+  Loan: Ref = null;
+
   @Props({ type: 'Catalog.Person' })
   Person: Ref = null;
 

@@ -200,7 +200,11 @@ export class MSSQL {
       const value = this.toJSON(data[k]);
       if (k.includes('.')) {
         const keys = k.split('.');
-        row[keys[0]] = { ...row[keys[0]], [keys[1]]: value };
+        if (keys.length > 2)
+          row[keys[0]][keys[1]] = { ...row[keys[0]][keys[1]], [keys[2]]: value };
+        else
+          row[keys[0]] = { ...row[keys[0]], [keys[1]]: value };
+
       } else
         row[k] = value;
     }

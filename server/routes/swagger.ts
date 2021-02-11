@@ -67,7 +67,7 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
         let flatDocument: any = null;
         const existDoc = await lib.doc.findDocumentByKey(options.searchKey, tx);
 
-        if (!existDoc && options.updateType === 'Update')
+        if ((!existDoc || existDoc.length === 0) && options.updateType === 'Update')
           res.json(`Document not found by: ${JSON.stringify(options.searchKey)}`);
         else if (existDoc && existDoc.length > 1)
           res.json(`Found ${existDoc.length} documents by ${JSON.stringify(options.searchKey)}`);
@@ -78,7 +78,7 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
             flatDocument = existDoc[0];
             res.statusCode = 200;
           }
-        } else if (!existDoc && options.updateType.includes('Insert')) res.statusCode = 200;
+        } else if ((!existDoc || existDoc.length === 0) && options.updateType.includes('Insert')) res.statusCode = 200;
         else res.json(`Bad arguments`);
 
         if (res.statusCode !== 200) return;
