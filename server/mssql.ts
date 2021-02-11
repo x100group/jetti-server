@@ -122,7 +122,7 @@ export class MSSQL {
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) {
-            if (!global['isProd']) console.error(`${error.code}: ${error.message}\n${params}`); return reject(error);
+            if (!global['isProd']) console.error(`${error.code}: ${error.message}\n${params}\n${sql}`); return reject(error);
           }
           return resolve();
         });
@@ -200,7 +200,10 @@ export class MSSQL {
       const value = this.toJSON(data[k]);
       if (k.includes('.')) {
         const keys = k.split('.');
-        row[keys[0]] = { ...row[keys[0]], [keys[1]]: value };
+        if (keys.length > 2)
+          row[keys[0]][keys[1]] = { ...row[keys[0]][keys[1]], [keys[2]]: value };
+        else
+          row[keys[0]] = { ...row[keys[0]], [keys[1]]: value };
       } else
         row[k] = value;
     }

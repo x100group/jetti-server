@@ -8,6 +8,9 @@ export class CatalogStaffingTableServer extends CatalogStaffingTable implements 
 
   beforeSave = async (tx: MSSQL): Promise<this> => {
 
+    if (this.CloseDate && this.ActivationDate && this.CloseDate! < this.ActivationDate!)
+      throw new Error('Дата закрытия не может быть раньше даты открытия!');
+
     if (this.isfolder) return this;
 
     const defVal = '<пусто>';

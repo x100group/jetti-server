@@ -80,11 +80,6 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       case 'CashRecipient':
         this.Contract = null;
         this.CashRecipientBankAccount = null;
-        if (this.CashRecipient) {
-          const CashRecipient = await lib.doc.byId(this.CashRecipient, tx);
-          if (CashRecipient && CashRecipient.type === 'Catalog.Counterpartie' && CashRecipient['Manager'])
-            this.Manager = CashRecipient['Manager'];
-        }
         if (this.Operation === 'Оплата ДС в другую организацию') { this.CashOrBankIn = null; return this; }
         if (!value.id || value.type !== 'Catalog.Counterpartie') { this.Contract = null; return this; }
         query = `
@@ -395,7 +390,7 @@ ORDER BY
   }
 
   async beforeSave(tx: MSSQL): Promise<this> {
-    if (this.PayDay && this.PayDay < this.date) throw new Error(`Дата платежа не может быть раньше даты документа`);
+    if (this.PayDay && this.PayDay.setHours(0) < this.date.setHours(0, 0, 0, 0)) throw new Error(`Дата платежа не может быть раньше даты документа`);
     if (this.Amount < 0.01) throw new Error(`${this.description} неверно указана сумма`);
     if (!this.CashKind) throw new Error(`${this.description} не указан тип платежа`);
     return this;

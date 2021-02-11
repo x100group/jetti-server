@@ -41,8 +41,10 @@ router.get('/register/movements/list/:id', async (req, res, next) => {
     const result = await sdb.manyOrNone<{ records: number, kind: string, type: RegisterAccumulationTypes | string | string }>(query, [req.params.id]);
     const listAccumulation = getRegisterFromQueryResult(result, 'Accumulation', createRegisterAccumulation);
     const listInfo = getRegisterFromQueryResult(result, 'Info', createRegisterInfo);
-    const listAccount = getRegisterFromQueryResult(result, 'Account', _ => ({ description: 'Хозрасчетный' }));
-    const reslist = listAccumulation.concat(listInfo, listAccount);
+    let listAccount: any[] = [];
+    if (result.find(e => e.kind === 'Account'))
+      listAccount = [{ type: 'Register.Account', description: `Accounting [${result.filter(e => e.kind === 'Account').length}]`, kind: 'Account' }];
+    const reslist = [...listAccount, ...listAccumulation, ...listInfo];
     res.json(reslist);
   } catch (err) { next(err); }
 });
