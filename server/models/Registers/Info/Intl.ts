@@ -19,6 +19,15 @@ export class RegisterInfoIntl extends RegisterInfo {
   @Props({ type: 'string', required: true, resource: true })
   Value = '';
 
+  @Props({ type: 'string', resource: true })
+  DativeCase = '';
+
+  @Props({ type: 'string', resource: true })
+  NominativeCase = '';
+
+  @Props({ type: 'string', resource: true })
+  PrepositionalCase = '';
+
   constructor(init: Partial<RegisterInfoIntl>) {
     super(init);
     Object.assign(this, init);
