@@ -57,7 +57,7 @@ export class CatalogContract extends DocumentBase {
   })
   BankAccount: Ref = null;
 
-  @Props({ type: 'Catalog.Manager', required: false })
+  @Props({ type: 'Catalog.Manager', required: false, hidden: true })
   Manager: Ref = null;
 
   @Props({ type: 'Catalog.Person' })

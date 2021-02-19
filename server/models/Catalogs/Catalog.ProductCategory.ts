@@ -23,6 +23,9 @@ export class CatalogProductCategory extends DocumentBase {
   RetailNetwork: Ref = null;
 
   @Props({ type: 'boolean' })
+  isDefault = false;
+
+  @Props({ type: 'boolean' })
   isDesktop = false;
 
   @Props({ type: 'boolean' })
@@ -32,6 +35,6 @@ export class CatalogProductCategory extends DocumentBase {
   isMobile = false;
 
   @Props({ type: 'string' })
-  LocalURL = '';
+  Slug = '';
 
 }

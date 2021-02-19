@@ -11,7 +11,6 @@ import { DocumentInvoiceServer } from './Documents/Document.Invoce.server';
 import { DocumentOperation } from './Documents/Document.Operation';
 import { DocumentOperationServer } from './Documents/Document.Operation.server';
 import { DocumentPriceListServer } from './Documents/Document.PriceList.server';
-import { DocumentSettingsServer } from './Documents/Document.Settings.server';
 import { DocumentUserSettingsServer } from './Documents/Document.UserSettings.server';
 import { MSSQL } from '../mssql';
 import { DocumentWorkFlowServer } from './Documents/Document.WorkFlow.server';
@@ -63,7 +62,6 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRatesServer },
   { type: 'Document.PriceList', Class: DocumentPriceListServer },
-  { type: 'Document.Settings', Class: DocumentSettingsServer },
   { type: 'Document.UserSettings', Class: DocumentUserSettingsServer },
   { type: 'Document.CashRequest', Class: DocumentCashRequestServer },
   { type: 'Document.WorkFlow', Class: DocumentWorkFlowServer },

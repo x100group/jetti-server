@@ -122,7 +122,7 @@ export class MSSQL {
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) {
-            if (!global['isProd']) console.error(`${error.code}: ${error.message}\n${params}`); return reject(error);
+            if (!global['isProd']) console.error(`${error.code}: ${error.message}\n${params}\n${sql}`); return reject(error);
           }
           return resolve();
         });
@@ -192,7 +192,7 @@ export class MSSQL {
     });
   }
 
-  private complexObject<T>(data: any) {
+  private _complexObject<T>(data: any) {
     if (!data) return data;
     const row = {};
     // tslint:disable-next-line:forin
@@ -204,12 +204,44 @@ export class MSSQL {
           row[keys[0]][keys[1]] = { ...row[keys[0]][keys[1]], [keys[2]]: value };
         else
           row[keys[0]] = { ...row[keys[0]], [keys[1]]: value };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 49dff35044e3dd4585e46aefdcf0afd1020668b1
       } else
         row[k] = value;
     }
     return row;
   }
+
+  private complexObject<T>(data: any) {
+    if (!data) return data;
+    const row = {};
+    // tslint:disable-next-line:forin
+    for (const k in data) {
+      const value = this.toJSON(data[k]);
+      const keys = k.split('.');
+      switch (keys.length) {
+        case 1:
+          row[k] = value;
+          break;
+        case 2:
+          row[keys[0]] = { ...row[keys[0]], [keys[1]]: value };
+          break;
+        case 3:
+          row[keys[0]][keys[1]] = { ...row[keys[0]][keys[1]], [keys[2]]: value };
+          break;
+        case 4:
+          row[keys[0]][keys[1]][keys[2]] = { ...row[keys[0]][keys[1]][keys[2]], [keys[3]]: value };
+          break;
+        default:
+          throw new Error('SQL Query: JSON path is to long!');
+          break;
+      }
+    }
+    return row;
+  }
+
 
   private toJSON(value: any): any {
     if (typeof value === 'string' && (
