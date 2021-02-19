@@ -204,10 +204,6 @@ export class MSSQL {
           row[keys[0]][keys[1]] = { ...row[keys[0]][keys[1]], [keys[2]]: value };
         else
           row[keys[0]] = { ...row[keys[0]], [keys[1]]: value };
-<<<<<<< HEAD
-
-=======
->>>>>>> 49dff35044e3dd4585e46aefdcf0afd1020668b1
       } else
         row[k] = value;
     }
