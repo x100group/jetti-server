@@ -96,7 +96,6 @@ export type DocumentTypes =
   'Document.Invoice' |
   'Document.Operation' |
   'Document.PriceList' |
-  'Document.Settings' |
   'Document.UserSettings' |
   'Document.CashRequest' |
   'Document.WorkFlow' |
