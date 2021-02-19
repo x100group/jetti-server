@@ -698,6 +698,8 @@ ORDER BY
     docOperation.f2 = docOperation['Supplier'];
     docOperation.f3 = docOperation['CashFlow'];
 
+    if (!this.BudgetPayment) docOperation['TaxOfficeCode2'] = '';
+
   }
 
   async FillOperationОплатаПоставщику(docOperation: DocumentOperationServer, tx: MSSQL, params?: any) {
