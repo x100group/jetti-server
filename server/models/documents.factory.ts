@@ -52,7 +52,6 @@ import { DocumentExchangeRates } from './Documents/Document.ExchangeRates';
 import { DocumentInvoice } from './Documents/Document.Invoice';
 import { DocumentOperation } from './Documents/Document.Operation';
 import { DocumentPriceList } from './Documents/Document.PriceList';
-import { DocumentSettings } from './Documents/Document.Settings';
 import { DocumentUserSettings } from './Documents/Document.UserSettings';
 import { CatalogOperationType } from './Catalogs/Catalog.Operation.Type';
 import { CatalogBudgetItem } from './Catalogs/Catalog.BudgetItem';
@@ -233,7 +232,6 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Document.Invoice', Class: DocumentInvoice },
   { type: 'Document.Operation', Class: DocumentOperation },
   { type: 'Document.PriceList', Class: DocumentPriceList },
-  { type: 'Document.Settings', Class: DocumentSettings },
   { type: 'Document.UserSettings', Class: DocumentUserSettings },
   { type: 'Document.WorkFlow', Class: DocumentWorkFlow },
   { type: 'Document.CashRequest', Class: DocumentCashRequest },

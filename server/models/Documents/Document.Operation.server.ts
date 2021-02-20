@@ -2,7 +2,6 @@ import { lib } from '../../std.lib';
 import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { CatalogOperation } from '../Catalogs/Catalog.Operation';
 import { createDocumentServer, IServerDocument, DocumentBaseServer } from '../documents.factory.server';
-import { RegisterInfoSettings } from '../Registers/Info/Settings';
 import { PostResult } from './../post.interfaces';
 import { DocumentOperation } from './Document.Operation';
 import { MSSQL } from '../../mssql';
@@ -71,17 +70,9 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
 
     if (!postSettings || (!postSettings.scriptManagment && !postSettings.scriptAccounting)) return Registers;
 
-    const exchangeRate = await lib.info.exchangeRate(this.date, this.company, this.currency, tx);
-    const settings = await lib.info.sliceLast<RegisterInfoSettings>('Settings', this.date, this.company, {}, tx);
-    const accountingCurrency = settings && settings.accountingCurrency || this.currency;
-    const exchangeRateAccounting = await lib.info.exchangeRate(this.date, this.company, accountingCurrency, tx);
-
     const executePostScript = async (postScript: string) => {
       if (!postScript) return;
       const script = `
-      let exchangeRateBalance = exchangeRate;
-      let AmountInBalance = doc.Amount / exchangeRate;
-      let AmountInAccounting = doc.Amount / exchangeRateAccounting;
       ${postScript
           .replace(/\$\./g, 'doc.')
           .replace(/tx\./g, 'await tx.')
@@ -89,8 +80,8 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
           .replace(/\'doc\./g, '\'$.')}
       `;
       const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
-      const func = new AsyncFunction('doc, Registers, tx, lib, settings, exchangeRate, exchangeRateAccounting', script);
-      await func(this, Registers, tx, lib, settings, exchangeRate, exchangeRateAccounting);
+      const func = new AsyncFunction('doc, Registers, tx, lib', script);
+      await func(this, Registers, tx, lib);
     };
 
     await executePostScript(postSettings.scriptManagment);
