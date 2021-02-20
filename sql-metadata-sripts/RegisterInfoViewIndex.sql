@@ -469,6 +469,7 @@
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CompanyGroup"')) [CompanyGroup]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) [Loan]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) [Qty]
@@ -512,6 +513,9 @@
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Property"')) [Property]
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Language"')) [Language]
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Value"')) [Value]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."DativeCase"')) [DativeCase]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."NominativeCase"')) [NominativeCase]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."PrepositionalCase"')) [PrepositionalCase]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Intl';
     GO
     GRANT SELECT,DELETE ON [Register.Info.Intl] TO JETTI;
