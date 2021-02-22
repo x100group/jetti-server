@@ -2584,6 +2584,7 @@ GO
         , d.[isVegan] [isVegan]
         , d.[isHot] [isHot]
         , d.[isPromo] [isPromo]
+        , d.[Slug] [Slug]
       
         , ISNULL(l5.id, d.id) [Product.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Product.Level4.id]
@@ -2781,10 +2782,11 @@ GO
         , d.[Order] [Order]
         , d.[Presentation] [Presentation]
         , ISNULL([RetailNetwork.v].description, '') [RetailNetwork.value], d.[RetailNetwork] [RetailNetwork.id], [RetailNetwork.v].type [RetailNetwork.type]
+        , d.[isDefault] [isDefault]
         , d.[isDesktop] [isDesktop]
         , d.[isWeb] [isWeb]
         , d.[isMobile] [isMobile]
-        , d.[LocalURL] [LocalURL]
+        , d.[Slug] [Slug]
       
         , ISNULL(l5.id, d.id) [ProductCategory.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ProductCategory.Level4.id]

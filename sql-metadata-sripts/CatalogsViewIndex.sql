@@ -2059,6 +2059,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Product.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isVegan')), 0) [isVegan]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isHot')), 0) [isHot]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isPromo')), 0) [isPromo]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Slug')), '') [Slug]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Product'
 ;
@@ -2212,10 +2213,11 @@ CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Order')), 0) [Order]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Presentation')), '') [Presentation]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isDefault')), 0) [isDefault]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isDesktop')), 0) [isDesktop]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isWeb')), 0) [isWeb]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isMobile')), 0) [isMobile]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.LocalURL')), '') [LocalURL]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Slug')), '') [Slug]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.ProductCategory'
 ;
