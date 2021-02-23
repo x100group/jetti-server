@@ -30,7 +30,7 @@ export async function buildViewModel<T>(ServerDoc: DocumentBase, tx: MSSQL) {
 router.post('/list', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
-    const params = req.body as DocListRequestBody;
+    const params = JSON.parse(JSON.stringify(req.body), dateReviverUTC) as DocListRequestBody;
     res.json(await List(params, sdb));
   } catch (err) { next(err); }
 });
