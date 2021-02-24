@@ -11,7 +11,7 @@ import { JETTI_POOL } from '../sql.pool.jetti';
 import { lib } from '../std.lib';
 import { CatalogSubSystem } from '../models/Catalogs/Catalog.SubSystem';
 import { createDocument } from '../models/documents.factory';
-import { DocumentOptions, Ref, IFlatDocument, INoSqlDocument, IJWTPayload} from 'jetti-middle';
+import { DocumentOptions, Ref, IFlatDocument, INoSqlDocument, IJWTPayload } from 'jetti-middle';
 import { createForm } from '../models/Forms/form.factory';
 import { CatalogOperationGroup } from '../models/Catalogs/Catalog.Operation.Group';
 
@@ -19,8 +19,8 @@ export const router = express.Router();
 
 function getUserEnviroment(user: CatalogUser) {
   return {
-    id: user.id, code: user.code, type: user.type, value: user.description
-    , LOGIC_USECASHREQUESTAPPROVING: LOGIC_USECASHREQUESTAPPROVING
+    view: { id: user.id, code: user.code, type: user.type, value: user.description },
+    settings: { LOGIC_USECASHREQUESTAPPROVING: LOGIC_USECASHREQUESTAPPROVING }
   };
 }
 
@@ -87,7 +87,7 @@ router.post('/refresh', authHTTP, async (req, res, next) => {
       description: user.description,
       isAdmin: user.isAdmin === true ? true : false,
       roles: await getUserRoles(user),
-      env: { id: user.id, code: user.code, type: user.type, value: user.description },
+      env: getUserEnviroment(user),
     };
     const token = jwt.sign(new_payload, JTW_KEY, { expiresIn: '72h' });
     return res.json({ account: user, token });

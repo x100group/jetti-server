@@ -5,8 +5,8 @@ import { MSSQL } from '../../mssql';
 import { PropOptions, DocumentBase, DocumentOptions } from 'jetti-middle';
 import { getAdminTX, lib } from '../../std.lib';
 import { riseUpdateMetadataEvent, IDynamicProps } from '../Dynamic/dynamic.common';
-import { x100DATA_POOL } from '../../sql.pool.x100-DATA';
 import { Type } from 'jetti-middle';
+import { TASKS_POOL } from '../../sql.pool.tasks';
 
 
 export class CatalogCatalogServer extends CatalogCatalog implements IServerDocument {
@@ -27,7 +27,7 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
   }
 
   async updateSQLViewsX100DATA() {
-    await lib.meta.updateSQLViewsByType(this.typeString as any, new MSSQL(x100DATA_POOL), false);
+    await lib.meta.updateSQLViewsByType(this.typeString as any, new MSSQL(TASKS_POOL), false);
   }
 
   async riseUpdateMetadataEvent() {

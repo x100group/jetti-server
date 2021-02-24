@@ -10,8 +10,10 @@ export const filterBuilder = (filter: FormListFilter[],
 
   let where = ' (1 = 1) '; let tempTable = '';
   const filterList = filter
-    .filter(f => !(f.right === null || f.right === undefined))
+    .filter(el => !(el.right === null || el.right === undefined) || el.center === 'is null' || el.center === 'is not null')
     .map(f => ({ ...f, leftQ: `\"${f.left}\"` }));
+
+  const dateToSQLLiteral = (date: Date) => `N'${date.toJSON()}'` ;
 
   for (const f of filterList) {
     switch (f.center) {
@@ -24,7 +26,7 @@ export const filterBuilder = (filter: FormListFilter[],
         if (typeof f.right === 'string') f.right = f.right.toString().replace('\'', '\'\'');
         if (typeof f.right === 'number') { where += ` AND ${f.leftQ} ${f.center} '${f.right}'`; break; }
         if (typeof f.right === 'boolean') { where += ` AND ${f.leftQ} ${f.center} '${f.right}'`; break; }
-        if (f.right instanceof Date) { where += ` AND ${f.leftQ} ${f.center} '${f.right.toJSON()}'`; break; }
+        if (f.right instanceof Date) { where += ` AND ${f.leftQ} ${f.center} ${dateToSQLLiteral(f.right)}`; break; }
         if (typeof f.right === 'object') {
           if (!f.right.id) where += ` AND ${f.leftQ} IS NULL `;
           else if (f.left === 'parent.id') where += ` AND ${f.leftQ} = '${f.right.id}'`;
@@ -44,11 +46,25 @@ export const filterBuilder = (filter: FormListFilter[],
         where += ` AND ${f.leftQ} NOT LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
         break;
       case 'beetwen':
-        const interval = f.right as FilterInterval;
-        if (interval.start) where += ` AND ${f.leftQ} BEETWEN '${interval.start}' AND '${interval.end}' `;
+        if (Array.isArray(f.right)) {
+          if (f.right[0] instanceof Date)
+            where += ` AND ${f.leftQ} >= ${dateToSQLLiteral(f.right[0])} AND ${f.leftQ} <= ${dateToSQLLiteral(f.right[1])}`;
+          else if (typeof f.right[0] === 'number') {
+            if (f.right[0]) where += ` AND ${f.leftQ} >= '${f.right[0]}'`;
+            if (f.right[1]) where += ` AND ${f.leftQ} <= '${f.right[1]}'`;
+          }
+        } else {
+          const interval = f.right as FilterInterval;
+          if (typeof interval.start === 'number') {
+            where += ` AND ${f.leftQ} >= '${interval.start}'`;
+            where += ` AND ${f.leftQ} <= '${interval.end}'`;
+          } else if (interval.start)
+            where += ` AND ${f.leftQ} BEETWEN '${interval.start}' AND '${interval.end}' `;
+        }
         break;
       case 'in':
-        where += ` AND ${f.leftQ} IN (${(f.right['value'] || f.right)}) `;
+        if (f.right['value'] || f.right)
+          where += ` AND ${f.leftQ} IN (${(f.right['value'] || f.right)}) `;
         break;
       case 'not in':
         where += ` AND ${f.leftQ} NOT IN (${(f.right['value'] || f.right)}) `;

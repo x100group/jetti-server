@@ -51,34 +51,6 @@ router.get('/document/meta/:type/:operationId', async (req: Request, res: Respon
   } catch (err) { next(err); }
 });
 
-// router.post('/document_simple', async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const sdb = SDB(req);
-//     await sdb.tx(async tx => {
-//       await lib.util.adminMode(true, tx);
-//       try {
-//         const { document, options } = JSON.parse(JSON.stringify(req.body), dateReviverUTC) as IUpdateDocumentRequest;
-//         if (options.skipExisting && document.id && (await lib.doc.byId(document.id, tx))) {
-//           res.json(document); return;
-//         }
-//         if (!document.code) document.code = await lib.doc.docPrefix(document.type, tx);
-//         const serverDoc = await createDocumentServer(document.type as DocTypes, document, tx);
-//         if (serverDoc.timestamp) {
-//           await updateDocument(serverDoc, tx);
-//           if (serverDoc.posted && serverDoc.isDoc && options.saveMode === 'Post') {
-//             await unpostDocument(serverDoc, tx);
-//             await postDocument(serverDoc, tx);
-//           }
-//         } else {
-//           await insertDocument(serverDoc, tx);
-//         }
-//         res.json(serverDoc);
-//       } catch (ex) { throw new Error(ex); }
-//       finally { await lib.util.adminMode(false, tx); }
-//     });
-//   } catch (err) { next(err); }
-// });
-
 router.post('/document', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);

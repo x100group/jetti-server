@@ -5,7 +5,7 @@ import { filterBuilder } from '../../fuctions/filterBuilder';
 import { DocListRequestBody, DocListResponse, FormListFilter, DocumentBase } from 'jetti-middle';
 
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
-  params.filter = (params.filter || []).filter(el => !(el.right === null || el.right === undefined));
+  params.filter = (params.filter || []).filter(el => !(el.right === null || el.right === undefined) || el.center === 'is null' || el.center === 'is not null');
 
   if (params.listOptions && params.listOptions!.withHierarchy) {
     let parent: any = null;
