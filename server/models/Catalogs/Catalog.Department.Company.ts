@@ -12,7 +12,8 @@ import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
   ],
   dimensions: [
     { company: 'Catalog.Company' }
-  ]
+  ],
+  module: `{const onOpen = async () => {this.readonly = this.readonly || !this.auth.isRoleAvailableDepartmentCompanyEditor()}; return {onOpen};}`,
 })
 export class CatalogDepartmentCompany extends DocumentBase {
 
