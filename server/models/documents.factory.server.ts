@@ -23,6 +23,7 @@ import { CatalogProductServer } from './Catalogs/Catalog.Product.server';
 import { CatalogProductCategoryServer } from './Catalogs/Catalog.ProductCategory.server';
 import { CatalogLoanServer } from './Catalogs/Catalog.Loan.server';
 import { Ref, DocumentBase, IFlatDocument, DocumentOptions, RefValue, calculateDescription } from 'jetti-middle';
+import { CatalogUserServer } from './Catalogs/Catalog.User.server';
 
 export interface IServerDocument {
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
@@ -58,6 +59,7 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.ProductKind', Class: CatalogProductKindServer },
   { type: 'Catalog.Product', Class: CatalogProductServer },
   { type: 'Catalog.ProductCategory', Class: CatalogProductCategoryServer },
+  { type: 'Catalog.User', Class: CatalogUserServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRatesServer },
@@ -138,7 +140,6 @@ export async function createDocumentServer<T extends DocumentBaseServer>
       }
     }
   }
-
   if (!Operation && result.onCreate) await result.onCreate(tx);
   // protect against mutate
   result.Props = () => Props;
