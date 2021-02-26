@@ -51,10 +51,10 @@ export const filterBuilder = (filter: FormListFilter[],
       case 'end with':
         where += ` AND ${f.leftQ} LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}' `;
         break;
-      case 'match':
+      case 'matching':
         where += ` AND ${f.leftQ} LIKE N'${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}' `;
         break;
-      case 'don\'t match':
+      case 'don\'t matching':
         where += ` AND ${f.leftQ} NOT LIKE N'${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}' `;
         break;
       case 'beetwen':
