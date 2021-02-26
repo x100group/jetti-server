@@ -13,7 +13,7 @@ export const filterBuilder = (filter: FormListFilter[],
     .filter(el => !(el.right === null || el.right === undefined) || el.center === 'is null' || el.center === 'is not null')
     .map(f => ({ ...f, leftQ: `\"${f.left}\"` }));
 
-  const dateToSQLLiteral = (date: Date) => `N'${date.toJSON()}'` ;
+  const dateToSQLLiteral = (date: Date) => `N'${date.toJSON()}'`;
 
   for (const f of filterList) {
     switch (f.center) {
@@ -44,6 +44,18 @@ export const filterBuilder = (filter: FormListFilter[],
         break;
       case 'not like':
         where += ` AND ${f.leftQ} NOT LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
+        break;
+      case 'start with':
+        where += ` AND ${f.leftQ} LIKE N'${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}%' `;
+        break;
+      case 'end with':
+        where += ` AND ${f.leftQ} LIKE N'%${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}' `;
+        break;
+      case 'match':
+        where += ` AND ${f.leftQ} LIKE N'${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}' `;
+        break;
+      case 'don\'t match':
+        where += ` AND ${f.leftQ} NOT LIKE N'${(f.right['value'] || f.right).toString().replace('\'', '\'\'')}' `;
         break;
       case 'beetwen':
         if (Array.isArray(f.right)) {
