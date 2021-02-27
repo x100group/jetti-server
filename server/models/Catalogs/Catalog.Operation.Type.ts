@@ -1,5 +1,4 @@
 import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
-
 @JDocument({
   type: 'Catalog.Operation.Type',
   description: 'Тип операции/свойства',
@@ -8,18 +7,19 @@ import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
   prefix: 'OPERT-',
   hierarchy: 'folders'
 })
+
 export class CatalogOperationType extends DocumentBase {
 
-  @Props({ type: 'Catalog.Operation.Type', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.Operation.Type', hiddenInList: true, order: -1, panel: 'Config' })
   parent: Ref = null;
 
-  @Props({ type: 'string', label: 'Type', panel: 'Additional prop' })
-  PropType: Ref = null;
+  @Props({ type: 'string', label: 'Type', panel: 'Config' })
+  PropType = '';
 
-  @Props({
-    type: 'json', label: 'Props', hiddenInList: true,
-    style: { width: '100%' }, controlType: 'json', panel: 'Additional prop'
-  })
-  PropProps = '';
+  @Props({ type: 'Catalog.Operation', useIn: 'all', panel: 'Config' })
+  Model: Ref = null;
+
+  @Props({ type: 'enum', value: ['SELF', 'OBJECT', 'REGISTER'], label: 'Stored in', panel: 'Config' })
+  StoredIn = '';
 
 }
