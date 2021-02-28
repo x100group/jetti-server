@@ -2160,7 +2160,8 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[PropType] [PropType]
-        , d.[PropProps] [PropProps]
+        , ISNULL([Model.v].description, '') [Model.value], d.[Model] [Model.id], [Model.v].type [Model.type]
+        , d.[StoredIn] [StoredIn]
       
         , ISNULL(l5.id, d.id) [OperationType.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [OperationType.Level4.id]
@@ -2183,6 +2184,7 @@ GO
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Operation.v] [Model.v] WITH (NOEXPAND) ON [Model.v].id = d.[Model]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Operation.Type] TO jetti;
@@ -2214,7 +2216,10 @@ GO
         , d.[AddressResidence] [AddressResidence]
         , d.[City] [City]
         , d.[Phone] [Phone]
+        , d.[PersonalPhone] [PersonalPhone]
         , d.[Email] [Email]
+        , d.[PersonalEmail] [PersonalEmail]
+        , d.[Birthday] [Birthday]
         , d.[EmploymentDate] [EmploymentDate]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , ISNULL([JobTitle.v].description, '') [JobTitle.value], d.[JobTitle] [JobTitle.id], [JobTitle.v].type [JobTitle.type]

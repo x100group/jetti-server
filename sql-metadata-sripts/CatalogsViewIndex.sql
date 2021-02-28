@@ -1709,7 +1709,8 @@ CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PropType')), '') [PropType]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$.PropProps')), '') [PropProps]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Model')) [Model]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.StoredIn')), '') [StoredIn]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Operation.Type'
 ;
@@ -1755,7 +1756,10 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.AddressResidence')), '') [AddressResidence]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.City')), '') [City]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Phone')), '') [Phone]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PersonalPhone')), '') [PersonalPhone]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Email')), '') [Email]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PersonalEmail')), '') [PersonalEmail]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.Birthday'),127) [Birthday]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EmploymentDate'),127) [EmploymentDate]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.JobTitle')) [JobTitle]
