@@ -36,6 +36,10 @@ CREATE OR ALTER VIEW dbo.[Operation.AdditionalParametersDepartment.v] WITH SCHEM
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isCoordinatesCheck')), 0) [isCoordinatesCheck]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isSailPlayPromocodeCheck')), 0) [isSailPlayPromocodeCheck]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isSailPlayBonusCheck')), 0) [isSailPlayBonusCheck]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.wifiSSID')), '') [wifiSSID]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.timeZoneOffset')), '') [timeZoneOffset]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.addressCheck')), '') [addressCheck]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.organisationCheck')), '') [organisationCheck]
       FROM dbo.[Documents]
       WHERE [operation] = 'CE62E430-3004-11E8-A0FF-732D589B1ACA'
 ; 
@@ -208,96 +212,6 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
       RAISERROR('Operation.CHECK_JETTI_FRONT finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.CHECK_JETTI_FRONT ------------------------------
-
-      
------------------------------- BEGIN Operation.CRAUD_INTEGRATION ------------------------------
-
-      RAISERROR('Operation.CRAUD_INTEGRATION start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.CRAUD_INTEGRATION.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.CRAUD_INTEGRATION.v] WITH SCHEMABINDING AS 
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.alias')), '') [alias]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.OperationJETTI')) [OperationJETTI]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.StatusPosted')), '') [StatusPosted]
-      FROM dbo.[Documents]
-      WHERE [operation] = '492FFDE0-2D8E-11EB-8F97-B98B2F73F45B'
-; 
-GO
-CREATE UNIQUE CLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v] ON [Operation.CRAUD_INTEGRATION.v](id);
-      CREATE UNIQUE NONCLUSTERED INDEX[Operation.CRAUD_INTEGRATION.v.date] ON[Operation.CRAUD_INTEGRATION.v](date, id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v.parent] ON [Operation.CRAUD_INTEGRATION.v](parent,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v.deleted] ON [Operation.CRAUD_INTEGRATION.v](deleted,date,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v.code] ON [Operation.CRAUD_INTEGRATION.v](code,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v.user] ON [Operation.CRAUD_INTEGRATION.v]([user],id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v.company] ON [Operation.CRAUD_INTEGRATION.v](company,id);
-      
-GO
-GRANT SELECT ON dbo.[Operation.CRAUD_INTEGRATION.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.CRAUD_INTEGRATION.v];
-      RAISERROR('Operation.CRAUD_INTEGRATION finish', 0 ,1) WITH NOWAIT;
-      
------------------------------- BEGIN Operation.CRAUD_INTEGRATION ------------------------------
-
-      
------------------------------- BEGIN Operation.CRAUD_INTEGRATION_CREATE_LOAN ------------------------------
-
-      RAISERROR('Operation.CRAUD_INTEGRATION_CREATE_LOAN start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v] WITH SCHEMABINDING AS 
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.ScriptFindLoan')), '') [ScriptFindLoan]
-      FROM dbo.[Documents]
-      WHERE [operation] = '1A628370-2FD7-11EB-8258-97B2F1CC49F6'
-; 
-GO
-CREATE UNIQUE CLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](id);
-      CREATE UNIQUE NONCLUSTERED INDEX[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.date] ON[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](date, id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.parent] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](parent,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.deleted] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](deleted,date,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.code] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](code,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.user] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v]([user],id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.company] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](company,id);
-      
-GO
-GRANT SELECT ON dbo.[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v];
-      RAISERROR('Operation.CRAUD_INTEGRATION_CREATE_LOAN finish', 0 ,1) WITH NOWAIT;
-      
------------------------------- BEGIN Operation.CRAUD_INTEGRATION_CREATE_LOAN ------------------------------
 
       
 ------------------------------ BEGIN Operation.DeliveryAreas ------------------------------

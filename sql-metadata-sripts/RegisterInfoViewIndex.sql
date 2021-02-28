@@ -221,22 +221,28 @@
     GO
 ------------------------------ END Register.Info.ProductSpecificationByDepartment ------------------------------
 
------------------------------- BEGIN Register.Info.Settings ------------------------------
+------------------------------ BEGIN Register.Info.AdditionalProps ------------------------------
 
-    CREATE OR ALTER VIEW [Register.Info.Settings]
+    CREATE OR ALTER VIEW [Register.Info.AdditionalProps]
     WITH SCHEMABINDING
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."balanceCurrency"')) [balanceCurrency]
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."accountingCurrency"')) [accountingCurrency]
-      FROM dbo.[Register.Info] WHERE type = N'Register.Info.Settings';
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AddProp"')) [AddProp]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Object"')) [Object]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ValueRef"')) [ValueRef]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."ValueNumber"')) [ValueNumber]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."ValueString"')) [ValueString]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."ValueDate"'),127) [ValueDate]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."ValueBoolean"')) [ValueBoolean]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.AdditionalProps';
     GO
-    GRANT SELECT,DELETE ON [Register.Info.Settings] TO JETTI;
-    CREATE UNIQUE CLUSTERED INDEX [Register.Info.Settings] ON [dbo].[Register.Info.Settings]([company], [date], [id])
-    
+    GRANT SELECT,DELETE ON [Register.Info.AdditionalProps] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.AdditionalProps] ON [dbo].[Register.Info.AdditionalProps]([company], [date], [id])
+    CREATE NONCLUSTERED INDEX[Register.Info.AdditionalProps.AddProp] ON [Register.Info.AdditionalProps]([AddProp]);
+    CREATE NONCLUSTERED INDEX[Register.Info.AdditionalProps.Object] ON [Register.Info.AdditionalProps]([Object]);
     GO
------------------------------- END Register.Info.Settings ------------------------------
+------------------------------ END Register.Info.AdditionalProps ------------------------------
 
 ------------------------------ BEGIN Register.Info.Depreciation ------------------------------
 
