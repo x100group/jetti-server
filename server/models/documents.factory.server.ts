@@ -6,7 +6,6 @@ import { lib } from '../std.lib';
 import { createDocument, RegisteredDocumentType } from './../models/documents.factory';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationServer } from './Catalogs/Catalog.Operation.server';
-import { calculateDescription, RefValue, DocumentBase, DocumentOptions, Ref, IFlatDocument } from 'jetti-middle';
 import { DocumentExchangeRatesServer } from './Documents/Document.ExchangeRates.server';
 import { DocumentInvoiceServer } from './Documents/Document.Invoce.server';
 import { DocumentOperation } from './Documents/Document.Operation';
@@ -23,8 +22,13 @@ import { CatalogProductKindServer } from './Catalogs/Catalog.ProductKind.server'
 import { CatalogProductServer } from './Catalogs/Catalog.Product.server';
 import { CatalogProductCategoryServer } from './Catalogs/Catalog.ProductCategory.server';
 import { CatalogLoanServer } from './Catalogs/Catalog.Loan.server';
+import { Ref, DocumentBase, IFlatDocument, DocumentOptions, RefValue, calculateDescription } from 'jetti-middle';
+import { CatalogUserServer } from './Catalogs/Catalog.User.server';
+import { CatalogOperationTypeServer } from './Catalogs/Catalog.Operation.Type.server';
 
 export interface IServerDocument {
+
+  selfCreated?(tx: MSSQL, document: IFlatDocument | undefined): Promise<boolean>;
   onCreate?(tx: MSSQL): Promise<DocumentBaseServer>;
   onCopy?(tx: MSSQL): Promise<DocumentBaseServer>;
 
@@ -50,6 +54,7 @@ export type DocumentBaseServer = DocumentBase & IServerDocument;
 export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.Contract', Class: CatalogContractServer },
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
+  { type: 'Catalog.Operation.Type', Class: CatalogOperationTypeServer },
   { type: 'Catalog.StaffingTable', Class: CatalogStaffingTableServer },
   { type: 'Catalog.Person.Contract', Class: CatalogPersonContractServer },
   { type: 'Catalog.Catalog', Class: CatalogCatalogServer },
@@ -58,6 +63,7 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.ProductKind', Class: CatalogProductKindServer },
   { type: 'Catalog.Product', Class: CatalogProductServer },
   { type: 'Catalog.ProductCategory', Class: CatalogProductCategoryServer },
+  { type: 'Catalog.User', Class: CatalogUserServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
   { type: 'Document.ExchangeRates', Class: DocumentExchangeRatesServer },
@@ -81,6 +87,9 @@ export async function createDocumentServer<T extends DocumentBaseServer>
   } else {
     result = createDocument<T>(type, document);
   }
+
+  if (result.selfCreated && await result.selfCreated(tx, document)) return result;
+
   result['serverModule'] = {};
 
   const Props = Object.assign({}, result.Props());
@@ -138,7 +147,6 @@ export async function createDocumentServer<T extends DocumentBaseServer>
       }
     }
   }
-
   if (!Operation && result.onCreate) await result.onCreate(tx);
   // protect against mutate
   result.Props = () => Props;

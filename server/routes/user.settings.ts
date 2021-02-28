@@ -1,54 +1,37 @@
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
+import { IJWTPayload } from 'jetti-middle';
 import { SDB } from './middleware/db-sessions';
-import { lib } from '../std.lib';
-import { FormListSettings, IJWTPayload, UserDefaultsSettings } from 'jetti-middle';
+import { UserSettingsManager } from './utils/user.settings';
 
 export const router = express.Router();
 
 export function User(req: Request): IJWTPayload {
   return (<any>req).user as IJWTPayload;
 }
-
-router.get('/user/settings/:type', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/user/settings', async (req, res, next) => {
   try {
-    const user = User(req);
-    const sdb = SDB(req);
-    // const query = `select JSON_QUERY(settings, '$."${req.params.type}"') data from users where email = @p1`;
-    // const result = await sdb.oneOrNone<{ data: FormListSettings }>(query, [user.email]);
-    res.json(new FormListSettings());
-  } catch (err) { next(err); }
-});
-
-router.post('/user/settings/:type', async (req, res, next) => {
-  try {
-    const user = User(req);
-    const sdb = SDB(req);
-    const data = req.body || {};
-    // const query = `update users set settings = JSON_MODIFY(settings, '$."${req.params.type}"', JSON_QUERY(@p1)) where email = @p2`;
-    // await sdb.none(query, [JSON.stringify(data), user.email]);
-    res.json(true);
-  } catch (err) { next(err); }
-});
-
-router.get('/user/settings/defaults', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const user = User(req);
-    const sdb = SDB(req);
-    // const query = `select JSON_QUERY(settings, '$."defaults"') data from users where email = @p1`;
-    // const result = await sdb.oneOrNone<{ data: UserDefaultsSettings }>(query, [user.email]);
-    res.json(new UserDefaultsSettings());
-  } catch (err) { next(err); }
-});
-
-router.post('/user/settings/defaults', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const user = User(req);
-    const sdb = SDB(req);
-    const data = req.body || new UserDefaultsSettings();
-    // const query = `update users set settings = JSON_MODIFY(settings, '$."defaults"', JSON_QUERY(@p1)) where email = @p2`;
-    // await sdb.none(query, [JSON.stringify(data), user.email]);
-    res.json(true);
+    switch (req.body.command) {
+      case 'save':
+        res.json(await UserSettingsManager.saveSettingsArray(req.body.settings, SDB(req)));
+        break;
+      case 'delete':
+        await UserSettingsManager.deleteSettingsById(req.body.id, SDB(req));
+        res.json({});
+        break;
+      case 'get':
+        const { type, user, id } = req.body;
+        res.json(await UserSettingsManager.getSettings({
+          type: type || '',
+          user: user || '',
+          id: id || ''
+        }, SDB(req)));
+        break;
+      default:
+        res.status(405);
+        res.json({ error: 'unknow command: ' + req.body.command });
+        break;
+    }
   } catch (err) { next(err); }
 });
 

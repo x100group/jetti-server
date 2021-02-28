@@ -7,7 +7,7 @@ import { RegisterAccumulationCashToPay } from '../Registers/Accumulation/CashToP
 import { lib } from '../../std.lib';
 import { DocumentCashRequest } from './Document.CashRequest';
 import { createDocument } from '../documents.factory';
-import { insertDocument, updateDocument } from '../../routes/utils/post';
+import { insertDocument, upsertDocument } from '../../routes/utils/post';
 import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
 import { DocumentOperation } from './Document.Operation';
 import { Ref } from 'jetti-middle';
@@ -71,7 +71,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     if (this.Status !== 'APPROVED') throw new Error(`${this.description} cоздание возможно только в документе со статусом "APPROVED"!`);
     if (this.CashRequests.filter(c => !c.OperationType || (this.Operation && this.Operation !== c.OperationType))) {
       await this.FillOperationTypes(tx);
-      await updateDocument(this, tx);
+      await upsertDocument(this, tx);
     }
     await lib.doc.postById(this.id, tx);
     const OperationTypes = [...new Set(this.CashRequests.filter(c => (c.Amount > 0)).map(x => x.OperationType))];
@@ -79,7 +79,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       await this.CreateByOperationType(OperationType, tx);
     }
     this.DocumentsCreationDate = new Date as any;
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
     await lib.doc.postById(this.id, tx);
   }
 
@@ -143,7 +143,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
         if (cashOper) { OperationServer['CashRegister'] = row.CashRegister; OperationServer['f1'] = OperationServer['CashRegister']; }
         if (OperationType === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount'] && cashOper) OperationServer['Amount'] = row.Amount;
-        if (OperationServer.timestamp) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
+        if (OperationServer.timestamp) await upsertDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
         await lib.doc.postById(OperationServer.id, tx);
         rowsByCashReqest.filter(el => (el.CashRequest === currentCR && (!cashOper || el.CashRegister === row.CashRegister))).forEach(el => { el.LinkedDocument = OperationServer.id; });
       }
@@ -157,7 +157,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     const Operations = this.CashRequests.filter(c => (c.LinkedDocument)).map(c => (c.LinkedDocument));
     this.info = await BankStatementUnloader.getBankStatementAsString(Operations, tx);
     this.BankUploadDate = new Date as any;
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
     await lib.doc.postById(this.id, tx);
   }
 
@@ -215,7 +215,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     }
 
     this.info = result;
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
     await lib.doc.postById(this.id, tx);
   }
 
