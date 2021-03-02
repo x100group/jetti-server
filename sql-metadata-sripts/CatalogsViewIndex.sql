@@ -1708,6 +1708,9 @@ GO
 CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PropType')), '') [PropType]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Model')) [Model]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.StoredIn')), '') [StoredIn]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Operation.Type'
 ;
@@ -1729,42 +1732,6 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
 RAISERROR('Catalog.Operation.Type end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Operation.Type ------------------------------
-
------------------------------- BEGIN Catalog.OrderSource ------------------------------
-
-RAISERROR('Catalog.OrderSource start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.OrderSource.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.OrderSource.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Kind')), '') [Kind]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.OrderSource'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX [Catalog.OrderSource.v] ON [Catalog.OrderSource.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.deleted] ON [Catalog.OrderSource.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.code.f] ON [Catalog.OrderSource.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.description.f] ON [Catalog.OrderSource.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.description] ON [Catalog.OrderSource.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.code] ON [Catalog.OrderSource.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.user] ON [Catalog.OrderSource.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.company] ON [Catalog.OrderSource.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.OrderSource.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.OrderSource.v];
-RAISERROR('Catalog.OrderSource end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.OrderSource ------------------------------
 
 ------------------------------ BEGIN Catalog.Person ------------------------------
 
@@ -1789,7 +1756,10 @@ CREATE OR ALTER VIEW dbo.[Catalog.Person.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.AddressResidence')), '') [AddressResidence]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.City')), '') [City]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Phone')), '') [Phone]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PersonalPhone')), '') [PersonalPhone]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Email')), '') [Email]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PersonalEmail')), '') [PersonalEmail]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.Birthday'),127) [Birthday]
       , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EmploymentDate'),127) [EmploymentDate]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.JobTitle')) [JobTitle]
@@ -3376,42 +3346,6 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
 RAISERROR('Document.PriceList end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Document.PriceList ------------------------------
-
------------------------------- BEGIN Document.Settings ------------------------------
-
-RAISERROR('Document.Settings start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Document.Settings.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Document.Settings.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.balanceCurrency')) [balanceCurrency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.accountingCurrency')) [accountingCurrency]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Document.Settings'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX [Document.Settings.v] ON [Document.Settings.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.date] ON [Document.Settings.v](date,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.parent] ON [Document.Settings.v](parent,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.deleted] ON [Document.Settings.v](deleted,date,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.code] ON [Document.Settings.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.user] ON [Document.Settings.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Document.Settings.v.company] ON [Document.Settings.v](company,id);
-GO
-GRANT SELECT ON dbo.[Document.Settings.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Document.Settings.v];
-RAISERROR('Document.Settings end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Document.Settings ------------------------------
 
 ------------------------------ BEGIN Document.UserSettings ------------------------------
 

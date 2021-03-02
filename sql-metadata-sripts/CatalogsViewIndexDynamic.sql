@@ -57,6 +57,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Country')) [Country]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Longitude')), '') [Longitude]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Latitude')), '') [Latitude]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Slug')), '') [Slug]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.BusinessRegion'
 ;
@@ -203,6 +204,44 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
 RAISERROR('Catalog.JobTitle.Functional end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.JobTitle.Functional ------------------------------
+
+------------------------------ BEGIN Catalog.OrderSource ------------------------------
+
+RAISERROR('Catalog.OrderSource start', 0 ,1) WITH NOWAIT;
+      
+BEGIN TRY
+  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.OrderSource.v];
+END TRY
+BEGIN CATCH
+END CATCH;
+GO
+CREATE OR ALTER VIEW dbo.[Catalog.OrderSource.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Kind')), '') [Kind]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.SourceType')), '') [SourceType]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Country')) [Country]
+      FROM dbo.[Documents]
+      WHERE [type] = N'Catalog.OrderSource'
+;
+GO
+CREATE UNIQUE CLUSTERED INDEX [Catalog.OrderSource.v] ON [Catalog.OrderSource.v](id);
+        
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.deleted] ON [Catalog.OrderSource.v](deleted,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.code.f] ON [Catalog.OrderSource.v](parent,isfolder,code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.description.f] ON [Catalog.OrderSource.v](parent,isfolder,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.description] ON [Catalog.OrderSource.v](description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.code] ON [Catalog.OrderSource.v](code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.user] ON [Catalog.OrderSource.v]([user],id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.company] ON [Catalog.OrderSource.v](company,id);
+GO
+GRANT SELECT ON dbo.[Catalog.OrderSource.v]TO jetti;
+GO
+
+ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.OrderSource.v];
+RAISERROR('Catalog.OrderSource end', 0 ,1) WITH NOWAIT;
+      
+------------------------------ END Catalog.OrderSource ------------------------------
 
 ------------------------------ BEGIN Catalog.RetailNetwork ------------------------------
 

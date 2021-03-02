@@ -16,9 +16,6 @@ CREATE OR ALTER VIEW dbo.[Operation.AdditionalParametersDepartment.v] WITH SCHEM
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.FrontType')), '') [FrontType]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.MainStoreHouse')) [MainStoreHouse]
@@ -36,6 +33,10 @@ CREATE OR ALTER VIEW dbo.[Operation.AdditionalParametersDepartment.v] WITH SCHEM
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isCoordinatesCheck')), 0) [isCoordinatesCheck]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isSailPlayPromocodeCheck')), 0) [isSailPlayPromocodeCheck]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isSailPlayBonusCheck')), 0) [isSailPlayBonusCheck]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.wifiSSID')), '') [wifiSSID]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.timeZoneOffset')), '') [timeZoneOffset]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.addressCheck')), '') [addressCheck]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.organisationCheck')), '') [organisationCheck]
       FROM dbo.[Documents]
       WHERE [operation] = 'CE62E430-3004-11E8-A0FF-732D589B1ACA'
 ; 
@@ -75,9 +76,6 @@ CREATE OR ALTER VIEW dbo.[Operation.AutoAdditionSettings.v] WITH SCHEMABINDING A
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.AdditionalType')), '') [AdditionalType]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.MainSKU')) [MainSKU]
@@ -121,9 +119,6 @@ CREATE OR ALTER VIEW dbo.[Operation.CashShifts.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.UserId')) [UserId]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.CashShiftNumber')), '') [CashShiftNumber]
@@ -173,9 +168,6 @@ CREATE OR ALTER VIEW dbo.[Operation.CHECK_JETTI_FRONT.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Customer')) [Customer]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Manager')) [Manager]
@@ -210,96 +202,6 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.CHECK_JETTI_FRONT ------------------------------
 
       
------------------------------- BEGIN Operation.CRAUD_INTEGRATION ------------------------------
-
-      RAISERROR('Operation.CRAUD_INTEGRATION start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.CRAUD_INTEGRATION.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.CRAUD_INTEGRATION.v] WITH SCHEMABINDING AS 
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.alias')), '') [alias]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.OperationJETTI')) [OperationJETTI]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.StatusPosted')), '') [StatusPosted]
-      FROM dbo.[Documents]
-      WHERE [operation] = '492FFDE0-2D8E-11EB-8F97-B98B2F73F45B'
-; 
-GO
-CREATE UNIQUE CLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v] ON [Operation.CRAUD_INTEGRATION.v](id);
-      CREATE UNIQUE NONCLUSTERED INDEX[Operation.CRAUD_INTEGRATION.v.date] ON[Operation.CRAUD_INTEGRATION.v](date, id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v.parent] ON [Operation.CRAUD_INTEGRATION.v](parent,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v.deleted] ON [Operation.CRAUD_INTEGRATION.v](deleted,date,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v.code] ON [Operation.CRAUD_INTEGRATION.v](code,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v.user] ON [Operation.CRAUD_INTEGRATION.v]([user],id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION.v.company] ON [Operation.CRAUD_INTEGRATION.v](company,id);
-      
-GO
-GRANT SELECT ON dbo.[Operation.CRAUD_INTEGRATION.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.CRAUD_INTEGRATION.v];
-      RAISERROR('Operation.CRAUD_INTEGRATION finish', 0 ,1) WITH NOWAIT;
-      
------------------------------- BEGIN Operation.CRAUD_INTEGRATION ------------------------------
-
-      
------------------------------- BEGIN Operation.CRAUD_INTEGRATION_CREATE_LOAN ------------------------------
-
-      RAISERROR('Operation.CRAUD_INTEGRATION_CREATE_LOAN start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v] WITH SCHEMABINDING AS 
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.ScriptFindLoan')), '') [ScriptFindLoan]
-      FROM dbo.[Documents]
-      WHERE [operation] = '1A628370-2FD7-11EB-8258-97B2F1CC49F6'
-; 
-GO
-CREATE UNIQUE CLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](id);
-      CREATE UNIQUE NONCLUSTERED INDEX[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.date] ON[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](date, id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.parent] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](parent,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.deleted] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](deleted,date,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.code] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](code,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.user] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v]([user],id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v.company] ON [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v](company,id);
-      
-GO
-GRANT SELECT ON dbo.[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.CRAUD_INTEGRATION_CREATE_LOAN.v];
-      RAISERROR('Operation.CRAUD_INTEGRATION_CREATE_LOAN finish', 0 ,1) WITH NOWAIT;
-      
------------------------------- BEGIN Operation.CRAUD_INTEGRATION_CREATE_LOAN ------------------------------
-
-      
 ------------------------------ BEGIN Operation.DeliveryAreas ------------------------------
 
       RAISERROR('Operation.DeliveryAreas start', 0 ,1) WITH NOWAIT;
@@ -317,9 +219,6 @@ CREATE OR ALTER VIEW dbo.[Operation.DeliveryAreas.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$.MapUrl')), '') [MapUrl]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.LoadFolder')), '') [LoadFolder]
@@ -345,65 +244,6 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.DeliveryAreas ------------------------------
 
       
------------------------------- BEGIN Operation.IncomeBank_CRAUD_LoanInternational ------------------------------
-
-      RAISERROR('Operation.IncomeBank_CRAUD_LoanInternational start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.IncomeBank_CRAUD_LoanInternational.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.IncomeBank_CRAUD_LoanInternational.v] WITH SCHEMABINDING AS 
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BankAccountIN')) [BankAccountIN]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CashFlow')) [CashFlow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.IntercompanyIN')) [IntercompanyIN]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.IntercompanyOUT')) [IntercompanyOUT]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CurrencyVia')) [CurrencyVia]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.LoanViaIntercompanyIN')) [LoanViaIntercompanyIN]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.LoanViaIntercompanyOUT')) [LoanViaIntercompanyOUT]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.AmountVia')), 0) [AmountVia]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.BankConfirm')), 0) [BankConfirm]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.BankDocNumber')), '') [BankDocNumber]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.BankConfirmDate'),127) [BankConfirmDate]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Intercompany_CRAUD')) [Intercompany_CRAUD]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Customer')) [Customer]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Loan_Customer')) [Loan_Customer]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.SKU')) [SKU]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Loan_Customer_Company')) [Loan_Customer_Company]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount_Loan_Customer_Company')), 0) [Amount_Loan_Customer_Company]
-      FROM dbo.[Documents]
-      WHERE [operation] = '482CFFC0-02EF-11EB-9AD5-69E561DF4143'
-; 
-GO
-CREATE UNIQUE CLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v] ON [Operation.IncomeBank_CRAUD_LoanInternational.v](id);
-      CREATE UNIQUE NONCLUSTERED INDEX[Operation.IncomeBank_CRAUD_LoanInternational.v.date] ON[Operation.IncomeBank_CRAUD_LoanInternational.v](date, id) INCLUDE([company]);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v.parent] ON [Operation.IncomeBank_CRAUD_LoanInternational.v](parent,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v.deleted] ON [Operation.IncomeBank_CRAUD_LoanInternational.v](deleted,date,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v.code] ON [Operation.IncomeBank_CRAUD_LoanInternational.v](code,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v.user] ON [Operation.IncomeBank_CRAUD_LoanInternational.v]([user],id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Operation.IncomeBank_CRAUD_LoanInternational.v.company] ON [Operation.IncomeBank_CRAUD_LoanInternational.v](company,id);
-      
-GO
-GRANT SELECT ON dbo.[Operation.IncomeBank_CRAUD_LoanInternational.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.IncomeBank_CRAUD_LoanInternational.v];
-      RAISERROR('Operation.IncomeBank_CRAUD_LoanInternational finish', 0 ,1) WITH NOWAIT;
-      
------------------------------- BEGIN Operation.IncomeBank_CRAUD_LoanInternational ------------------------------
-
-      
 ------------------------------ BEGIN Operation.LOT_Sales ------------------------------
 
       RAISERROR('Operation.LOT_Sales start', 0 ,1) WITH NOWAIT;
@@ -421,9 +261,6 @@ CREATE OR ALTER VIEW dbo.[Operation.LOT_Sales.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Customer')) [Customer]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CompanySeller')) [CompanySeller]
@@ -475,9 +312,6 @@ CREATE OR ALTER VIEW dbo.[Operation.LotModelsVsDepartment.v] WITH SCHEMABINDING 
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Lot')), '') [Lot]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isProfitability')), 0) [isProfitability]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Lot_BonusManager')), 0) [Lot_BonusManager]
@@ -523,9 +357,6 @@ CREATE OR ALTER VIEW dbo.[Operation.OnlineSalesManagementSettings.v] WITH SCHEMA
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BusinessRegion')) [BusinessRegion]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.DateBegin'),127) [DateBegin]
@@ -570,9 +401,6 @@ CREATE OR ALTER VIEW dbo.[Operation.OnlineSalesManagementSettings.v] WITH SCHEMA
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BusinessRegion')) [BusinessRegion]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.DateBegin'),127) [DateBegin]
@@ -597,5 +425,50 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
       RAISERROR('Operation.OnlineSalesManagementSettings finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.OnlineSalesManagementSettings ------------------------------
+
+      
+------------------------------ BEGIN Operation.Status_Opening_Registry ------------------------------
+
+      RAISERROR('Operation.Status_Opening_Registry start', 0 ,1) WITH NOWAIT;
+      
+      BEGIN TRY
+        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.Status_Opening_Registry.v];
+      END TRY
+      BEGIN CATCH
+      END CATCH
+GO
+CREATE OR ALTER VIEW dbo.[Operation.Status_Opening_Registry.v] WITH SCHEMABINDING AS 
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ResponsibilityCenter')) [ResponsibilityCenter]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.ValueString')), '') [ValueString]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BusinessRegion')) [BusinessRegion]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Brand')) [Brand]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpeningDatePlanned'),127) [OpeningDatePlanned]
+      FROM dbo.[Documents]
+      WHERE [operation] = 'D7804240-741E-11EB-B750-45F122470B78'
+; 
+GO
+CREATE UNIQUE CLUSTERED INDEX [Operation.Status_Opening_Registry.v] ON [Operation.Status_Opening_Registry.v](id);
+      CREATE UNIQUE NONCLUSTERED INDEX[Operation.Status_Opening_Registry.v.date] ON[Operation.Status_Opening_Registry.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.Status_Opening_Registry.v.parent] ON [Operation.Status_Opening_Registry.v](parent,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.Status_Opening_Registry.v.deleted] ON [Operation.Status_Opening_Registry.v](deleted,date,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.Status_Opening_Registry.v.code] ON [Operation.Status_Opening_Registry.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.Status_Opening_Registry.v.user] ON [Operation.Status_Opening_Registry.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.Status_Opening_Registry.v.company] ON [Operation.Status_Opening_Registry.v](company,id);
+      
+GO
+GRANT SELECT ON dbo.[Operation.Status_Opening_Registry.v]TO jetti; 
+GO
+ALTER SECURITY POLICY[rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.Status_Opening_Registry.v];
+      RAISERROR('Operation.Status_Opening_Registry finish', 0 ,1) WITH NOWAIT;
+      
+------------------------------ BEGIN Operation.Status_Opening_Registry ------------------------------
 
       
