@@ -49,6 +49,7 @@ export class CatalogOperationServer extends CatalogOperation implements IServerD
     async getPropsFunc(tx: MSSQL): Promise<Function> {
         const doc = await this.createDocServer(tx);
         const props = { ...doc.Props() };
+        ['f1', 'f2', 'f3'].forEach(e => delete props[e]);
         props.type = { type: 'string', hidden: true, hiddenInList: true };
         props.Operation.value = this.id;
         return () => props;
