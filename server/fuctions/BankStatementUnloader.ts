@@ -212,12 +212,12 @@ export class BankStatementUnloader {
     ,Person.description as NAME_B
     ,BAEmp.[code] as COUNT_B
     ,Obj.[info] as N_P
-	,JSON_VALUE(Person.doc, '$.Code1') as OKPO_B
+	  ,JSON_VALUE(Person.doc, '$.Code1') as OKPO_B
 
     FROM [dbo].[Documents] as Obj
     LEFT JOIN [dbo].[Documents] as BAComp on BAComp.id = JSON_VALUE(Obj.doc, '$.BankAccount') and BAComp.[type] = 'Catalog.BankAccount'
     LEFT JOIN [dbo].[Documents] as BAEmp on BAEmp.id = JSON_VALUE(Obj.doc, '$.BankAccountPerson') and BAEmp.[type] = 'Catalog.Counterpartie.BankAccount'
-	LEFT JOIN [dbo].[Documents] as Person on Person.id = JSON_VALUE(Obj.doc, '$.Employee') and Person.[type] = 'Catalog.Person'
+	  LEFT JOIN [dbo].[Documents] as Person on Person.id = JSON_VALUE(Obj.doc, '$.Employee') and Person.[type] = 'Catalog.Person'
 
     WHERE Obj.[id] in (@p1) and JSON_VALUE(Obj.doc, '$.Operation') = 'E47A8910-4599-11EA-AAE2-A1796B9A826A' -- С р/с - выплата зарплаты (СОТРУДНИКУ без ведомости) (RUSSIA)
     order by Obj.company, BAComp.[code], Obj.[date]`;
@@ -285,8 +285,8 @@ export class BankStatementUnloader {
     ,BankComp.[code] as N'ПлательщикБИК'
     ,JSON_VALUE(BankComp.doc, '$.KorrAccount') as N'ПлательщикКорсчет'
     ,BAEmployee.[code] as N'ПолучательСчет'
-    ,N'ИНН ' + Employee.[code] + ' ' + Employee.[description] as N'Получатель'
-    ,Employee.[code] as N'ПолучательИНН'
+    ,N'ИНН ' + JSON_VALUE(Employee.doc, '$.Code1') + ' ' + Employee.[description] as N'Получатель'
+    ,JSON_VALUE(Employee.doc, '$.Code1') as N'ПолучательИНН'
     ,Employee.[description] as N'Получатель1'
     ,BAEmployee.[code] as N'ПолучательРасчСчет'
     ,BankEmployee.description as N'ПолучательБанк1'
@@ -328,8 +328,8 @@ export class BankStatementUnloader {
     ,BankComp.[code] as N'ПлательщикБИК'
     ,JSON_VALUE(BankComp.doc, '$.KorrAccount') as N'ПлательщикКорсчет'
     ,BAPers.[code] as N'ПолучательСчет'
-    ,N'ИНН ' + Pers.[code] + ' ' + Pers.[description] as N'Получатель'
-    ,Pers.[code] as N'ПолучательИНН'
+    ,N'ИНН ' + JSON_VALUE(Pers.doc, '$.Code1') + ' ' + Pers.[description] as N'Получатель'
+    ,JSON_VALUE(Pers.doc, '$.Code1') as N'ПолучательИНН'
     ,Pers.description as N'Получатель1'
     ,BAPers.[code] as N'ПолучательРасчСчет'
     ,BankPers.description as N'ПолучательБанк1'
