@@ -52,10 +52,10 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'Catalog.Product.Report', order: 666, useIn: 'all' })
   ProductReport: Ref = null;
 
-  @Props({ type: 'Document.Operation', order: 666, useIn: 'all' })
+  @Props({ type: 'Document.Operation', order: 666, useIn: 'all', hiddenInList: true })
   Settings: Ref = null;
 
-  @Props({ type: 'boolean', order: 666, useIn: 'all' })
+  @Props({ type: 'boolean', order: 666, useIn: 'all', hiddenInList: true })
   Purchased = false;
 
   @Props({ type: 'string', order: 666, useIn: 'all' })
@@ -64,55 +64,55 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'string', order: 666, useIn: 'all' })
   ShortName = '';
 
-  @Props({ type: 'string', order: 666, useIn: 'all' })
+  @Props({ type: 'string', order: 666, useIn: 'all', hiddenInList: true })
   Tags = '';
 
-  @Props({ type: 'number', order: 666, useIn: 'all' })
+  @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
   Weight = '';
 
-  @Props({ type: 'number', order: 666, useIn: 'all' })
+  @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
   Volume = '';
 
-  @Props({ type: 'number', order: 666, useIn: 'all' })
+  @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
   Calorie = 0;
 
-  @Props({ type: 'number', order: 666, useIn: 'all' })
+  @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
   Carbohydrates = 0;
 
-  @Props({ type: 'number', order: 666, useIn: 'all' })
+  @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
   Fat = 0;
 
-  @Props({ type: 'number', order: 666, useIn: 'all' })
+  @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
   Proteins = 0;
 
-  @Props({ type: 'number', order: 666, useIn: 'all' })
+  @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
   CookingTime = 0;
 
-  @Props({ type: 'string', order: 666, useIn: 'all' })
+  @Props({ type: 'string', order: 666, useIn: 'all', hiddenInList: true })
   Composition = '';
 
   @Props({ type: 'enum', order: 666, value: ['kitchen', 'outlet'], useIn: 'all' })
   CookingPlace = 'kitchen';
 
-  @Props({ type: 'number', order: 666, useIn: 'all' })
+  @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
   Order = 0;
 
-  @Props({ type: 'string', order: 666, useIn: 'all' })
+  @Props({ type: 'string', order: 666, useIn: 'all', hiddenInList: true })
   Barcode = '';
 
   @Props({ type: 'string', useIn: 'all' })
   Eancode = '';
 
-  @Props({ type: 'boolean', order: 666, useIn: 'all' })
+  @Props({ type: 'boolean', order: 666, useIn: 'all', hiddenInList: true })
   isVegan = false;
 
-  @Props({ type: 'boolean', order: 666, useIn: 'all' })
+  @Props({ type: 'boolean', order: 666, useIn: 'all', hiddenInList: true })
   isHot = false;
 
-  @Props({ type: 'boolean', order: 666, useIn: 'all' })
+  @Props({ type: 'boolean', order: 666, useIn: 'all', hiddenInList: true })
   isPromo = false;
 
-  @Props({ type: 'string', order: 666, useIn: 'all' })
+  @Props({ type: 'string', order: 666, useIn: 'all', hiddenInList: true })
   Slug = '';
 
   @Props({ type: 'table', label: 'Products', order: 666 })

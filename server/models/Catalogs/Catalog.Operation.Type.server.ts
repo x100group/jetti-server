@@ -3,7 +3,7 @@ import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { CatalogOperationType } from './Catalog.Operation.Type';
 import { createDocument } from '../documents.factory';
-import { IFlatDocument } from 'jetti-middle';
+import { IFlatDocument, Ref } from 'jetti-middle';
 import { DocumentOperationServer } from './../Documents/Document.Operation.server';
 
 export class CatalogOperationTypeServer extends CatalogOperationType implements IServerDocument {
@@ -11,11 +11,11 @@ export class CatalogOperationTypeServer extends CatalogOperationType implements 
   async selfCreated(tx: MSSQL, document: IFlatDocument | undefined) {
 
     if (document) this.map(document);
-    if (this.isfolder) return false;
+    // if (this.isfolder) return false;
     if (this['isExtended']) return true;
 
     this['isExtended'] = true;
-    const model = await this.getModel(tx);
+    const model = await this.getModel(tx, this.parent);
     if (!model) return false;
 
     const fakeDoc = {
@@ -38,10 +38,12 @@ export class CatalogOperationTypeServer extends CatalogOperationType implements 
     return true;
   }
 
-  async getModel(tx: MSSQL) {
-    if (this.Model || !this.parent) return this.Model;
-    const parent = await lib.doc.byIdT<CatalogOperationType>(this.parent, tx);
-    return parent?.Model;
+  async getModel(tx: MSSQL, parent: Ref) {
+    if (this.Model || !parent) return this.Model;
+    const parentOb = await lib.doc.byIdT<CatalogOperationType>(parent, tx);
+    if (parentOb && parentOb.Model) return parentOb.Model;
+    if (!parentOb || !parentOb.parent) return null;
+    return this.getModel(tx, parentOb.parent);
   }
 
   async isEditorMode(tx: MSSQL) {
