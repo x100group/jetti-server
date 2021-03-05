@@ -10,8 +10,10 @@ import {
   IUpdateOperationTaxCheckResponse,
   findTaxCheckAttachmentsByOperationId
 } from './x100/functions/taxCheck';
-import { TRANSFORMED_REGISTER_MOVEMENTS_TABLE } from './env/environment';
+import { bpApiHost, TRANSFORMED_REGISTER_MOVEMENTS_TABLE } from './env/environment';
 import { Ref } from 'jetti-middle';
+import { DocumentCashRequestServer } from './models/Documents/Document.CashRequest.server';
+import axios from 'axios';
 
 export interface Ix100Lib {
   account: {
@@ -23,6 +25,7 @@ export interface Ix100Lib {
     counterpartieByINNAndKPP: (INN: string, KPP: string, tx: MSSQL) => Promise<Ref | null>
   };
   doc: {
+    startCashReqestAgreement: (cashRequestId: string, tx: MSSQL) => Promise<{ error: boolean, message: string, data: any }>
   };
   info: {
     companyByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
@@ -54,6 +57,7 @@ export const x100: Ix100Lib = {
     counterpartieByINNAndKPP
   },
   doc: {
+    startCashReqestAgreement
   },
   info: {
     companyByDepartment,
@@ -74,6 +78,62 @@ export const x100: Ix100Lib = {
     x100DataDB
   }
 };
+
+async function startCashReqestAgreement(cashRequestId: string, tx: MSSQL) {
+
+  const servDoc = await lib.doc.createDocServerById<DocumentCashRequestServer>(cashRequestId, tx);
+  const res = { error: true, message: ``, data: null };
+
+  if (!servDoc) {
+    res.message = `StartCashReqestAgreement: Document ${cashRequestId} not exist`;
+    return res;
+  }
+
+  if (servDoc.Operation === 'Выплата заработной платы без ведомости') {
+    res.message = await servDoc!['checkTaxCheck'](tx);
+    if (res.message) return res;
+  }
+
+  const userMail = servDoc.user ? (await lib.doc.byId(servDoc.user, tx))?.code : '';
+
+  const body = {
+    'CompanyDescription': (await lib.doc.byId(servDoc.company, tx))?.description,
+    'CompanyID': servDoc.company,
+    'CashRecipientDescription': servDoc.CashRecipient ? (await lib.doc.byId(servDoc.CashRecipient, tx))?.description : '',
+    'SubdivisionID': servDoc.Department,
+    'Sum': servDoc.Amount,
+    'ItemID': servDoc.CashFlow,
+    'OperationTypeID': servDoc.Operation,
+    'AuthorID': userMail,
+    'DocumentID': servDoc.id,
+    'Comment': servDoc.info,
+    'BaseType': 'Document.CashRequest',
+    'userMail': userMail
+  };
+
+  try {
+    const instance = axios.create({ baseURL: bpApiHost });
+    const query = `/Processes/pwd/StartProcess/CashApplication`;
+    res.data = (await instance.post(query, body)).data;
+    if (!res.data) throw new Error(`StartCashReqestAgreement: Document ${cashRequestId} empty response`);
+  } catch (error) {
+    res.message = error.toString();
+    return res;
+  }
+
+  if (res.data === 'APPROVED') {
+    if (servDoc.Status !== 'APPROVED') servDoc.Status = 'APPROVED';
+    else return res;
+  } else {
+    servDoc.Status = 'AWAITING';
+    servDoc.workflowID = res.data! as string;
+  }
+
+  res.error = false;
+
+  await lib.doc.saveDoc(servDoc, tx);
+  return res;
+}
 
 async function getTransformedRegisterMovementsByDocId(docID: string): Promise<any> {
   return await x100DataDB().manyOrNone(`

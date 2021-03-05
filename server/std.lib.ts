@@ -4,9 +4,12 @@ import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
 import { getUserPermissions } from './fuctions/UsersPermissions';
 import { configSchema } from './models/config';
-import { DocumentBase, Ref, IFlatDocument, INoSqlDocument, RefValue, RegisterAccumulation, Type, RegisterInfo } from 'jetti-middle';
+import {
+  DocumentBase, Ref, IFlatDocument, INoSqlDocument, RefValue, RegisterAccumulation,
+  Type, RegisterInfo, PropOptions, RegisterAccumulationOptions
+} from 'jetti-middle';
 import { createDocumentServer, DocumentBaseServer } from './models/documents.factory.server';
-import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
+import { createRegisterAccumulation as createAccumulationRegister, RegisterAccumulationTypes, } from './models/Registers/Accumulation/factory';
 import { adminMode, postDocument, unpostDocument, setPostedSate, IUpdateInsertDocumentOptions, upsertDocument } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
@@ -22,6 +25,9 @@ import { getIndexedOperationById } from './models/indexedOperation';
 import { createDocument } from './models/documents.factory';
 import * as iconv from 'iconv-lite';
 import { DocumentOperation } from './models/Documents/Document.Operation';
+import { DocumentOperationServer } from './models/Documents/Document.Operation.server';
+import { createRegisterInfo} from './models/Registers/Info/factory';
+import { createFormServer } from './models/Forms/form.factory.server';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 export interface FillDocBasedOnParams {
@@ -121,9 +127,12 @@ export interface JTL {
   meta: {
     updateSQLViewsByType: (type: string, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
     updateSQLViewsByOperationId: (id: string, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
-    riseUpdateMetadataEvent: () => void
+    riseUpdateMetadataEvent: () => void,
+    propsByType: (type: string, operation?: string, tx?: MSSQL) => Promise<{ [x: string]: PropOptions }>,
+    propByType: (type: string, operation?: string, tx?: MSSQL) => Promise<PropOptions | RegisterAccumulationOptions>
   };
   util: {
+    createObject,
     groupArray: <T>(array: T[], groupField?: string) => T[],
     formatDate: (date: Date) => string,
     parseDate: (date: string, format: string, delimiter: string) => Date,
@@ -205,7 +214,9 @@ export const lib: JTL = {
   meta: {
     updateSQLViewsByType,
     updateSQLViewsByOperationId,
-    riseUpdateMetadataEvent
+    riseUpdateMetadataEvent,
+    propsByType,
+    propByType
   },
   info: {
     sliceLast,
@@ -216,6 +227,7 @@ export const lib: JTL = {
     turnover
   },
   util: {
+    createObject,
     groupArray,
     formatDate,
     parseDate,
@@ -746,6 +758,45 @@ async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityP
       if (queries.indexOf(querText)) throw new Error(error);
     }
   }
+}
+
+async function propsByType(type: string, operation?: string, tx?: MSSQL): Promise<{ [x: string]: PropOptions }> {
+  return (await createObject({ type, operation }, tx)).Props();
+}
+
+async function propByType(type: string, operation?: string, tx?: MSSQL): Promise<PropOptions | RegisterAccumulationOptions> {
+  return (await createObject({ type, operation })).Prop();
+}
+
+async function createDocumentOperationServer(init: Partial<DocumentOperation>, tx: MSSQL): Promise<DocumentOperationServer> {
+  const fakeDoc = {
+    type: 'Document.Operation',
+    Operation: init.Operation,
+    Group: init.Group || (await lib.util.getObjectPropertyById(init.Operation as string, 'Group', tx)).id
+  };
+  const doc: IFlatDocument = { ...createDocument(fakeDoc.type), ...fakeDoc };
+  return await createDocumentServer<DocumentOperationServer>(fakeDoc.type, doc, tx);
+}
+
+async function createObject(init: any, tx?: MSSQL) {
+
+  if (Type.isOperation(init.type) && init.Operation)
+    return await createDocumentOperationServer(init, tx!);
+
+  if (init.type.startsWith('Document.') || init.type.startsWith('Catalog.'))
+    return await createDocumentServer<DocumentOperationServer>(init.type, init, tx!);
+
+  if (init.type.startsWith('Register.Accumulation.'))
+    return createAccumulationRegister(init);
+
+  if (init.type.startsWith('Register.Info.'))
+    return createRegisterInfo(init);
+
+  if (init.type.startsWith('Form.'))
+    return createFormServer(init);
+
+  throw new Error(`createObject: type ${init!.type} is not registered`);
+
 }
 
 export function isEqualObjects(object1: Object, object2: Object): boolean {

@@ -115,3 +115,19 @@ router.post('/v1.0/queue', authHTTP, async (req: Request, res: Response, next: N
   } catch (err) { next(err); }
 });
 
+router.post('/v1.1/queue', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdba = new MSSQL(TASKS_POOL,
+      { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
+    await sdba.none(`
+      INSERT INTO [exc].[Queue]([type],[doc],[ExchangeCode],[ExchangeBase])
+      VALUES (@p4, JSON_QUERY(@p1), @p2, @p3)`,
+      [JSON.stringify(req.body),
+      req.body.ExchangeCode || null,
+      req.body.ExchangeBase || null,
+      req.body.DataType || 'Queue_v1.1']
+    );
+    return res.json(200);
+  } catch (err) { next(err); }
+});
+

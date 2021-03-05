@@ -54,12 +54,12 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
     const id: string | undefined = params.id;
     const type: DocTypes = params.type;
     const Operation: string | undefined = req.query.Operation as string || params.operation as string || undefined;
-    const isFolder: boolean = req.query.isfolder === 'true';
+    const isfolder: boolean = req.query.isfolder === 'true';
     const Group = params.group ? params.group : Operation ? (await lib.util.getObjectPropertyById(Operation, 'Group', sdb)).id : null;
 
     let doc: IFlatDocument | DocumentOperation | null = null;
     if (id) doc = await lib.doc.byId(id, sdb);
-    if (!doc) doc = { ...createDocument(type), Operation, Group, isFolder } as any;
+    if (!doc) doc = { ...createDocument(type), Operation, Group, isfolder } as any;
     const ServerDoc = await createDocumentServer(type, doc as IFlatDocument, sdb);
     if (!ServerDoc) throw new Error(`wrong type ${type}`);
     if (id) ServerDoc.id = id;
