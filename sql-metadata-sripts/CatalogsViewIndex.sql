@@ -860,6 +860,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.Country.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Currency')) [Currency]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Alpha2Code')), '') [Alpha2Code]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PhoneCode')), '') [PhoneCode]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Language')), '') [Language]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Country'
 ;
