@@ -6,6 +6,7 @@ import { PostResult } from './../post.interfaces';
 import { DocumentOperation } from './Document.Operation';
 import { MSSQL } from '../../mssql';
 import { DocumentCashRequestServer } from './Document.CashRequest.server';
+import { x100 } from '../../x100.lib';
 
 export class DocumentOperationServer extends DocumentOperation implements IServerDocument {
 
@@ -112,15 +113,15 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
             .replace(/\'doc\./g, '\'$.')}
           `;
         const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
-        const func = new AsyncFunction('doc, tx, lib', script) as Function;
-        await func.bind(this, sourceDoc, tx, lib)();
+        const func = new AsyncFunction('doc, tx, lib, x100', script) as Function;
+        await func.bind(this, sourceDoc, tx, lib, x100)();
       }
     } else {
       switch (sourceDoc.type) {
         case 'Catalog.Counterpartie':
           break;
         case 'Document.CashRequest':
-          await (sourceDoc as DocumentCashRequestServer).FillDocumentOperation(this, tx, params);
+          await this.baseOnCashRequest(sourceDoc as DocumentCashRequestServer, tx, params);
           break;
         case 'Catalog.Operation':
           this.Operation = (sourceDoc as CatalogOperation).id;
@@ -137,5 +138,26 @@ export class DocumentOperationServer extends DocumentOperation implements IServe
     this.Props = () => Props;
     this.Prop = () => Prop;
     return this;
+  }
+
+  async baseOnCashRequest(cashRequest: DocumentCashRequestServer, tx: MSSQL, params?: any) {
+    const query =
+      `SELECT TOP 1 id
+      FROM Documents
+      WHERE Operation = 'C7C86BA0-7DB7-11EB-8BF1-D7EBACB55696'
+        AND posted = 1
+        AND JSON_VALUE(doc, '$.Status') = 'ACTIVE'
+        AND JSON_VALUE(doc, '$.OperationType') = N'${cashRequest.Operation}'`;
+    const rulesDocID = await tx.oneOrNone<{ id: string }>(query);
+    if (!rulesDocID || !rulesDocID.id) throw new Error(`Operation creating base on document cash request with operation type "${cashRequest.Operation}" is not implemented`);
+    const rulesDoc = await lib.doc.byId(rulesDocID.id, tx);
+    const declaration = new Function('', rulesDoc!['Module']).bind(this)();
+    if (!declaration.fillOperation)
+      throw new Error(`baseOnCashRequest: Operation creating base on document cash request with operation type "${cashRequest.Operation}" is not implemented`);
+    try {
+      await (declaration.fillOperation as Function)(cashRequest, this, tx, params);
+    } catch (error) {
+      throw new Error(`baseOnCashRequest: cash request id ${cashRequest.id}\n${error}`);
+    }
   }
 }
