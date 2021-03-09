@@ -206,11 +206,18 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
 
   }
 
+  async ExecuteQuery<T>(queryText: string) {
+    return await this.getTX().manyOrNone<T>(queryText);
+  }
+
   async selectFilter() {
 
     const setId = 'selectFilter';
-    const filterFields = this.PropSettings.filter(e => e.isFilter).map(e => e.PropName);
     const listFilter: FormListFilter[] = [];
+
+    if (this.QueryText) listFilter.push({ left: 'id', center: 'in', right: (await this.ExecuteQuery<{ id: string }>(this.QueryText)).map(e => `'${e.id}'`) });
+
+    const filterFields = this.PropSettings.filter(e => e.isFilter).map(e => e.PropName);
     const props = await this.getRecieverProps();
     this.DynamicPropsClearSet(setId);
     for (const filterField of filterFields) {
@@ -312,14 +319,14 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       else queryOb.fields.push(jsonProp(prop.key, prop.type));
       if (prop.isComplex) queryOb.joins.push(leftJoin(prop.key, prop.type));
     }
-
+    console.log('listFilter', JSON.stringify(listFilter));
     return `
     SELECT
     d.id "Object",
     ${queryOb.fields.join(`,\n`)}
     FROM "Documents" d
     ${queryOb.joins.join(`\n`)}
-    WHERE ${filterBuilder(listFilter).where}`.trim();
+    WHERE ${filterBuilder(listFilter).where.replace(/"/g, '')}`.trim();
   }
 
   async getRecieverType(): Promise<DocTypes | string> {
