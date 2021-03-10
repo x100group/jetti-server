@@ -37,6 +37,8 @@ CREATE OR ALTER VIEW dbo.[Operation.AdditionalParametersDepartment.v] WITH SCHEM
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.timeZoneOffset')), '') [timeZoneOffset]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.addressCheck')), '') [addressCheck]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.organisationCheck')), '') [organisationCheck]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.defaultCoockingTime')), 0) [defaultCoockingTime]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.defaultDeliveryTime')), 0) [defaultDeliveryTime]
       FROM dbo.[Documents]
       WHERE [operation] = 'CE62E430-3004-11E8-A0FF-732D589B1ACA'
 ; 
@@ -82,6 +84,46 @@ CREATE OR ALTER VIEW dbo.[Operation.AutoAdditionSettings.v] WITH SCHEMABINDING A
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Qty')), 0) [Qty]
       FROM dbo.[Documents]
       WHERE [operation] = '73F98550-33E2-11EB-A7C3-274B4A063111'
+; 
+GO
+CREATE UNIQUE CLUSTERED INDEX [Operation.AutoAdditionSettings.v] ON [Operation.AutoAdditionSettings.v](id);
+      CREATE UNIQUE NONCLUSTERED INDEX[Operation.AutoAdditionSettings.v.date] ON[Operation.AutoAdditionSettings.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.AutoAdditionSettings.v.parent] ON [Operation.AutoAdditionSettings.v](parent,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.AutoAdditionSettings.v.deleted] ON [Operation.AutoAdditionSettings.v](deleted,date,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.AutoAdditionSettings.v.code] ON [Operation.AutoAdditionSettings.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.AutoAdditionSettings.v.user] ON [Operation.AutoAdditionSettings.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.AutoAdditionSettings.v.company] ON [Operation.AutoAdditionSettings.v](company,id);
+      
+GO
+GRANT SELECT ON dbo.[Operation.AutoAdditionSettings.v]TO jetti; 
+GO
+ALTER SECURITY POLICY[rls].[companyAccessPolicy]
+      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.AutoAdditionSettings.v];
+      RAISERROR('Operation.AutoAdditionSettings finish', 0 ,1) WITH NOWAIT;
+      
+------------------------------ BEGIN Operation.AutoAdditionSettings ------------------------------
+
+      
+------------------------------ BEGIN Operation.AutoAdditionSettings ------------------------------
+
+      RAISERROR('Operation.AutoAdditionSettings start', 0 ,1) WITH NOWAIT;
+      
+      BEGIN TRY
+        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.AutoAdditionSettings.v];
+      END TRY
+      BEGIN CATCH
+      END CATCH
+GO
+CREATE OR ALTER VIEW dbo.[Operation.AutoAdditionSettings.v] WITH SCHEMABINDING AS 
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
+      FROM dbo.[Documents]
+      WHERE [operation] = 'E3910160-7AC1-11EB-A815-05612A0C2146'
 ; 
 GO
 CREATE UNIQUE CLUSTERED INDEX [Operation.AutoAdditionSettings.v] ON [Operation.AutoAdditionSettings.v](id);

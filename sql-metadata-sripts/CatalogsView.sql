@@ -1081,6 +1081,7 @@ GO
         , ISNULL([Currency.v].description, '') [Currency.value], d.[Currency] [Currency.id], [Currency.v].type [Currency.type]
         , d.[Alpha2Code] [Alpha2Code]
         , d.[PhoneCode] [PhoneCode]
+        , d.[Language] [Language]
       
         , ISNULL(l5.id, d.id) [Country.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Country.Level4.id]

@@ -34,6 +34,8 @@
         , d.[timeZoneOffset] [timeZoneOffset]
         , d.[addressCheck] [addressCheck]
         , d.[organisationCheck] [organisationCheck]
+        , d.[defaultCoockingTime] [defaultCoockingTime]
+        , d.[defaultDeliveryTime] [defaultDeliveryTime]
       FROM [Operation.AdditionalParametersDepartment.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -51,6 +53,42 @@ GO
 
       
 ------------------------------ END Operation.AdditionalParametersDepartment ------------------------------
+
+------------------------------ BEGIN Operation.AutoAdditionSettings ------------------------------
+
+      CREATE OR ALTER VIEW dbo.[Operation.AutoAdditionSettings] AS
+      
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "AutoAdditionSettings",  d.posted, d.deleted, d.isfolder, d.timestamp, d.version
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
+        , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
+        , d.[Amount] [Amount]
+        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
+        , ISNULL([RetailNetwork.v].description, '') [RetailNetwork.value], d.[RetailNetwork] [RetailNetwork.id], [RetailNetwork.v].type [RetailNetwork.type]
+        , d.[AdditionalType] [AdditionalType]
+        , ISNULL([MainSKU.v].description, '') [MainSKU.value], d.[MainSKU] [MainSKU.id], [MainSKU.v].type [MainSKU.type]
+        , d.[Qty] [Qty]
+      FROM [Operation.AutoAdditionSettings.v] d WITH (NOEXPAND)
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
+        LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
+        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
+        LEFT JOIN dbo.[Catalog.RetailNetwork.v] [RetailNetwork.v] WITH (NOEXPAND) ON [RetailNetwork.v].id = d.[RetailNetwork]
+        LEFT JOIN dbo.[Catalog.Product.v] [MainSKU.v] WITH (NOEXPAND) ON [MainSKU.v].id = d.[MainSKU]
+    ; 
+GO
+GRANT SELECT ON dbo.[Operation.AutoAdditionSettings] TO jetti;
+GO
+
+      
+------------------------------ END Operation.AutoAdditionSettings ------------------------------
 
 ------------------------------ BEGIN Operation.AutoAdditionSettings ------------------------------
 
