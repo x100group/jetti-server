@@ -11,7 +11,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     let parent: any = null;
     if (params.id) {
       const ob = await lib.doc.byId(params.id, tx);
-      parent = ob!.isfolder && params.listOptions.hierarchyDirectionUp ? params.id : ob!.parent;
+      parent = ob!.isfolder && !params.listOptions.hierarchyDirectionUp ? params.id : ob!.parent;
     }
     // folders
     const queryList = configSchema().get(params.type)!.QueryList;
