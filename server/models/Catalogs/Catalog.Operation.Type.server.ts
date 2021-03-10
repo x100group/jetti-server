@@ -11,7 +11,6 @@ export class CatalogOperationTypeServer extends CatalogOperationType implements 
   async selfCreated(tx: MSSQL, document: IFlatDocument | undefined) {
 
     if (document) this.map(document);
-    // if (this.isfolder) return false;
     if (this['isExtended']) return true;
 
     this['isExtended'] = true;

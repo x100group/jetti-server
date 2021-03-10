@@ -26,8 +26,9 @@ import { createDocument } from './models/documents.factory';
 import * as iconv from 'iconv-lite';
 import { DocumentOperation } from './models/Documents/Document.Operation';
 import { DocumentOperationServer } from './models/Documents/Document.Operation.server';
-import { createRegisterInfo} from './models/Registers/Info/factory';
-import { createFormServer } from './models/Forms/form.factory.server';
+import { createRegisterInfo } from './models/Registers/Info/factory';
+import { createFormServer, FormBaseServer } from './models/Forms/form.factory.server';
+import { Event } from './fuctions/Event';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 export interface FillDocBasedOnParams {
@@ -132,7 +133,8 @@ export interface JTL {
     propByType: (type: string, operation?: string, tx?: MSSQL) => Promise<PropOptions | RegisterAccumulationOptions>
   };
   util: {
-    createObject,
+    // tslint:disable-next-line: max-line-length
+    createObject: (init: any, tx?: MSSQL | undefined) => Promise<DocumentOperationServer | RegisterAccumulation | RegisterInfo | FormBaseServer>
     groupArray: <T>(array: T[], groupField?: string) => T[],
     formatDate: (date: Date) => string,
     parseDate: (date: string, format: string, delimiter: string) => Date,
@@ -172,6 +174,9 @@ export interface JTL {
   };
   queuePost: {
     addId: (id: string, flow: number, taskPoolTX?: MSSQL) => Promise<void>
+  };
+  log: {
+    newEvent: (init: Partial<Event>) => Event
   };
 }
 
@@ -266,6 +271,9 @@ export const lib: JTL = {
   },
   queuePost: {
     addId
+  },
+  log: {
+    newEvent
   }
 };
 
@@ -403,7 +411,7 @@ async function fillDocBasedOn(params: FillDocBasedOnParams, tx: MSSQL): Promise<
   if (!ServerDoc.baseOn) throw new Error(`Based on method is not defined`);
   // process baseOn
   const resDoc = await ServerDoc.baseOn(base, tx);
-  resDoc.user = tx.user.env.id;
+  resDoc.user = tx.user.env.view.id;
   // document saving
   if (saveMode === 'save' || saveMode === 'post') {
     resDoc.posted = saveMode.toLowerCase() === 'post';
@@ -436,7 +444,7 @@ async function executeCommand(params: ExecuteCommandParams, tx: MSSQL): Promise<
 
   // document saving
   if (saveMode === 'save' || saveMode === 'post') {
-    serverDoc.user = tx.user.env.id;
+    serverDoc.user = tx.user.env.view.id;
     serverDoc.posted = saveMode.toLowerCase() === 'post';
     saveDoc(serverDoc, tx);
   }
@@ -944,7 +952,7 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
     if (attachment.id && attachment.timestamp) ob = await createDocServerById(attachment.id, tx);
     else {
       ob = await createDocServer<CatalogAttachment>('Catalog.Attachment', undefined, tx);
-      if (!userId) userId = tx.user.env.id;
+      if (!userId) userId = tx.user.env.view.id;
       ob.user = userId;
       ob.date = new Date;
       ob.company = (await byId(attachment.owner, tx))!.company;
@@ -1136,3 +1144,8 @@ async function getObjectPropertyById(id: Ref, propPath: string, tx: MSSQL) {
 function exchangeDB() {
   return new MSSQL(EXCHANGE_POOL);
 }
+
+function newEvent(init: Partial<Event>) {
+  return new Event(init);
+}
+

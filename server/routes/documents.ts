@@ -66,7 +66,7 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
 
     let model = {};
     const settings = new FormListSettings();
-    const userID = sdb.user.env.id;
+    const userID = sdb.user.env.view.id;
 
     if (id) {
 

@@ -319,7 +319,6 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       else queryOb.fields.push(jsonProp(prop.key, prop.type));
       if (prop.isComplex) queryOb.joins.push(leftJoin(prop.key, prop.type));
     }
-    console.log('listFilter', JSON.stringify(listFilter));
     return `
     SELECT
     d.id "Object",
