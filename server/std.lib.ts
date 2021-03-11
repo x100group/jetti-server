@@ -411,7 +411,7 @@ async function fillDocBasedOn(params: FillDocBasedOnParams, tx: MSSQL): Promise<
   if (!ServerDoc.baseOn) throw new Error(`Based on method is not defined`);
   // process baseOn
   const resDoc = await ServerDoc.baseOn(base, tx);
-  resDoc.user = tx.user.env.view.id;
+  resDoc.user = tx.userId();
   // document saving
   if (saveMode === 'save' || saveMode === 'post') {
     resDoc.posted = saveMode.toLowerCase() === 'post';
@@ -444,7 +444,7 @@ async function executeCommand(params: ExecuteCommandParams, tx: MSSQL): Promise<
 
   // document saving
   if (saveMode === 'save' || saveMode === 'post') {
-    serverDoc.user = tx.user.env.view.id;
+    serverDoc.user = tx.userId();
     serverDoc.posted = saveMode.toLowerCase() === 'post';
     saveDoc(serverDoc, tx);
   }
@@ -952,7 +952,7 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
     if (attachment.id && attachment.timestamp) ob = await createDocServerById(attachment.id, tx);
     else {
       ob = await createDocServer<CatalogAttachment>('Catalog.Attachment', undefined, tx);
-      if (!userId) userId = tx.user.env.view.id;
+      if (!userId) userId = tx.userId();
       ob.user = userId;
       ob.date = new Date;
       ob.company = (await byId(attachment.owner, tx))!.company;

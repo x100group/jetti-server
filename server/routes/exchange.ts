@@ -5,6 +5,7 @@ import { authHTTP } from './middleware/check-auth';
 import { MSSQL } from '../mssql';
 import { TASKS_POOL } from '../sql.pool.tasks';
 import { IJWTPayload } from 'jetti-middle';
+import { getUser } from './auth';
 
 export const router = Router();
 
@@ -22,12 +23,14 @@ router.post('/login', async (req, res, next) => {
     }
     if (password !== process.env.EXCHANGE_ACCESS_KEY) { return res.status(401).json({ message: 'Auth failed: wrong password' }); }
 
+    const user = await getUser(email);
+
     const payload: IJWTPayload = {
       email,
-      description: 'setka service account',
+      description: user ? user.description : 'exchange',
       isAdmin: true,
       roles: [],
-      env: {},
+      env: { view: { id: user ? user.id : null } },
     };
     const token = jwt.sign(payload, JTW_KEY, { expiresIn: '24h' });
     return res.json({ account: payload, token });

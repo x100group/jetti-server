@@ -51,6 +51,10 @@ export class MSSQL {
     this.user = { email: '', isAdmin: false, env: {}, description: '', roles: [], ...user };
   }
 
+  userId() {
+    return this.user.env.view ? this.user.env.view.id : null;
+  }
+
   private setParams(params: any[], request: Request) {
     for (let i = 0; i < params.length; i++) {
       if (params[i] instanceof Date) {
