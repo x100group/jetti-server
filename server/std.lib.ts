@@ -28,7 +28,7 @@ import { DocumentOperation } from './models/Documents/Document.Operation';
 import { DocumentOperationServer } from './models/Documents/Document.Operation.server';
 import { createRegisterInfo } from './models/Registers/Info/factory';
 import { createFormServer, FormBaseServer } from './models/Forms/form.factory.server';
-import { JEvent } from './fuctions/Event';
+import { Event } from './fuctions/Event';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 export interface FillDocBasedOnParams {
@@ -176,7 +176,7 @@ export interface JTL {
     addId: (id: string, flow: number, taskPoolTX?: MSSQL) => Promise<void>
   };
   log: {
-    newEvent: (init: Partial<JEvent>) => JEvent
+    newEvent: (init: Partial<Event>) => Event
   };
 }
 
@@ -1145,7 +1145,7 @@ function exchangeDB() {
   return new MSSQL(EXCHANGE_POOL);
 }
 
-function newEvent(init: Partial<JEvent>) {
-  return new JEvent(init);
+function newEvent(init: Partial<Event>) {
+  return new Event(init);
 }
 

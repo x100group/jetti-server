@@ -12,7 +12,7 @@ import { Server as SocketIO } from 'socket.io';
 import { createAdapter } from 'socket.io-redis';
 import { RedisClient } from 'redis';
 
-import { REDIS_DB_HOST, REDIS_DB_AUTH, DB_NAME, QUERY_DURATION_LIMIT, API_DURATION_LIMIT } from './env/environment';
+import { REDIS_DB_HOST, REDIS_DB_AUTH, DB_NAME } from './env/environment';
 import { updateDynamicMeta } from './models/Dynamic/dynamic.common';
 import { Global } from './models/global';
 import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
@@ -29,7 +29,7 @@ import { router as userSettings } from './routes/user.settings';
 import { router as form } from './routes/form';
 import { router as bp } from './routes/bp';
 import { router as exchange } from './routes/exchange';
-import { jettiDB, SDB, tasksDB } from './routes/middleware/db-sessions';
+import { jettiDB, tasksDB } from './routes/middleware/db-sessions';
 import * as swaggerDocument from './swagger.json';
 import * as swaggerUi from 'swagger-ui-express';
 
@@ -57,12 +57,12 @@ app.use('/auth', jettiDB, auth);
 app.use('/exchange', jettiDB, exchange);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get('*', (req: Request, res: Response) =>
-  res.status(200).send('Jetti API 1.0.0')
-);
+app.get('*', (req: Request, res: Response) => {
+  res.status(200);
+  res.send('Jetti API 1.0.0');
+});
 
-function errorHandler(err: Error, req: Request, res: Response) {
-  console.log('errorHandler');
+function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
   const errAny = err as any;
   const errText = `${err.message}${errAny.response ? ' Response data: ' + JSON.stringify(errAny.response.data) : ''}`;
   console.error(errText);
@@ -70,15 +70,7 @@ function errorHandler(err: Error, req: Request, res: Response) {
   res.status(status).send(errText);
 }
 
-function apiResponseHandler(err: Error, req: Request, res: Response, next: NextFunction) {
-  console.log('apiResponseHandler');
-  const sdb = SDB(req);
-  if (sdb.event) sdb.event.stop();
-  if (err instanceof Error) errorHandler(err, req, res);
-  else (res.json(err));
-}
-
-app.use(apiResponseHandler);
+app.use(errorHandler);
 
 export const IO = new SocketIO(HTTP, { cors: { origin: '*.*', methods: ['GET', 'POST'] } });
 IO.use(authIO);
@@ -97,11 +89,6 @@ subscriber.subscribe('updateDynamicMeta');
 const port = (process.env.PORT) || '3000';
 HTTP.listen(port, () => console.log(`API running on port: ${port}\nDB: ${DB_NAME}\nCPUs: ${os.cpus().length}`));
 JQueue.getJobCounts().then(jobs => console.log('JOBS:', jobs));
-
-console.log('Exec duration limits:', {
-  MSSQL: QUERY_DURATION_LIMIT ? QUERY_DURATION_LIMIT : ' OFF',
-  API: API_DURATION_LIMIT ? API_DURATION_LIMIT : ' OFF'
-});
 
 Global.init().then(e => {
   if (!Global.isProd) {

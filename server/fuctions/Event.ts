@@ -1,27 +1,23 @@
 import { v4 } from 'uuid';
-import { QUERY_DURATION_LIMIT } from '../env/environment';
 import { MSSQL } from '../mssql';
 import { JETTI_POOL } from '../sql.pool.jetti';
 
-export class JEvent {
+export class Event {
 
     id: string;
-    instance: string;
     date: Date;
     kind: string;
     type: string;
     user: string;
-    durationLimit = 0;
-    info: { [x: string]: any };
-
+    info: { [x: string]: string };
     private _tx: MSSQL;
 
-    static async byId(id: string, tx: MSSQL): Promise<JEvent | null> {
-        const eventData = await tx.oneOrNone<JEvent>(`
+    static async byId(id: string, tx: MSSQL): Promise<Event | null> {
+        const eventData = await tx.oneOrNone<Event>(`
         SELECT * FROM [dbo].[EventsLog]
         WHERE id = @p1
         `, [id]);
-        return eventData ? new JEvent(eventData) : null;
+        return eventData ? new Event(eventData) : null;
     }
 
     beforeStart: () => boolean = () => true;
@@ -32,37 +28,36 @@ export class JEvent {
         return this.date ? (new Date).getTime() - this.date.getTime() : 0;
     }
 
-    constructor(partial?: Partial<JEvent>) {
-        if (partial) Object.keys(partial).forEach(key => this[key] = partial[key]);
-        if (!this.instance) this.instance = v4().toLocaleUpperCase();
+    constructor(partial: Partial<Event>) {
+        for (const key of Object.keys(partial)) {
+            this[key] = partial[key];
+        }
+        if (!this.id) this.id = v4().toLocaleUpperCase();
     }
 
     start(save = false) {
         this.date = new Date;
-        if (save) this.save();
+        if (save) this._save();
     }
 
-    stop(durationLimit: number = 0, info: { [x: string]: any } = {}) {
-        if (!info.error &&
-            ((durationLimit === 0 && this.durationLimit === 0) ||
-                this.duration < (durationLimit || this.durationLimit))) return;
-        this.info = { duration: this.duration, limit: durationLimit || this.durationLimit, ...info };
-        if (info.error) this.kind = 'ERR';
-        this.save();
+    stop(duration?: number) {
+        if (duration && this.duration < duration) return;
+        this._save();
     }
 
-    async save() {
-        if (!this.beforeSave()) return;
-        await this.tx.none(`
-            INSERT INTO [dbo].[EventsLog]([kind],[type],[instance],[user],[info])
+    private async _save() {
+        if (this.beforeSave())
+            await this.tx.none(`
+            INSERT INTO [dbo].[EventsLog]([id],[date],[type],[kind],[user],[info])
             OUTPUT inserted.id
-            VALUES (@p1,@p2,@p3,@p4,@p5)
+            VALUES (@p1,@p2,@p3,@p4,@p5,@p6)
             `,
-            [this.kind || '',
-            this.type || '',
-            this.instance || '',
-            this.user || '',
-            JSON.stringify(this.info || {})]);
+                [this.id,
+                this.date,
+                this.type,
+                this.kind,
+                this.user,
+                JSON.stringify(this.info || {})]);
     }
 
 }

@@ -1,8 +1,7 @@
 import { Connection, Request, ColumnValue, RequestError, ConnectionError, ISOLATION_LEVEL, TYPES } from 'tedious';
 import { Pool } from 'tarn';
-import { ConnectionConfigAndPool, QUERY_DURATION_LIMIT } from './env/environment';
+import { ConnectionConfigAndPool } from './env/environment';
 import { dateReviverUTC } from 'jetti-middle';
-import { JEvent } from './fuctions/Event';
 
 export class SqlPool {
 
@@ -48,7 +47,7 @@ export class SqlPool {
 
 export class MSSQL {
 
-  constructor(private sqlPool: SqlPool, public user?: any, private connection?: Connection, public event?: JEvent) {
+  constructor(private sqlPool: SqlPool, public user?: any, private connection?: Connection) {
     this.user = { email: '', isAdmin: false, env: {}, description: '', roles: [], ...user };
   }
 
@@ -80,26 +79,11 @@ export class MSSQL {
     `;
   }
 
-  private startQueryExecutionEvent() {
-    if (!QUERY_DURATION_LIMIT) return;
-    if (!this.event || this.event! instanceof JEvent) this.event = new JEvent(this.event);
-    if (!this.event.durationLimit) this.event.durationLimit = QUERY_DURATION_LIMIT;
-    if (!this.event.type) this.event.type = 'QUERY';
-    if (!this.event.user) this.event.user = this.userId();
-    this.event.start();
-  }
-
-  private async stopQueryExecutionEvent(info: { [x: string]: any }) {
-    if (!this.event) return;
-    await this.event!.stop(this.event!.durationLimit, info);
-  }
-
   manyOrNone<T>(sql: string, params: any[] = []): Promise<T[]> {
     return (new Promise<T[]>(async (resolve, reject) => {
       try {
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
-          this.stopQueryExecutionEvent({ error, sql, params });
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) { if (!global['isProd']) console.error(error, sql); return reject(error); }
           if (!rowCount) return resolve([]);
@@ -111,7 +95,6 @@ export class MSSQL {
           return resolve(result);
         });
         this.setParams(params, request);
-        this.startQueryExecutionEvent();
         connection.execSql(request);
       } catch (error) { return reject(error); }
     }));
@@ -122,7 +105,6 @@ export class MSSQL {
       try {
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
-          this.stopQueryExecutionEvent({ error, sql, params });
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) { if (!global['isProd']) console.error(error, sql); return reject(error); }
           if (!rowCount) return resolve(null);
@@ -132,7 +114,6 @@ export class MSSQL {
           return resolve(result);
         });
         this.setParams(params, request);
-        this.startQueryExecutionEvent();
         connection.execSql(request);
       } catch (error) { return reject(error); }
     });
@@ -143,7 +124,6 @@ export class MSSQL {
       try {
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
-          this.stopQueryExecutionEvent({ error, sql, params });
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) {
             if (!global['isProd']) console.error(`${error.code}: ${error.message}\n${params}\n${sql}`); return reject(error);
@@ -151,7 +131,6 @@ export class MSSQL {
           return resolve();
         });
         this.setParams(params, request);
-        this.startQueryExecutionEvent();
         connection.execSql(request);
       } catch (error) { return reject(error); }
     });
@@ -162,7 +141,6 @@ export class MSSQL {
       try {
         const connection = this.connection ? this.connection : await this.sqlPool.pool.acquire().promise;
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
-          this.stopQueryExecutionEvent({ error, sql, params });
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) {
             if (!global['isProd']) console.error(`${error.code}: ${error.message}\n${sql}`); return reject(error);
@@ -170,7 +148,6 @@ export class MSSQL {
           return resolve();
         });
         this.setParams(params, request);
-        this.startQueryExecutionEvent();
         connection.execSqlBatch(request);
       } catch (error) { return reject(error); }
     });

@@ -4,8 +4,6 @@ import { ConnectionConfig } from 'tedious';
 dotenv();
 export type ConnectionConfigAndPool = ConnectionConfig & { pool: { min: number, max: number, idleTimeoutMillis: number } };
 
-export const QUERY_DURATION_LIMIT = Number.parseInt(process.env.QUERY_DURATION_LIMIT || '0', 10);
-export const API_DURATION_LIMIT = Number.parseInt(process.env.API_DURATION_LIMIT || '0', 10);
 export const DB_NAME = process.env.DB_NAME!;
 export const REDIS_DB_HOST = process.env.REDIS_DB_HOST!;
 export const REDIS_DB_AUTH = process.env.REDIS_DB_AUTH;
