@@ -184,7 +184,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     LEFT JOIN [dbo].[Catalog.Person.BankAccount.v] bap on bap.id = CashRequests.BankAccountPerson
       where d.id = @p1 and @p2 <> N'Оплата по кредитам и займам полученным'
       AND Amount > 0
-    UNION
+    UNION ALL
       SELECT
 	  cp.description Person,
     '' JobTitle,
