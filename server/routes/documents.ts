@@ -6,7 +6,7 @@ import { DocTypes } from '../models/documents.types';
 import { DocumentOperation } from '../models/Documents/Document.Operation';
 import { lib } from './../std.lib';
 import { List } from './utils/list';
-import { postDocument, insertDocument, updateDocument, unpostDocument, upsertDocument } from './utils/post';
+import { postDocument, unpostDocument, upsertDocument } from './utils/post';
 import { MSSQL } from '../mssql';
 import { SDB } from './middleware/db-sessions';
 import { getIndexedOperationType } from '../models/indexedOperation';
@@ -31,7 +31,11 @@ router.post('/list', async (req: Request, res: Response, next: NextFunction) => 
   try {
     const sdb = SDB(req);
     const params = JSON.parse(JSON.stringify(req.body), dateReviverUTC) as DocListRequestBody;
-    res.json(await List(params, sdb));
+    const result = await List(params, sdb);
+    // next(result);
+    console.log('/list');
+    res.json(result);
+    next();
   } catch (err) { next(err); }
 });
 
@@ -43,7 +47,8 @@ router.post('/baseon', async (req: Request, res: Response, next: NextFunction) =
 
 router.post('/executecommand', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.json(await lib.doc.executeCommand(req.body, SDB(req)));
+    const sdb = SDB(req, { type: 'API', info: { route: 'executecommand', params: req.body } });
+    res.json(await lib.doc.executeCommand(req.body, sdb));
   } catch (err) { next(err); }
 });
 
@@ -193,35 +198,6 @@ router.delete('/:id', async (req: Request, res: Response, next: NextFunction) =>
   } catch (err) { next(err); }
 });
 
-router.post('/deprecated/save', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const sdb = SDB(req);
-    await sdb.tx(async tx => {
-      await lib.util.adminMode(true, tx);
-      try {
-        const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-        if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
-        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-        if (doc.ExchangeBase) {
-          serverDoc['ExchangeBase'] = doc.ExchangeBase;
-          serverDoc['ExchangeCode'] = doc.ExchangeCode;
-        }
-        if (serverDoc.timestamp) {
-          await updateDocument(serverDoc, tx);
-          if (serverDoc.posted && serverDoc.isDoc) {
-            await unpostDocument(serverDoc, tx);
-            await postDocument(serverDoc, tx);
-          }
-        } else {
-          await insertDocument(serverDoc, tx);
-        }
-        res.json((await buildViewModel(serverDoc, tx)));
-      } catch (ex) { throw new Error(ex); }
-      finally { await lib.util.adminMode(false, tx); }
-    });
-  } catch (err) { next(err); }
-});
-
 router.post('/save', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
@@ -261,55 +237,6 @@ router.post('/savepost', async (req: Request, res: Response, next: NextFunction)
         const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
         await unpostDocument(serverDoc, tx);
         await upsertDocument(serverDoc, tx);
-        await postDocument(serverDoc, tx);
-        res.json((await buildViewModel(serverDoc, tx)));
-      } catch (ex) { throw new Error(ex); }
-      finally { await lib.util.adminMode(false, tx); }
-    });
-  } catch (err) { next(err); }
-});
-
-router.post('/deprecated/savepost', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const sdb = SDB(req);
-    await sdb.tx(async tx => {
-      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-      if (doc && doc.deleted) throw new Error('Cant POST deleted document');
-      doc.posted = true;
-      await lib.util.adminMode(true, tx);
-      try {
-        if (!doc.code) doc.code = await lib.doc.docPrefix(doc.type, tx);
-        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-        await unpostDocument(serverDoc, tx);
-        if (serverDoc.timestamp) {
-          await updateDocument(serverDoc, tx);
-        } else {
-          await insertDocument(serverDoc, tx);
-        }
-        await postDocument(serverDoc, tx);
-        res.json((await buildViewModel(serverDoc, tx)));
-      } catch (ex) { throw new Error(ex); }
-      finally { await lib.util.adminMode(false, tx); }
-    });
-  } catch (err) { next(err); }
-});
-
-router.post('/deprecated/post', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const sdb = SDB(req);
-    await sdb.tx(async tx => {
-      const doc: IFlatDocument = JSON.parse(JSON.stringify(req.body), dateReviverUTC);
-      if (doc && doc.deleted) throw new Error('Cant POST deleted document');
-      doc.posted = true;
-      await lib.util.adminMode(true, tx);
-      try {
-        const serverDoc = await createDocumentServer(doc.type as DocTypes, doc, tx);
-        await unpostDocument(serverDoc, tx);
-        if (serverDoc.timestamp) {
-          await updateDocument(serverDoc, tx);
-        } else {
-          await insertDocument(serverDoc, tx);
-        }
         await postDocument(serverDoc, tx);
         res.json((await buildViewModel(serverDoc, tx)));
       } catch (ex) { throw new Error(ex); }
