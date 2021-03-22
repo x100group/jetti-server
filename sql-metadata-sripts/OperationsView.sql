@@ -36,6 +36,7 @@
         , d.[organisationCheck] [organisationCheck]
         , d.[defaultCoockingTime] [defaultCoockingTime]
         , d.[defaultDeliveryTime] [defaultDeliveryTime]
+        , d.[iikoTerminalId] [iikoTerminalId]
       FROM [Operation.AdditionalParametersDepartment.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -150,6 +151,7 @@ GO
         , d.[ProductionCalculated] [ProductionCalculated]
         , d.[startBalance] [startBalance]
         , d.[endBalance] [endBalance]
+        , d.[ErrorCount] [ErrorCount]
       FROM [Operation.CashShifts.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]

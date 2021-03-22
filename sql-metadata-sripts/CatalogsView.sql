@@ -4239,12 +4239,12 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([UserOrGroup.v].description, '') [UserOrGroup.value], d.[UserOrGroup] [UserOrGroup.id], [UserOrGroup.v].type [UserOrGroup.type]
-        , d.[COMP] [COMP]
-        , d.[DEPT] [DEPT]
-        , d.[STOR] [STOR]
-        , d.[CASH] [CASH]
-        , d.[BANK] [BANK]
-        , d.[GROUP] [GROUP]
+        , d.[ExcludeCompanys] [ExcludeCompanys]
+        , d.[ExcludeDepartments] [ExcludeDepartments]
+        , d.[ExcludeStorehouse] [ExcludeStorehouse]
+        , d.[ExcludeCashRegisters] [ExcludeCashRegisters]
+        , d.[ExcludeBankAccounts] [ExcludeBankAccounts]
+        , d.[ExcludeOperationGroups] [ExcludeOperationGroups]
       
         , ISNULL(l5.id, d.id) [UserSettings.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [UserSettings.Level4.id]

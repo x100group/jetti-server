@@ -75,6 +75,10 @@ GO
         , d.[Longitude] [Longitude]
         , d.[Latitude] [Latitude]
         , d.[Slug] [Slug]
+        , d.[GeoCodeName] [GeoCodeName]
+        , d.[DstOffset] [DstOffset]
+        , d.[TimeOffset] [TimeOffset]
+        , d.[TimeZoneId] [TimeZoneId]
       
         , ISNULL(l5.id, d.id) [BusinessRegion.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [BusinessRegion.Level4.id]
