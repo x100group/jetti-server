@@ -249,7 +249,7 @@ async function checkDocumentUnique(serverDoc: DocumentBaseServer, tx: MSSQL) {
   if (!propsKeys.length) return;
 
   const propFilter = {};
-  propsKeys.forEach(e => propFilter[e] = serverDoc[e]);
+  propsKeys.filter(e => serverDoc[e]).forEach(e => propFilter[e] = serverDoc[e]);
 
   const cat = await lib.doc.findDocumentByProps<any>(
     serverDoc.type as AllDocTypes,
