@@ -26,6 +26,7 @@ export interface Ix100Lib {
   };
   doc: {
     startCashReqestAgreement: (cashRequestId: string, tx: MSSQL) => Promise<{ error: boolean, message: string, data: any }>
+    ancestorsParent2: (id: Ref, tx: MSSQL, level?: number) => Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null>;
   };
   info: {
     companyByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
@@ -57,7 +58,8 @@ export const x100: Ix100Lib = {
     counterpartieByINNAndKPP
   },
   doc: {
-    startCashReqestAgreement
+    startCashReqestAgreement,
+    ancestorsParent2
   },
   info: {
     companyByDepartment,
@@ -78,6 +80,19 @@ export const x100: Ix100Lib = {
     x100DataDB
   }
 };
+
+async function ancestorsParent2(id: string, tx: MSSQL, level?: number): Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null> {
+  if (!id) return null;
+  const query = `SELECT id, [parent.id] parent, levelUp as N'level' FROM dbo.[Ancestors2](@p1) WHERE levelUp = @p2 or @p2 is NULL`;
+  let result;
+  if (level || level === 0) {
+    result = await tx.oneOrNone<{ id: Ref, parent: Ref, level: number } | null>(query, [id, level]);
+    if (result) result = result.id;
+  } else {
+    result = await tx.manyOrNone<{ id: Ref, parent: Ref, level: number } | null>(query, [id, null]);
+  }
+  return result;
+}
 
 async function startCashReqestAgreement(cashRequestId: string, tx: MSSQL) {
 
