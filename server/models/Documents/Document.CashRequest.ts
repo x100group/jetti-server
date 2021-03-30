@@ -239,6 +239,7 @@ export class DocumentCashRequest extends DocumentBase {
     hiddenInList: false,
     order: 9,
     isIndexed: true,
+    required: true,
     label: 'Дата платежа',
     style: { width: '100px' }
   })
