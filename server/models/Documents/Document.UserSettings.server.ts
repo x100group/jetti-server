@@ -5,6 +5,74 @@ import { DocumentUserSettings } from './Document.UserSettings';
 import { MSSQL } from '../../mssql';
 import { IServerDocument } from '../documents.factory.server';
 
+export const queryPost = `
+--DECLARE @p1 uniqueidentifier = 'F787EA90-D593-11EA-A56A-0B950F0DDFD1'
+DECLARE @UserOrGroup TABLE ([documents] uniqueidentifier, [type] nvarchar(50), [UserOrGroup] uniqueidentifier)
+DECLARE @ResUserOrGroup TABLE ([document] uniqueidentifier, [User] uniqueidentifier, [AccountAD] nvarchar(50))
+
+DROP TABLE IF EXISTS #CompanyList
+
+INSERT INTO @UserOrGroup
+SELECT DocUserSettings.[id] as [documents]
+,SpravDoc.[type] as [type]
+,docJson.[UserOrGroup]
+FROM [dbo].[Documents] as DocUserSettings
+CROSS APPLY OPENJSON(DocUserSettings.[doc])
+WITH ([UserOrGroup] uniqueidentifier) as docJson
+LEFT JOIN [dbo].[Documents] as SpravDoc on SpravDoc.[id] = docJson.[UserOrGroup]
+WHERE 1=1
+and DocUserSettings.[type] = 'Document.UserSettings'
+and DocUserSettings.[id] = @p1
+
+SELECT DocUserSettings.[id] as "document"
+, CompanyList.[company]
+INTO #CompanyList
+FROM [dbo].[Documents] as DocUserSettings
+CROSS APPLY OPENJSON(JSON_QUERY(DocUserSettings.[doc], '$.CompanyList'))
+WITH ([company] uniqueidentifier) as "CompanyList"
+WHERE 1=1
+and DocUserSettings.[type] = 'Document.UserSettings'
+and DocUserSettings.[id] = @p1
+
+if ((SELECT TOP 1 [type] FROM @UserOrGroup) = 'Catalog.UsersGroup')
+BEGIN
+INSERT INTO @ResUserOrGroup
+SELECT (SELECT TOP 1 [documents] FROM @UserOrGroup) as "document"
+,Users.[User] as "User"
+,CatUser.[code] as "AccountAD"
+FROM [dbo].[documents] as DocUserGroup
+CROSS APPLY OPENJSON(JSON_QUERY(DocUserGroup.[doc], '$.Users'))
+WITH ([User] uniqueidentifier) as Users
+LEFT JOIN [dbo].[Catalog.User.v] as CatUser with (noexpand) on CatUser.[id] = Users.[User]
+where DocUserGroup.[type] = (SELECT TOP 1 [type] FROM @UserOrGroup) and DocUserGroup.[id] = (SELECT TOP 1 [UserOrGroup] FROM @UserOrGroup)
+END
+
+if ((SELECT TOP 1 [type] FROM @UserOrGroup) = 'Catalog.User')
+BEGIN
+INSERT INTO @ResUserOrGroup
+SELECT (SELECT TOP 1 [documents] FROM @UserOrGroup) as "document"
+,DocUser.[id] as "User"
+,CatUser.[code] as "AccountAD"
+FROM [dbo].[documents] as DocUser
+LEFT JOIN [dbo].[Catalog.User.v] as CatUser with (noexpand) on CatUser.[id] = DocUser.[id]
+where DocUser.[type] = (SELECT TOP 1 [type] FROM @UserOrGroup) and DocUser.[id] = (SELECT TOP 1 [UserOrGroup] FROM @UserOrGroup)
+END
+
+DELETE FROM [rls].[company] WHERE [document] = @p1;
+
+SELECT DISTINCT Result.[document]
+,Result.[AccountAD] [user]
+,CompanyList.[company]
+INTO #RLS
+FROM @ResUserOrGroup as Result
+CROSS APPLY (SELECT [document], [company] FROM #CompanyList) as "CompanyList"
+WHERE Result.[document] = @p1;
+
+INSERT INTO rls.[company]([user],[company],[document])
+SELECT [user],[company],[document] FROM #RLS;
+
+SELECT * FROM #RLS;`;
+
 export class DocumentUserSettingsServer extends DocumentUserSettings implements IServerDocument {
 
   async AddDescendantsCompany(tx: MSSQL) {
@@ -65,9 +133,25 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
 
     await lib.util.adminMode(true, tx);
     try {
+      // await this.deleteRLSMovements(tx);
+      const users = await tx.manyOrNone<{user, company, document}>(queryPost, [this.id]);
+      // lib.sys.clearUsersPermissons(Users.map(e => e.id));
+   //   Registers.Info = users.map(user => (new RegisterInfoRLS(user)));
+      return Registers;
+    } catch (ex) { throw new Error(ex); }
+    finally { await lib.util.adminMode(false, tx); }
+  }
+
+
+
+  async _onPost(tx: MSSQL) {
+    const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
+
+    await lib.util.adminMode(true, tx);
+    try {
       await this.deleteRLSMovements(tx);
-      const Users = await tx.manyOrNone<{ code: string }>(`
-        SELECT code FROM  Documents WHERE deleted = 0 AND id IN (
+      const Users = await tx.manyOrNone<{ id: string, code: string }>(`
+        SELECT id, code FROM  Documents WHERE deleted = 0 AND id IN (
           SELECT @p1 id
           UNION ALL
           SELECT [UsersGroup.User] id FROM Documents
@@ -83,14 +167,14 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
         );`, [this.UserOrGroup]
       );
 
+      // lib.sys.clearUsersPermissons(Users.map(e => e.id));
+
       for (const user of Users) {
         for (const row of this.CompanyList) {
           Registers.Info.push(new RegisterInfoRLS({
             company: row.company,
             user: user.code,
           }));
-          // await tx.none(`INSERT INTO [rls].[company]([user],[company],[document]) VALUES(@p1, @p2, @p3)`,
-          //   [user.code, row.company, this.id]);
         }
       }
 
