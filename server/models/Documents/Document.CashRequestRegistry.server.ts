@@ -169,7 +169,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     per.description Person,
     ISNULL(jt.description,'') JobTitle,
     ISNULL(CR.description,'') CashRegister,
-    ISNULL(bap.code,'') BankAccountPerson,
+    ISNULL(bap.description,'') BankAccountPerson,
     Amount
     FROM Documents d
         CROSS APPLY OPENJSON (d.doc, N'$.CashRequests')
@@ -189,7 +189,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 	  cp.description Person,
     '' JobTitle,
     ISNULL(ba.description,'') CashRegister,
-    crb.code BankAccountPerson,
+    crb.description BankAccountPerson,
     Amount
     FROM Documents d
         CROSS APPLY OPENJSON (d.doc, N'$.CashRequests')
