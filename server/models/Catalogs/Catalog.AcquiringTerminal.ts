@@ -12,10 +12,10 @@ export class CatalogAcquiringTerminal extends DocumentBase {
   @Props({ type: 'Catalog.AcquiringTerminal', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.Company', required: true, hiddenInList: false })
+  @Props({ type: 'Catalog.Company', required: true, hiddenInList: false, isProtected: true })
   company: Ref = null;
 
-  @Props({ type: 'Catalog.BankAccount', required: true })
+  @Props({ type: 'Catalog.BankAccount', required: true, isProtected: true })
   BankAccount: Ref = null;
 
   @Props({ type: 'Catalog.Counterpartie', required: true })

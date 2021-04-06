@@ -11,14 +11,20 @@ import { insertDocument, upsertDocument } from '../../routes/utils/post';
 import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
 import { DocumentOperation } from './Document.Operation';
 import { Ref } from 'jetti-middle';
-
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
-    return this;
+  async getDynamicModule(tx: MSSQL) {
+    const dynamicModule = await lib.doc.byId('8F58AE90-963C-11EB-B245-F3054AA54AB9', tx);
+    return new Function('', dynamicModule!['module']).bind(this)();
   }
 
   async onCommand(command: string, args: any, tx: MSSQL) {
+    const dynamicModule = await this.getDynamicModule(tx);
+    if (dynamicModule[command]) {
+      await dynamicModule[command](this, tx);
+      return this;
+    }
+
     switch (command) {
       case 'Fill':
         await this.Fill(tx);
@@ -233,7 +239,6 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     return [
       'Прочий расход ДС',
       'Возврат оплаты клиенту',
-      'Перемещение ДС',
       'Внутренний займ'
     ];
   }
@@ -242,20 +247,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     if (this.Status !== 'PREPARED') throw new Error(`Filling is possible only in the PREPARED document!`);
     if (this.unsupportedOperations().indexOf(this.Operation) !== -1) throw new Error(`Unsupported operation type ${this.Operation}`);
     let query = '';
-    // let salaryProject: any;
     const isCashSalary = this.Operation === 'Выплата заработной платы (наличные)';
-    // if (isCashSalary) {
-    //   query = `
-    //   SELECT TOP 1 id
-    //   FROM dbo.[Catalog.SalaryProject.v]
-    //   WHERE currency = @p1
-    //   and company = @p2
-    //   and deleted = 0`;
-    //   salaryProject = await tx.oneOrNone<{ id: string }>(query, [this.сurrency, this.company]);
-    //   if (!salaryProject) throw new Error(`Не найден зарплатный проект по организации и валюте `);
-    //   salaryProject = salaryProject.id;
-    // }
-
     this.CashRequests = [];
     query = `
     DROP TABLE IF EXISTS #CashRequestBalance;

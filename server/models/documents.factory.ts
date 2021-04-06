@@ -116,7 +116,10 @@ export function createDocument<T extends DocumentBase>(type: string, document?: 
     result.Props = () => ({ ...Props });
     result.Prop = () => ({ ...docMeta!.Prop() });
     result.type = type;
+
     if (!document && !result.date) result.date = new Date;
+    if (docMeta?.modules?.server) result['serverModuleProto'] = docMeta?.modules?.server;
+
   } else {
     const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
     ArrayProps.forEach(prop => result[prop].length = 0);

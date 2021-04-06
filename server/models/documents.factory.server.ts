@@ -25,6 +25,7 @@ import { CatalogLoanServer } from './Catalogs/Catalog.Loan.server';
 import { Ref, DocumentBase, IFlatDocument, DocumentOptions, RefValue, calculateDescription } from 'jetti-middle';
 import { CatalogUserServer } from './Catalogs/Catalog.User.server';
 import { CatalogOperationTypeServer } from './Catalogs/Catalog.Operation.Type.server';
+import { CatalogUsersGroupServer } from './Catalogs/Catalog.UsersGroup.server';
 
 export interface IServerDocument {
 
@@ -63,6 +64,7 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
   { type: 'Catalog.ProductKind', Class: CatalogProductKindServer },
   { type: 'Catalog.Product', Class: CatalogProductServer },
   { type: 'Catalog.ProductCategory', Class: CatalogProductCategoryServer },
+  { type: 'Catalog.UsersGroup', Class: CatalogUsersGroupServer },
   { type: 'Catalog.User', Class: CatalogUserServer },
   { type: 'Document.Operation', Class: DocumentOperationServer },
   { type: 'Document.Invoice', Class: DocumentInvoiceServer },
@@ -91,6 +93,14 @@ export async function createDocumentServer<T extends DocumentBaseServer>
   if (result.selfCreated && await result.selfCreated(tx, document)) return result;
 
   result['serverModule'] = {};
+
+  if (result['serverModuleProto']) {
+    const func = new Function('tx', result['serverModuleProto']);
+    result['serverModule'] = func.bind(result, tx)() || {};
+    const onCreate: (tx: MSSQL) => Promise<T> = result['serverModule']['onCreate'];
+    if (typeof onCreate === 'function') await onCreate(tx);
+    delete result['serverModuleProto'];
+  }
 
   const Props = Object.assign({}, result.Props());
   const Prop = { ...result.Prop() as DocumentOptions };

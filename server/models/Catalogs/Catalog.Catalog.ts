@@ -41,8 +41,11 @@ export class CatalogCatalog extends DocumentBase {
   @Props({ type: 'enum', value: ['folders', 'elements', 'none'], required: true })
   hierarchy = 'none';
 
-  @Props({ type: 'javascript', hiddenInList: true, style: { height: '50vh' }, panel: 'Module' })
-  module = '';
+  @Props({ type: 'javascript', hiddenInList: true, style: { height: '50vh' }, panel: 'Client module' })
+  moduleClient = '';
+
+  @Props({ type: 'javascript', hiddenInList: true, style: { height: '50vh' }, panel: 'Server module' })
+  moduleServer = '';
 
   @Props({ type: 'table' })
   Parameters: Parameter[] = [new Parameter()];

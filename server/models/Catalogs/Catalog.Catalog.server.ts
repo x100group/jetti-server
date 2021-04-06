@@ -81,7 +81,13 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
   async beforeDelete(tx: MSSQL) { return this; }
 
   async getDynamicMetadata(): Promise<IDynamicProps> {
-    return { type: this.typeString, Prop: await this.getProp(), Props: await this.getProps() };
+    return {
+      type: this.typeString,
+      Prop: await this.getProp(),
+      Props: await this.getProps(),
+      model: this.id,
+      modules: { client: this.moduleClient, server: this.moduleServer }
+    };
   }
 
   async getProp(): Promise<Function> {
@@ -93,7 +99,7 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
         res['type'] = dimension.type;
         return res;
       };
-      const props = {
+      return {
         type: this.typeString as DocTypes,
         description: this.description,
         presentation: this.presentation as any,
@@ -101,13 +107,12 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
         menu: this.menu,
         prefix: this.prefix,
         hierarchy: this.hierarchy === 'none' ? undefined : this.hierarchy as any,
-        module: this.module,
+        module: this.moduleClient,
         dimensions: this.dimensions ? this.dimensions.map(e => mapDimension(e)) : [] as any,
         relations: this.relations as any || [],
         copyTo: this.CopyTo as any || [],
         commands: this.commandsOnServer as any
       };
-      return props;
     };
 
   }

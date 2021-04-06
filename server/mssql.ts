@@ -268,7 +268,9 @@ export class MSSQL {
   async metaSequenceCreate(name: string, startWith = 0) {
     if (!name) return `Sequence name is not defined`;
     if (await this.metaSequenceByName(name)) return `Sequence "${name}" is exist`;
-    await this.none(`CREATE SEQUENCE [dbo].[${name}] START WITH ${startWith}`);
+    await this.none(
+      `CREATE SEQUENCE [dbo].[${name}] START WITH ${startWith};
+       GRANT UPDATE ON [dbo].[${name}] TO ${this.sqlPool.config.authentication?.options.userName}`);
     return '';
   }
 

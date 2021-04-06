@@ -129,20 +129,13 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
   }
 
   async onPost(tx: MSSQL) {
-    const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
-
     await lib.util.adminMode(true, tx);
     try {
-      // await this.deleteRLSMovements(tx);
-      const users = await tx.manyOrNone<{user, company, document}>(queryPost, [this.id]);
-      // lib.sys.clearUsersPermissons(Users.map(e => e.id));
-   //   Registers.Info = users.map(user => (new RegisterInfoRLS(user)));
-      return Registers;
+      await tx.none(`EXECUTE [dbo].[UserSettings.Update.RLS]'${this.id}'`);
+      return { Account: [], Accumulation: [], Info: [] };
     } catch (ex) { throw new Error(ex); }
     finally { await lib.util.adminMode(false, tx); }
   }
-
-
 
   async _onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };

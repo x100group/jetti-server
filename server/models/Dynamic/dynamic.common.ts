@@ -16,6 +16,8 @@ export interface IDynamicProps {
     type: string;
     Prop: Function;
     Props: Function;
+    model?: string;
+    modules?: { client: string, server: string };
 }
 
 export interface IDynamicMetadata {
