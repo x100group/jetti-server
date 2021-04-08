@@ -24,7 +24,10 @@ export class CatalogDepartmentCompany extends DocumentBase {
   @Props({ type: 'boolean', hidden: false, hiddenInList: true, order: 6, isIndexed: true })
   isfolder = false;
 
-  @Props({ type: 'enum', value: ['COMPANY', 'DEPARTMENT', 'NETWORK', 'REGION', 'BRANCH', 'SALEPOINT', 'NONE'], useIn: 'all' })
+  @Props({
+    type: 'enum', useIn: 'all',
+    value: ['COMPANY', 'DEPARTMENT', 'UNIT', 'NETWORK', 'REGION', 'GROUP', 'TEAM', 'BRANCH', 'SALEPOINT', 'NONE']
+  })
   kind = 'NONE';
 
   @Props({
