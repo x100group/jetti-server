@@ -26,7 +26,7 @@ export class CatalogDepartmentCompany extends DocumentBase {
 
   @Props({
     type: 'enum', useIn: 'all',
-    value: ['COMPANY', 'DEPARTMENT', 'UNIT', 'NETWORK', 'REGION', 'GROUP', 'TEAM', 'BRANCH', 'SALEPOINT', 'NONE']
+    value: ['COMPANY', 'DEPARTMENT', 'DIRECTION', 'UNIT', 'NETWORK', 'REGION', 'GROUP', 'TEAM', 'BRANCH', 'SALEPOINT', 'NONE']
   })
   kind = 'NONE';
 
