@@ -7,7 +7,7 @@ import { JRegisterInfo, RegisterInfo } from 'jetti-middle';
 })
 export class RegisterInfoEmploymentType extends RegisterInfo {
 
-  @Props({ type: 'enum', value: ['MAIN', 'INTERNAL', 'EXTERNAL', 'DELEGATE'] })
+  @Props({ type: 'enum', value: ['MAIN', 'INTERNAL', 'EXTERNAL', 'DELEGATE', 'REPLACE'] })
   EmploymentType = '';
 
   @Props({ type: 'Catalog.Employee' })
