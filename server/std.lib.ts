@@ -29,6 +29,7 @@ import { DocumentOperationServer } from './models/Documents/Document.Operation.s
 import { createRegisterInfo } from './models/Registers/Info/factory';
 import { createFormServer, FormBaseServer } from './models/Forms/form.factory.server';
 import { Event } from './fuctions/Event';
+import { JETTI_POOL_META } from './sql.pool.meta';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 export interface FillDocBasedOnParams {
@@ -735,7 +736,7 @@ async function executePOSTRequest(opts: { url: string, data: any, config?: any }
 }
 
 async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
-  if (!tx) tx = getAdminTX();
+  if (!tx) tx = metaPoolTx();
   const queries = [
     ...SQLGenegatorMetadata.CreateViewCatalogIndex(type, withSecurityPolicy, true),
     ...SQLGenegatorMetadata.CreateViewCatalog(type, true)
@@ -836,6 +837,10 @@ export function getAdminTX(): MSSQL {
 
 function jettiPoolTx(): MSSQL {
   return new MSSQL(JETTI_POOL);
+}
+
+function metaPoolTx(): MSSQL {
+  return new MSSQL(JETTI_POOL_META);
 }
 
 async function insertQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRow> {
