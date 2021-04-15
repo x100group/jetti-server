@@ -21,5 +21,8 @@ export class CatalogCountry extends DocumentBase {
   PhoneCode = '';
 
   @Props({ type: 'string' })
+  MobilePhoneMask = '';
+
+  @Props({ type: 'string' })
   Language = '';
 }
