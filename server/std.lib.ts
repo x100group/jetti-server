@@ -754,7 +754,7 @@ async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy
 async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
   const indexedOperation = getIndexedOperationById(id);
   if (!indexedOperation) throw new Error(`Operation ${id} is not indexed`);
-  if (!tx) tx = getAdminTX();
+  if (!tx) tx = metaPoolTx();
   const queries = [
     ...await SQLGenegatorMetadata.CreateViewOperationIndex(indexedOperation, tx, true, withSecurityPolicy),
     ...await SQLGenegatorMetadata.CreateViewOperation(indexedOperation, true)
