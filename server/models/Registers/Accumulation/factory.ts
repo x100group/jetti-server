@@ -24,6 +24,7 @@ import { RegisterAccumulationBalanceRC } from './Balance.RC';
 import { RegisterAccumulationPLRC } from './PL.RC';
 import { RegisterAccumulationInvestmentAnalytics } from './Investment.Analytics';
 import { RegisterAccumulationEmployeeTimekeeping } from './EmployeeTimekeeping';
+import { RegisterAccumulationCharityAnalytic } from './CharityAnalytic';
 
 export type RegisterAccumulationTypes =
   'Register.Accumulation.AccountablePersons' |
@@ -49,6 +50,7 @@ export type RegisterAccumulationTypes =
   'Register.Accumulation.Salary' |
   'Register.Accumulation.Depreciation' |
   'Register.Accumulation.CashToPay' |
+  'Register.Accumulation.CharityAnalytic' |
   'Register.Accumulation.StaffingTable' |
   'Register.Accumulation.BudgetItemTurnover';
 
@@ -75,6 +77,7 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.Salary', Class: RegisterAccumulationSalary },
   { type: 'Register.Accumulation.Depreciation', Class: RegisterAccumulationDepreciation },
   { type: 'Register.Accumulation.CashToPay', Class: RegisterAccumulationCashToPay },
+  { type: 'Register.Accumulation.CharityAnalytic', Class: RegisterAccumulationCharityAnalytic },
   { type: 'Register.Accumulation.BudgetItemTurnover', Class: RegisterAccumulationBudgetItemTurnover },
   { type: 'Register.Accumulation.Intercompany', Class: RegisterAccumulationIntercompany },
   { type: 'Register.Accumulation.Acquiring', Class: RegisterAccumulationAcquiring },
