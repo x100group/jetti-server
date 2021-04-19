@@ -110,8 +110,8 @@ export function createDocument<T extends DocumentBase>(type: string, document?: 
     const Props = docMeta!.Props();
     Object.keys(Props)
       .forEach(propName => {
-        const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'value');
-        result[propName] = defVal || defaultTypeValue(Props[propName].type);
+        const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'default');
+        result[propName] = defVal ? Props[propName].default : defaultTypeValue(Props[propName].type);
       });
     result.Props = () => ({ ...Props });
     result.Prop = () => ({ ...docMeta!.Prop() });
