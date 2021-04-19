@@ -3,7 +3,7 @@ import { IDeleteTaskParams, IGetTaskParams, execQueueAPIPostRequest } from './mo
 import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
 import { getUserPermissions } from './fuctions/UsersPermissions';
-import { configSchema } from './models/config';
+import { configSchema, IConfigSchema } from './models/config';
 import {
   DocumentBase, Ref, IFlatDocument, INoSqlDocument, RefValue, RegisterAccumulation,
   Type, RegisterInfo, PropOptions, RegisterAccumulationOptions
@@ -131,7 +131,8 @@ export interface JTL {
     updateSQLViewsByOperationId: (id: string, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
     riseUpdateMetadataEvent: () => void,
     propsByType: (type: string, operation?: string, tx?: MSSQL) => Promise<{ [x: string]: PropOptions }>,
-    propByType: (type: string, operation?: string, tx?: MSSQL) => Promise<PropOptions | RegisterAccumulationOptions>
+    propByType: (type: string, operation?: string, tx?: MSSQL) => Promise<PropOptions | RegisterAccumulationOptions>,
+    config: () => Map<string, IConfigSchema>
   };
   util: {
     // tslint:disable-next-line: max-line-length
@@ -222,7 +223,8 @@ export const lib: JTL = {
     updateSQLViewsByOperationId,
     riseUpdateMetadataEvent,
     propsByType,
-    propByType
+    propByType,
+    config
   },
   info: {
     sliceLast,
@@ -277,6 +279,10 @@ export const lib: JTL = {
     newEvent
   }
 };
+
+function config() {
+  return configSchema();
+}
 
 async function GUID(): Promise<string> {
   return v1().toLocaleUpperCase();

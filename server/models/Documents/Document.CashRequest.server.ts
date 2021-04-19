@@ -153,7 +153,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     return lib.util.isRoleAvailable('Cash request admin', tx.user);
   }
 
-  async doCheckTaxCheck(tx: MSSQL) {
+  async dontCheckTaxCheck(tx: MSSQL) {
     return lib.util.isRoleAvailable('Dont check tax check', tx.user);
   }
 
@@ -416,7 +416,7 @@ ORDER BY
   }
 
   async checkTaxCheck(tx: MSSQL): Promise<string> {
-    if (!this.doCheckTaxCheck(tx)) return '';
+    if (this.dontCheckTaxCheck(tx)) return '';
     const q = `
     select
       document,
