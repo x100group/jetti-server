@@ -30,6 +30,7 @@ import { createRegisterInfo } from './models/Registers/Info/factory';
 import { createFormServer, FormBaseServer } from './models/Forms/form.factory.server';
 import { Event } from './fuctions/Event';
 import { JETTI_POOL_META } from './sql.pool.meta';
+import * as xml2js from 'xml2js';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 export interface FillDocBasedOnParams {
@@ -163,7 +164,8 @@ export interface JTL {
     executePOSTRequest: (opts: { url: string, data: any, config?: any }) => Promise<any>,
     isEqualObjects: (object1: Object, object2: Object) => boolean,
     decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string,
-    converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string
+    converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string,
+    xmlStringToJSON: (xml: string) => Promise<string>
   };
   queue: {
     insertQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
@@ -262,6 +264,7 @@ export const lib: JTL = {
     isEqualObjects,
     decodeBase64StringAsUTF8,
     converStringEncoding,
+    xmlStringToJSON
   },
   queue: {
     insertQueue,
@@ -835,6 +838,10 @@ function decodeBase64StringAsUTF8(string: string, encodingIn: string): string {
 function converStringEncoding(string: string, encodingIn: string, ecnodingOut: string) {
   const buff = Buffer.from(string, encodingIn as any);
   return iconv.decode(buff, ecnodingOut).toString();
+}
+
+async function xmlStringToJSON(xml: string): Promise<string> {
+  return await xml2js.parseStringPromise(xml);
 }
 
 export function getAdminTX(): MSSQL {

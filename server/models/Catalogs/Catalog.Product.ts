@@ -91,8 +91,8 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'string', order: 666, useIn: 'all', hiddenInList: true })
   Composition = '';
 
-  @Props({ type: 'enum', order: 666, value: ['kitchen', 'outlet'], useIn: 'all' })
-  CookingPlace = 'kitchen';
+  @Props({ type: 'enum', order: 666, useIn: 'all', value: ['0 - Упаковка (Outlet)', '1 - Холодный цех (Cold shop)', '2 - Горячий цех (Hot shop)'] })
+  CookingPlace = '';
 
   @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
   Order = 0;
