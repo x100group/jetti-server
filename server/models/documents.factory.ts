@@ -86,7 +86,6 @@ import { CatalogOrderSource } from './Catalogs/Catalog.OrderSource';
 import { CatalogInvestorGroup } from './Catalogs/Catalog.InvestorGroup';
 import { CatalogAttachment } from './Catalogs/Catalog.Attachment';
 import { CatalogStaffingTable } from './Catalogs/Catalog.StaffingTable';
-import { CatalogAllUnicLot } from './Catalogs/Catalog.AllUnic.Lot';
 import { CatalogManufactureLocation } from './Catalogs/Catalog.ManufactureLocation';
 import { CatalogProductAnalytic } from './Catalogs/Catalog.Product.Analytic';
 import { CatalogDepartmentCompany } from './Catalogs/Catalog.Department.Company';
@@ -145,7 +144,6 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.Dynamic', Class: CatalogDynamic },
   { type: 'Catalog.Attachment', Class: CatalogAttachment },
   { type: 'Catalog.Attachment.Type', Class: CatalogAttachmentType },
-  { type: 'Catalog.AllUnic.Lot', Class: CatalogAllUnicLot },
   { type: 'Catalog.Account', Class: CatalogAccount },
   { type: 'Catalog.Balance', Class: CatalogBalance },
   { type: 'Catalog.BusinessCalendar', Class: CatalogBusinessCalendar },
