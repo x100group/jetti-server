@@ -7,10 +7,10 @@ import { JRegisterInfo, RegisterInfo } from 'jetti-middle';
 })
 export class RegisterInfoIntl extends RegisterInfo {
 
-  @Props({ type: 'Types.Catalog', required: true, dimension: true })
+  @Props({ type: 'Types.Catalog', required: true, dimension: true, isIndexed: true })
   Catalog: Ref = null;
 
-  @Props({ type: 'string', required: true, dimension: true })
+  @Props({ type: 'string', required: true, dimension: true, isIndexed: true })
   Property = '';
 
   @Props({ type: 'string', required: true, dimension: true })
