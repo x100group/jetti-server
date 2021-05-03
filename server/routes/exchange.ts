@@ -120,16 +120,26 @@ router.post('/v1.0/queue', authHTTP, async (req: Request, res: Response, next: N
 
 router.post('/v1.1/queue', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const sdba = new MSSQL(TASKS_POOL,
-      { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
-    await sdba.none(`
+
+    const insertRow = async (row) => {
+      await sdba.none(`
       INSERT INTO [exc].[Queue]([type],[doc],[ExchangeCode],[ExchangeBase])
       VALUES (@p4, JSON_QUERY(@p1), @p2, @p3)`,
-      [JSON.stringify(req.body),
-      req.body.ExchangeCode || null,
-      req.body.ExchangeBase || null,
-      req.body.DataType || 'Queue_v1.1']
-    );
+        [JSON.stringify(row),
+        row.ExchangeCode || null,
+        row.ExchangeBase || null,
+        row.DataType || 'Queue_v1.1']
+      );
+    };
+
+    const sdba = new MSSQL(TASKS_POOL,
+      { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
+
+    if (Array.isArray(req.body))
+      await Promise.all(req.body.map(row => insertRow(row)));
+    else
+      await insertRow(req.body);
+
     return res.json(200);
   } catch (err) { next(err); }
 });
