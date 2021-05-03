@@ -136,11 +136,11 @@ router.post('/v1.1/queue', authHTTP, async (req: Request, res: Response, next: N
       { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
 
     if (Array.isArray(req.body))
-      await Promise.all(req.body.map(row => insertRow(row)));
+      while (req.body.length)
+        await Promise.all(req.body.splice(0, 10).map(row => insertRow(row)));
     else
       await insertRow(req.body);
 
     return res.json(200);
   } catch (err) { next(err); }
 });
-
