@@ -225,7 +225,9 @@ export async function adminMode(mode: boolean, tx: MSSQL) {
 }
 
 async function beforeSaveDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
+
   if (!tx.user.disableChecks) {
+    await checkCommonDataValidity(serverDoc);
     await checkDocumentUnique(serverDoc, tx);
     await checkProtectedPropsModify(serverDoc, tx);
   }
@@ -239,6 +241,11 @@ async function afterSaveDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
   const afterSave: (tx: MSSQL) => Promise<DocumentBaseServer> = serverDoc['serverModule']['afterSave'];
   if (typeof afterSave === 'function') await afterSave(tx);
   if (serverDoc.afterSave) await serverDoc.afterSave(tx);
+}
+
+async function checkCommonDataValidity(serverDoc: DocumentBaseServer) {
+  if (Type.isCatalog(serverDoc.type) && serverDoc.parent && serverDoc.parent === serverDoc.id)
+    throw new Error(`An object cannot be a parent of itself`);
 }
 
 async function checkDocumentUnique(serverDoc: DocumentBaseServer, tx: MSSQL) {

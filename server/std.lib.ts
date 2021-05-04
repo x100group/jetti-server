@@ -425,7 +425,7 @@ async function fillDocBasedOn(params: FillDocBasedOnParams, tx: MSSQL): Promise<
   // document saving
   if (saveMode === 'save' || saveMode === 'post') {
     resDoc.posted = saveMode.toLowerCase() === 'post';
-    saveDoc(resDoc, tx);
+    await saveDoc(resDoc, tx);
   }
   return noSqlDocument(resDoc);
 }
@@ -456,7 +456,7 @@ async function executeCommand(params: ExecuteCommandParams, tx: MSSQL): Promise<
   if (saveMode === 'save' || saveMode === 'post') {
     serverDoc.user = tx.userId();
     serverDoc.posted = saveMode.toLowerCase() === 'post';
-    saveDoc(serverDoc, tx);
+    await saveDoc(serverDoc, tx);
   }
   return noSqlDocument(serverDoc);
 }
