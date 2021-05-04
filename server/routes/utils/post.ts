@@ -245,7 +245,7 @@ async function afterSaveDocument(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
 async function checkCommonDataValidity(serverDoc: DocumentBaseServer) {
   if (Type.isCatalog(serverDoc.type) && serverDoc.parent && serverDoc.parent === serverDoc.id)
-    throw new Error(`An object cannot be a parent of itself`);
+    throw new Error(`beforeSave: "${serverDoc.description || serverDoc.id}" cannot be a parent of itself`);
 }
 
 async function checkDocumentUnique(serverDoc: DocumentBaseServer, tx: MSSQL) {
