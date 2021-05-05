@@ -1111,7 +1111,7 @@ async function getUserRoles(user: CatalogUser): Promise<string[]> {
 }
 
 async function isRoleAvailable(role: string, tx: MSSQL): Promise<boolean> {
-  return tx && tx.user && tx.user.roles && tx.user.roles && tx.user.roles.includes(role);
+  return tx && tx.user && tx.user.roles && tx.user.roles.length && tx.user.roles.includes(role);
 }
 
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {
