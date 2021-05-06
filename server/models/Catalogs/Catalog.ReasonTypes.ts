@@ -15,7 +15,7 @@ export class CatalogReasonTypes extends DocumentBase {
   @Props({ type: 'boolean' })
   WriteOff = false;
 
-  @Props({ type: 'Catalog.ExpenseOrIncome' })
+  @Props({ type: 'Types.ExpenseOrIncome' })
   Expense: Ref = null;
 
   @Props({ type: 'Catalog.Expense.Analytics', owner: [{ dependsOn: 'Expense', filterBy: 'parent' }] })

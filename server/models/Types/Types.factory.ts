@@ -76,7 +76,7 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.Subcount', Class: TypesSubcount },
   { type: 'Types.Object', Class: TypesObject },
   { type: 'Types.ExpenseOrBalanceOrIncome', Class: TypesExpenseOrBalanceOrIncome },
-  { type: 'Types.TypesExpenseOrIncome', Class: TypesExpenseOrIncome },
+  { type: 'Types.ExpenseOrIncome', Class: TypesExpenseOrIncome },
   { type: 'Types.CashOrBank', Class: TypesCashOrBank },
   { type: 'Types.CashRecipient', Class: TypesCashRecipient },
   { type: 'Types.UserOrGroup', Class: TypesUserOrGroup },
