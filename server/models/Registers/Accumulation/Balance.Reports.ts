@@ -24,6 +24,12 @@ export class RegisterAccumulationBalanceReport extends RegisterAccumulation {
   @Props({ type: 'Types.Catalog', dimension: true })
   Analytics3: Ref = null;
 
+  @Props({ type: 'Types.Catalog', dimension: true })
+  Analytics4: Ref = null;
+
+  @Props({ type: 'Types.Catalog', dimension: true })
+  Analytics5: Ref = null;
+
   @Props({ type: 'number', resource: true })
   Amount = 0;
 
