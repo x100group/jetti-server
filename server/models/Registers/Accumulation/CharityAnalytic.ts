@@ -1,4 +1,3 @@
-import { AllDocTypes, CatalogTypes } from './../../documents.types';
 import { Props, Ref } from 'jetti-middle';
 import { JRegisterAccumulation, RegisterAccumulation } from 'jetti-middle';
 

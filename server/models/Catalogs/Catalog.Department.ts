@@ -77,7 +77,7 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.Brand' })
   Brand: Ref = null;
 
-  @Props({ type: 'Catalog.RetailNetwork' })
+  @Props({ type: 'Catalog.RetailNetwork', required: true })
   RetailNetwork: Ref = null;
 
   @Props({ type: 'Catalog.Department.Kind', required: true, isProtected: true })
