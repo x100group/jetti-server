@@ -52,7 +52,7 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' } })
   company: Ref = null;
 
-  @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'REJECTED'] })
+  @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'PAID', 'REJECTED'] })
   Status = 'PREPARED';
 
   @Props({

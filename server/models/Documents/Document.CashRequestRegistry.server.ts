@@ -159,7 +159,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   }
 
   private async UnloadToText(tx: MSSQL) {
-    if (this.Status !== 'APPROVED') throw new Error(`${this.description} выгрузка возможна только в документе со статусом "APPROVED"!`);
+    if (!['APPROVED', 'PAID'].includes(this.Status)) throw new Error(`${this.description} выгрузка возможна только в документе со статусом "APPROVED" или "PAID"!`);
     const Operations = this.CashRequests.filter(c => (c.LinkedDocument)).map(c => (c.LinkedDocument));
     this.info = await BankStatementUnloader.getBankStatementAsString(Operations, tx);
     this.BankUploadDate = new Date as any;
@@ -168,7 +168,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   }
 
   private async ExportSalaryToCSV(tx: MSSQL) {
-    if (this.Status !== 'APPROVED') throw new Error(`Possible only in the APPROVED document!`);
+    if (!['APPROVED', 'PAID'].includes(this.Status)) throw new Error(`Possible only in the APPROVED or PAID document!`);
     // if (this.Operation !== 'Выплата заработной платы (наличные)') throw new Error(`Доступно только для операции "Выплата заработной платы (наличные)"`);
     const query = `
     SELECT
@@ -398,7 +398,7 @@ HAVING SUM(Balance.[Amount]) > 0;
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
 
-    if (this.Status === 'REJECTED' || this.Status === 'APPROVED') return Registers;
+    if (['REJECTED', 'APPROVED', 'PAID'].includes(this.Status)) return Registers;
 
     for (const row of this.CashRequests
       .filter(c => (c.AmountRequest > 0 || c.Amount > 0) && !c.LinkedDocument)) {
