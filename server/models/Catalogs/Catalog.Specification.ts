@@ -41,7 +41,7 @@ export class CatalogSpecification extends DocumentBase {
   @Props({ type: 'table', required: false, label: 'Выходные изделия' })
   OutputProducts: OutputProduct[] = [new OutputProduct()];
 
-  @Props({ type: 'table', required: false, label: 'Ингридиенты' })
+  @Props({ type: 'table', required: false, label: 'Ингредиенты' })
   Ingridients: Ingridient[] = [new Ingridient()];
 
 }
@@ -61,7 +61,7 @@ export class OutputProduct {
 
 export class Ingridient {
 
-  @Props({ type: 'Catalog.Product', label: 'Ингридиент', style: { width: '300px' } })
+  @Props({ type: 'Catalog.Product', label: 'Ингредиент', style: { width: '300px' } })
   Ingridient: Ref = null;
 
   @Props({ type: 'number', label: 'Количество (вход)' })
