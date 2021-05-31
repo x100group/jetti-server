@@ -17,11 +17,14 @@ import {
 } from 'jetti-middle';
 import { createDocument } from '../models/documents.factory';
 import { FormListSettings } from 'jetti-middle/dist/common/classes/form-list';
+import { userContextFilter } from '../fuctions/filterBuilder';
 
 export const router = express.Router();
 
 export async function buildViewModel<T>(ServerDoc: DocumentBase, tx: MSSQL) {
-  const viewModelQuery = SQLGenegator.QueryObjectFromJSON(ServerDoc.Props());
+  let viewModelQuery = SQLGenegator.QueryObjectFromJSON(ServerDoc.Props());
+  const contextFilter = userContextFilter(tx.userContext, `d.company`);
+  if (contextFilter) viewModelQuery += ` WHERE (1=1) ${contextFilter}`;
   const NoSqlDocument = JSON.stringify(lib.doc.noSqlDocument(ServerDoc));
   return await tx.oneOrNone<T>(viewModelQuery, [NoSqlDocument]);
 }

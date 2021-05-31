@@ -1,7 +1,7 @@
 import { configSchema } from './../../models/config';
 import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
-import { filterBuilder } from '../../fuctions/filterBuilder';
+import { filterBuilder, userContextFilter } from '../../fuctions/filterBuilder';
 import { DocListRequestBody, DocListResponse, FormListFilter, DocumentBase } from 'jetti-middle';
 
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
@@ -23,7 +23,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
       const ancestorsId = ancestors.filter(el => el.parent !== parent).map(e => '\'' + e.id + '\'').join();
       queryText = `${queryText} UNION SELECT * FROM (${queryList}) d WHERE id IN (${ancestorsId})`;
     }
-    queryText = queryText + 'ORDER BY description';
+    queryText += `${userContextFilter(tx.userContext, `"company.id"`)} ORDER BY description`;
     const folders = await tx.manyOrNone(queryText, [parent]);
     // elements
     const deletedFilter = params.filter.find(e => e.left === 'deleted');
@@ -69,6 +69,8 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   orderbyAfter = orderbyAfter.slice(0, -2);
 
   valueOrder = valueOrder.filter(el => !(el.value === null || el.value === undefined));
+  const queryFilter = filterBuilder(params.filter);
+  queryFilter.where += userContextFilter(tx.userContext, params.type === 'Catalog.Company' ? 'd.id' : `"company.id"`);
 
   const queryBuilder = (isAfter: boolean) => {
     if (valueOrder.length === 0) return '';
@@ -76,7 +78,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     const dir = lastORDER ? isAfter ? '>' : '<' : isAfter ? '<' : '>';
     let queryBuilderResult = `
       SELECT TOP ${params.count + 1} id FROM (${QueryList}) d
-      WHERE ${(filterBuilder(params.filter).where)} AND (`;
+      WHERE ${queryFilter.where} AND (`;
 
     valueOrder.forEach(_or => {
       let where = '(';
@@ -96,7 +98,6 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     return queryBuilderResult;
   };
 
-  const queryFilter = filterBuilder(params.filter);
   const queryBefore = queryBuilder(false);
   const queryAfter = queryBuilder(true);
   if (queryBefore && queryAfter && row) {

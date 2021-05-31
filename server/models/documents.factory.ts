@@ -124,6 +124,7 @@ export function createDocument<T extends DocumentBase>(type: string, document?: 
     ArrayProps.forEach(prop => result[prop].length = 0);
   }
   if (document) result.map(document);
+  if (!result.company) result.company = '00000000-0000-0000-0000-000000000000';
   return result as T;
 }
 

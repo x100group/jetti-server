@@ -2,7 +2,7 @@ import { DocTypes } from './../models/documents.types';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { SDB } from './middleware/db-sessions';
-import { filterBuilder } from '../fuctions/filterBuilder';
+import { filterBuilder, userContextFilter } from '../fuctions/filterBuilder';
 import { createTypes, allTypes } from '../models/Types/Types.factory';
 import { createDocument } from '../models/documents.factory';
 import { FormListFilter, ISuggest, Type, DocumentOptions } from 'jetti-middle';
@@ -56,6 +56,7 @@ router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunc
       query = suggestQuery(select);
     } else if (type === 'Catalog.Subcount') query = suggestQuery(allTypes(), 'Catalog.Subcount');
     else {
+      filterQuery.where += userContextFilter(sdb.userContext, 'id');
       query = `${filterQuery.tempTable}
     SELECT top 10 id as id, description as value, code as code, description + ' (' + code + ')' as description, type as type, isfolder, deleted
     FROM [${type}.v] WITH (NOEXPAND)

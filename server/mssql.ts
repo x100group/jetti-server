@@ -2,6 +2,7 @@ import { Connection, Request, ColumnValue, RequestError, ConnectionError, ISOLAT
 import { Pool } from 'tarn';
 import { ConnectionConfigAndPool } from './env/environment';
 import { dateReviverUTC } from 'jetti-middle';
+import { IUserContext } from './fuctions/filterBuilder';
 
 export class SqlPool {
 
@@ -55,6 +56,18 @@ export class MSSQL {
     return this.user.env.view ? this.user.env.view.id : null;
   }
 
+  get isAdmin(): boolean {
+    return this.user?.isAdmin || false;
+  }
+
+  get email(): string {
+    return this.user?.email || '';
+  }
+
+  get userContext(): IUserContext {
+    return { email: this.email, isAdmin: this.isAdmin };
+  }
+
   private setParams(params: any[], request: Request) {
     for (let i = 0; i < params.length; i++) {
       if (params[i] instanceof Date) {
@@ -71,8 +84,8 @@ export class MSSQL {
   private prepareSession(sql: string) {
     return `
       SET NOCOUNT ON;
-      EXEC sys.sp_set_session_context N'user_id', N'${this.user.email}';
-      EXEC sys.sp_set_session_context N'isAdmin', N'${this.user.isAdmin}';
+      EXEC sys.sp_set_session_context N'user_id', N'${this.email}';
+      EXEC sys.sp_set_session_context N'isAdmin', N'${this.isAdmin}';
       EXEC sys.sp_set_session_context N'roles', N'${JSON.stringify(this.user.roles)}';
       SET NOCOUNT OFF;
       ${sql}

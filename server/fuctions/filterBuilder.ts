@@ -5,6 +5,28 @@ export interface IQueryFilter {
   where: string;
 }
 
+export interface IUserContext {
+  isAdmin: boolean;
+  email: string;
+}
+
+export const userContextFilter = (context: IUserContext, compField = '"company.id"') =>
+  context.isAdmin ? '' :
+    ` AND EXISTS (
+    SELECT 1 FROM [rls].[company]
+    WHERE
+      [user] = N'${context.email}'
+      AND company = ${compField})`;
+
+// export const userContextFilter = (context: IUserContext, compField = '"company.id"') =>
+//   context.isAdmin ? '' :
+//     ` AND ${compField} IN (
+//     SELECT '00000000-0000-0000-0000-000000000000'
+//     UNION ALL
+//     SELECT [company] FROM [rls].[company] r
+//     WHERE r.[user] = N'${context.email}' AND r.company = ${compField}
+//   )`;
+
 export const filterBuilder = (filter: FormListFilter[],
   excludesTypes = ['Catalog.Operation.Group', 'Catalog.User', 'Catalog.Operation']): IQueryFilter => {
 
