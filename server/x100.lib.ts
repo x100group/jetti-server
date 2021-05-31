@@ -32,6 +32,11 @@ export interface Ix100Lib {
     companyByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
     company2ByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
     IntercompanyByCompany: (company: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
+    getCompanyParentByDepartment: (department: string, date: Date, typeFranchise: string, tx: MSSQL) => Promise<{
+      company: Ref,
+      companyParent: Ref,
+      currencyParent: Ref
+    } | null>
   };
   salary: {
     personFIFO: (date: Date, person: Ref, currency: Ref, amount: number, tx: MSSQL) => Promise<any>
@@ -65,6 +70,7 @@ export const x100: Ix100Lib = {
     companyByDepartment,
     company2ByDepartment,
     IntercompanyByCompany,
+    getCompanyParentByDepartment
   },
   salary: {
     personFIFO
@@ -283,6 +289,35 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
       GROUP BY Storehouse, SKU
       HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
     LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
+  return result;
+}
+
+async function getCompanyParentByDepartment(department: string, date: Date, typeFranchise: string, tx: MSSQL) {
+  const result = await tx.oneOrNone<{
+    company: Ref,
+    companyParent: Ref,
+    currencyParent: Ref
+  }>(`
+  SELECT TOP 1
+    Res.[company] as [company]
+    ,CatCom.[parent] as [companyParent]
+    ,CatCom_Parent.[currency] as [currencyParent]
+  FROM (
+    SELECT TOP 1 RegDepCompHistory.[company]
+      ,RegDepCompHistory.[Department]
+      ,RegDepCompHistory.[InvestorGroup]
+      ,RegDepCompHistory.[TypeFranchise]
+    FROM [dbo].[Register.Info.DepartmentCompanyHistory] as RegDepCompHistory WITH (NOEXPAND)
+    WHERE 1=1
+      AND RegDepCompHistory.[date] <= @p1
+      AND RegDepCompHistory.[Department] = @p2
+      AND RegDepCompHistory.[TypeFranchise] = @p3
+    ORDER BY RegDepCompHistory.[date] DESC
+    ) as Res
+  LEFT JOIN [dbo].[Catalog.Company.v] as CatCom with (noexpand) on CatCom.[id] = Res.[company]
+  LEFT JOIN [dbo].[Catalog.Company.v] as CatCom_Parent with (noexpand) on CatCom_Parent.[id] = CatCom.[parent]
+  LEFT JOIN [dbo].[Catalog.Currency.v] as CatCur_Parent with (noexpand) on CatCur_Parent.[id] = CatCom_Parent.[currency]
+  `, [date, department, typeFranchise]);
   return result;
 }
 
