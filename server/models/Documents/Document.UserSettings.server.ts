@@ -114,7 +114,7 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
     }
   }
 
-  async beforeDelet(tx: MSSQL) {
+  async beforeDelete(tx: MSSQL) {
     await this.deleteRLSMovements(tx);
     return this;
   }
