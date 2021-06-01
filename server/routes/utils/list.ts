@@ -115,11 +115,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     else
       query = `${queryFilter.tempTable}SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(queryFilter.where)} ${orderbyAfter}`;
   }
-  if (!tx.isAdmin && params.type === 'Document.Operation')
-    query = query
-      .replace('d WITH (NOEXPAND)', 'd WITH (NOEXPAND, INDEX([Document.Operation.v.CompanyGroup]))')
-      .replace('d WITH (NOEXPAND)', 'd WITH (NOEXPAND, INDEX([Document.Operation.v.CompanyGroup]))')
-      .replace('d WITH (NOEXPAND)', 'd WITH (NOEXPAND, INDEX([Document.Operation.v.CompanyGroup]))');
+
   if (process.env.NODE_ENV !== 'production') console.log(query);
   const data = await tx.manyOrNone<any>(query);
 
