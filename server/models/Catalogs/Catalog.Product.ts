@@ -91,7 +91,7 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'string', order: 666, useIn: 'all', hiddenInList: true })
   Composition = '';
 
-  @Props({ type: 'enum', order: 666, useIn: 'all', value: ['OUTLET', 'COLD_SHOP', 'HOT_SHOP'] })
+  @Props({ type: 'enum', order: 666, useIn: 'all', value: ['OUTLET', 'COLD_SHOP', 'PIZZA_SHOP', 'HOT_SHOP'] })
   CookingPlace = '';
 
   @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
