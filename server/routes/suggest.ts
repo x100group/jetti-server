@@ -56,7 +56,7 @@ router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunc
       query = suggestQuery(select);
     } else if (type === 'Catalog.Subcount') query = suggestQuery(allTypes(), 'Catalog.Subcount');
     else {
-      filterQuery.where += userContextFilter(sdb.userContext, 'id');
+      filterQuery.where += userContextFilter(sdb.userContext, type === 'Catalog.Company' ? 'id' : 'company');
       query = `${filterQuery.tempTable}
     SELECT top 10 id as id, description as value, code as code, description + ' (' + code + ')' as description, type as type, isfolder, deleted
     FROM [${type}.v] WITH (NOEXPAND)

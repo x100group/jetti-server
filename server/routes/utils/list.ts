@@ -2,7 +2,7 @@ import { configSchema } from './../../models/config';
 import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { filterBuilder, userContextFilter } from '../../fuctions/filterBuilder';
-import { DocListRequestBody, DocListResponse, FormListFilter, DocumentBase } from 'jetti-middle';
+import { DocListRequestBody, DocListResponse, FormListFilter, DocumentBase, Type } from 'jetti-middle';
 
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
   params.filter = (params.filter || [])
@@ -70,7 +70,8 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   valueOrder = valueOrder.filter(el => !(el.value === null || el.value === undefined));
   const queryFilter = filterBuilder(params.filter);
-  queryFilter.where += userContextFilter(tx.userContext, params.type === 'Catalog.Company' ? 'd.id' : `"company.id"`);
+  if (!Type.isType(params.type))
+    queryFilter.where += userContextFilter(tx.userContext, params.type === 'Catalog.Company' ? 'd.id' : `"company.id"`);
 
   const queryBuilder = (isAfter: boolean) => {
     if (valueOrder.length === 0) return '';
