@@ -243,9 +243,42 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     ];
   }
 
+  async isSuperuser(tx: MSSQL) {
+    return lib.util.isRoleAvailable('Cash request registry admin', tx);
+  }
+
+  async beforePost(tx: MSSQL) {
+
+    if (!['APPROVED', 'PAID'].includes(this.Status) || (await this.isSuperuser(tx))) return this;
+
+    const emptyRows = this.CashRequests
+      .filter(row => !row.LinkedDocument)
+      .map((row, ind) => ind++)
+      .join(',');
+    if (emptyRows) throw new Error(`Не созданы операции в строках: ${emptyRows}`);
+
+    const operations = this.CashRequests.map(row => `'${row.LinkedDocument}'`).join(',');
+    const query = `SELECT amount, posted, id, code FROM [dbo].[Document.Operation.v] WHERE id IN (${operations})`;
+    const operData = await tx.manyOrNone<{ amount: number, posted: boolean, id: string, code: string }>(query);
+    const crRowIndex = (opId: string) => this.CashRequests.indexOf(this.CashRequests.find(cr => cr.LinkedDocument === opId)!);
+
+    const unposted = operData
+      .filter(op => !op.posted)
+      .map(op => crRowIndex(op.id) + 1).join(',');
+    if (unposted) throw new Error(`Не проведены операции в строках: ${unposted}`);
+
+    const unamounted = operData
+      .filter(op => this.CashRequests.find(cr => cr.LinkedDocument === op.id)!.Amount !== op.amount)
+      .map(op => crRowIndex(op.id) + 1)
+      .join(',');
+    if (unamounted) throw new Error(`Отраженные операциями суммы не соответствуют данным реестра, строки: ${unamounted}`);
+
+    return this;
+  }
+
   private async Fill(tx: MSSQL) {
     if (this.Status !== 'PREPARED') throw new Error(`Filling is possible only in the PREPARED document!`);
-    if (this.unsupportedOperations().indexOf(this.Operation) !== -1) throw new Error(`Unsupported operation type ${this.Operation}`);
+    if (this.unsupportedOperations().includes(this.Operation)) throw new Error(`Unsupported operation type ${this.Operation}`);
     let query = '';
     const isCashSalary = this.Operation === 'Выплата заработной платы (наличные)';
     this.CashRequests = [];
