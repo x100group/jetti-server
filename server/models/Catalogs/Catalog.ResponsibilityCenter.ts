@@ -16,8 +16,11 @@ export class CatalogResponsibilityCenter extends DocumentBase {
   @Props({ type: 'enum', order: 1, required: true, value: ['COST', 'REVENUE', 'PROFIT', 'INVESTMENT'] })
   kind = '';
 
-  @Props({ type: 'Catalog.Person', order: 2, required: true })
+  @Props({ type: 'Catalog.Person', order: 2, required: true, label: 'CEO' })
   ResponsiblePerson: Ref = null;
+
+  @Props({ type: 'Catalog.Person', order: 2, required: true, label: 'CFO' })
+  ResponsiblePersonFinance: Ref = null;
 
   @Props({ type: 'Catalog.Currency', required: true, isProtected: true })
   Currency: Ref = null;
