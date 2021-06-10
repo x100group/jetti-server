@@ -386,6 +386,10 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"')) AS [Balance]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) AS [Analytics]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"')) AS [Analytics2]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics3"')) AS [Analytics3]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics4"')) AS [Analytics4]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics5"')) AS [Analytics5]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1), 0)) [Amount]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, null), 0)) [Amount.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null, 1), 0)) [Amount.Out]
@@ -403,8 +407,12 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics3"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics4"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics5"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.TO] ON [dbo].[Register.Accumulation.Balance.Report.TO.v] ([date], [company], [currency], [Balance], [Analytics]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.TO] ON [dbo].[Register.Accumulation.Balance.Report.TO.v] ([date], [company], [currency], [Balance], [Analytics], [Analytics2], [Analytics3], [Analytics4], [Analytics5]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Balance.Report.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Balance.Report.TO.v] WITH (NOEXPAND);
       GO
@@ -868,6 +876,52 @@
       GRANT SELECT ON [dbo].[Register.Accumulation.CashToPay.TO] TO jetti;
       GO
       RAISERROR('Register.Accumulation.CashToPay end', 0 ,1) WITH NOWAIT;
+      GO
+
+      RAISERROR('Register.Accumulation.CharityAnalytic start', 0 ,1) WITH NOWAIT;
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.CharityAnalytic.TO.v] WITH SCHEMABINDING AS
+      SELECT
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+        , [company]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."MovementType"')) AS [MovementType]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Creator"')) AS [Creator]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CreatorContract"')) AS [CreatorContract]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Recipient"')) AS [Recipient]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RecipientContract"')) AS [RecipientContract]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Batch"')) AS [Batch]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Source"')) AS [Source]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1), 0)) [Amount]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, null), 0)) [Amount.In]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null, 1), 0)) [Amount.Out]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, 1, -1), 0)) [AmountInBalance]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, 1, null), 0)) [AmountInBalance.In]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, null, 1), 0)) [AmountInBalance.Out]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, -1), 0)) [AmountInAccounting]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, null), 0)) [AmountInAccounting.In]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null, 1), 0)) [AmountInAccounting.Out]
+        , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.CharityAnalytic'
+      GROUP BY
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
+        , [company]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."MovementType"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Creator"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CreatorContract"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Recipient"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RecipientContract"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Batch"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Source"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CharityAnalytic.TO] ON [dbo].[Register.Accumulation.CharityAnalytic.TO.v] ([date], [company], [MovementType], [Creator], [CreatorContract], [Recipient], [RecipientContract], [Batch], [Source], [currency]);
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.CharityAnalytic.TO] AS SELECT * FROM [dbo].[Register.Accumulation.CharityAnalytic.TO.v] WITH (NOEXPAND);
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.CharityAnalytic.TO] TO jetti;
+      GO
+      RAISERROR('Register.Accumulation.CharityAnalytic end', 0 ,1) WITH NOWAIT;
       GO
 
       RAISERROR('Register.Accumulation.BudgetItemTurnover start', 0 ,1) WITH NOWAIT;

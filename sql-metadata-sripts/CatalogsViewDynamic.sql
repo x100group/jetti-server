@@ -79,6 +79,8 @@ GO
         , d.[DstOffset] [DstOffset]
         , d.[TimeOffset] [TimeOffset]
         , d.[TimeZoneId] [TimeZoneId]
+        , ISNULL([PriceType.v].description, '') [PriceType.value], d.[PriceType] [PriceType.id], [PriceType.v].type [PriceType.type]
+        , d.[GeocodeRadius] [GeocodeRadius]
       
         , ISNULL(l5.id, d.id) [BusinessRegion.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [BusinessRegion.Level4.id]
@@ -102,6 +104,7 @@ GO
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
+        LEFT JOIN dbo.[Catalog.PriceType.v] [PriceType.v] WITH (NOEXPAND) ON [PriceType.v].id = d.[PriceType]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.BusinessRegion] TO jetti;
@@ -328,6 +331,9 @@ GO
         , ISNULL([Country.v].description, '') [Country.value], d.[Country] [Country.id], [Country.v].type [Country.type]
         , ISNULL([BusinessRegion.v].description, '') [BusinessRegion.value], d.[BusinessRegion] [BusinessRegion.id], [BusinessRegion.v].type [BusinessRegion.type]
         , ISNULL([Currency.v].description, '') [Currency.value], d.[Currency] [Currency.id], [Currency.v].type [Currency.type]
+        , d.[BonusPercent] [BonusPercent]
+        , d.[smsGateway] [smsGateway]
+        , d.[keyVaultURL] [keyVaultURL]
       
         , ISNULL(l5.id, d.id) [RetailNetwork.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [RetailNetwork.Level4.id]
