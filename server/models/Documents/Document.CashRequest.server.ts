@@ -438,6 +438,25 @@ ORDER BY
 
     const superuser = await this.isSuperuser(tx);
     if (!superuser) {
+      const taxFields = [
+        'TaxPaymentCode',
+        'TaxOfficeCode2',
+        'TaxPayerStatus',
+        'TaxBasisPayment',
+        'TaxPaymentPeriod'];
+      if (this.company && this.Operation === 'Перечисление налогов и взносов' && taxFields.filter(e => !this[e]).length) {
+        const topParent = await lib.doc.Ancestors(this.company, tx, 1) as string;
+        if (topParent && ['E5850830-02D2-11EA-A524-E592E08C23A5', /// RUSSIA, KAZAKHSTAN, BELARUS
+          '9C226AA0-FAFA-11E9-B75B-A35013C043AE',
+          '4A68D080-FFD9-11E9-A9B2-F3DA099B1152'].includes(topParent)) {
+          const props = this.Props();
+          const emptyTaxFields = taxFields
+            .filter(e => !this[e])
+            .map(e => `"${props[e].label || e}"`)
+            .join(',');
+          throw new Error(`Не заполнены налоговые реквизиты: ${emptyTaxFields}`);
+        }
+      }
 
       if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient)
         // tslint:disable-next-line: max-line-length
