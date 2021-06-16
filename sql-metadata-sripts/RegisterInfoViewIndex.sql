@@ -526,7 +526,8 @@
     GO
     GRANT SELECT,DELETE ON [Register.Info.Intl] TO JETTI;
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.Intl] ON [dbo].[Register.Info.Intl]([company], [date], [id])
-    
+    CREATE NONCLUSTERED INDEX[Register.Info.Intl.Catalog] ON [Register.Info.Intl]([Catalog]);
+    CREATE NONCLUSTERED INDEX[Register.Info.Intl.Property] ON [Register.Info.Intl]([Property]);
     GO
 ------------------------------ END Register.Info.Intl ------------------------------
 

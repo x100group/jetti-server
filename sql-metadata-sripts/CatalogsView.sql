@@ -61,55 +61,6 @@ GO
 
       
       
------------------------------- BEGIN Catalog.AllUnic.Lot ------------------------------
-
-      
-      CREATE OR ALTER VIEW dbo.[Catalog.AllUnic.Lot] AS
-        
-      SELECT
-        d.id, d.type, d.date, d.code, d.description "AllUnicLot", d.posted, d.deleted, d.isfolder, d.timestamp, d.version
-        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
-        , d.[SalesStartDate] [SalesStartDate]
-        , d.[Cost] [Cost]
-        , ISNULL([Currency.v].description, '') [Currency.value], d.[Currency] [Currency.id], [Currency.v].type [Currency.type]
-        , ISNULL([Product.v].description, '') [Product.value], d.[Product] [Product.id], [Product.v].type [Product.type]
-      
-        , ISNULL(l5.id, d.id) [AllUnicLot.Level5.id]
-        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [AllUnicLot.Level4.id]
-        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [AllUnicLot.Level3.id]
-        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [AllUnicLot.Level2.id]
-        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [AllUnicLot.Level1.id]
-        , ISNULL(l5.description, d.description) [AllUnicLot.Level5]
-        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [AllUnicLot.Level4]
-        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [AllUnicLot.Level3]
-        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [AllUnicLot.Level2]
-        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [AllUnicLot.Level1]
-      FROM [Catalog.AllUnic.Lot.v] d WITH (NOEXPAND)
-        LEFT JOIN [Catalog.AllUnic.Lot.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
-        LEFT JOIN [Catalog.AllUnic.Lot.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
-        LEFT JOIN [Catalog.AllUnic.Lot.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
-        LEFT JOIN [Catalog.AllUnic.Lot.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
-        LEFT JOIN [Catalog.AllUnic.Lot.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
-      
-        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
-        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
-        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
-        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-        LEFT JOIN dbo.[Catalog.Currency.v] [Currency.v] WITH (NOEXPAND) ON [Currency.v].id = d.[Currency]
-        LEFT JOIN dbo.[Catalog.Product.v] [Product.v] WITH (NOEXPAND) ON [Product.v].id = d.[Product]
-    ;
-GO
-GRANT SELECT ON dbo.[Catalog.AllUnic.Lot] TO jetti;
-GO
-
-      
------------------------------- END Catalog.AllUnic.Lot ------------------------------
-
-      
-      
 ------------------------------ BEGIN Catalog.Attachment ------------------------------
 
       
@@ -458,6 +409,7 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([parent2.v].description, '') [parent2.value], d.[parent2] [parent2.id], [parent2.v].type [parent2.type]
+        , d.[kind] [kind]
         , d.[UnaryOperator] [UnaryOperator]
         , d.[DescriptionENG] [DescriptionENG]
       
@@ -690,7 +642,8 @@ GO
         , d.[menu] [menu]
         , d.[presentation] [presentation]
         , d.[hierarchy] [hierarchy]
-        , d.[module] [module]
+        , d.[moduleClient] [moduleClient]
+        , d.[moduleServer] [moduleServer]
       
         , ISNULL(l5.id, d.id) [Catalog.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Catalog.Level4.id]
@@ -1081,6 +1034,7 @@ GO
         , ISNULL([Currency.v].description, '') [Currency.value], d.[Currency] [Currency.id], [Currency.v].type [Currency.type]
         , d.[Alpha2Code] [Alpha2Code]
         , d.[PhoneCode] [PhoneCode]
+        , d.[MobilePhoneMask] [MobilePhoneMask]
         , d.[Language] [Language]
       
         , ISNULL(l5.id, d.id) [Country.Level5.id]
@@ -1172,11 +1126,13 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[ShortName] [ShortName]
+        , d.[Status] [Status]
         , ISNULL([BusinessRegion.v].description, '') [BusinessRegion.value], d.[BusinessRegion] [BusinessRegion.id], [BusinessRegion.v].type [BusinessRegion.type]
         , ISNULL([BusinessCalendar.v].description, '') [BusinessCalendar.value], d.[BusinessCalendar] [BusinessCalendar.id], [BusinessCalendar.v].type [BusinessCalendar.type]
         , ISNULL([ResponsibilityCenter.v].description, '') [ResponsibilityCenter.value], d.[ResponsibilityCenter] [ResponsibilityCenter.id], [ResponsibilityCenter.v].type [ResponsibilityCenter.type]
         , d.[OpeningDate] [OpeningDate]
         , d.[OpeningDatePlanned] [OpeningDatePlanned]
+        , d.[OpeningDateBeforePurchase] [OpeningDateBeforePurchase]
         , d.[ClosingDate] [ClosingDate]
         , ISNULL([TaxOffice.v].description, '') [TaxOffice.value], d.[TaxOffice] [TaxOffice.id], [TaxOffice.v].type [TaxOffice.type]
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
@@ -2232,6 +2188,7 @@ GO
         , d.[DocumentDate] [DocumentDate]
         , d.[DocumentAuthority] [DocumentAuthority]
         , d.[AccountAD] [AccountAD]
+        , d.[SMAccount] [SMAccount]
         , d.[Pincode] [Pincode]
         , d.[Fired] [Fired]
       
@@ -2882,6 +2839,9 @@ GO
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[WriteOff] [WriteOff]
+        , ISNULL([Expense.v].description, '') [Expense.value], d.[Expense] [Expense.id], [Expense.v].type [Expense.type]
+        , ISNULL([ExpenseAnalynic.v].description, '') [ExpenseAnalynic.value], d.[ExpenseAnalynic] [ExpenseAnalynic.id], [ExpenseAnalynic.v].type [ExpenseAnalynic.type]
       
         , ISNULL(l5.id, d.id) [ReasonTypes.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ReasonTypes.Level4.id]
@@ -2904,6 +2864,8 @@ GO
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Documents] [Expense.v] ON [Expense.v].id = d.[Expense]
+        LEFT JOIN dbo.[Catalog.Expense.Analytics.v] [ExpenseAnalynic.v] WITH (NOEXPAND) ON [ExpenseAnalynic.v].id = d.[ExpenseAnalynic]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.ReasonTypes] TO jetti;
@@ -2927,6 +2889,7 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[kind] [kind]
         , ISNULL([ResponsiblePerson.v].description, '') [ResponsiblePerson.value], d.[ResponsiblePerson] [ResponsiblePerson.id], [ResponsiblePerson.v].type [ResponsiblePerson.type]
+        , ISNULL([ResponsiblePersonFinance.v].description, '') [ResponsiblePersonFinance.value], d.[ResponsiblePersonFinance] [ResponsiblePersonFinance.id], [ResponsiblePersonFinance.v].type [ResponsiblePersonFinance.type]
         , ISNULL([Currency.v].description, '') [Currency.value], d.[Currency] [Currency.id], [Currency.v].type [Currency.type]
       
         , ISNULL(l5.id, d.id) [ResponsibilityCenter.Level5.id]
@@ -2951,6 +2914,7 @@ GO
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Person.v] [ResponsiblePerson.v] WITH (NOEXPAND) ON [ResponsiblePerson.v].id = d.[ResponsiblePerson]
+        LEFT JOIN dbo.[Catalog.Person.v] [ResponsiblePersonFinance.v] WITH (NOEXPAND) ON [ResponsiblePersonFinance.v].id = d.[ResponsiblePersonFinance]
         LEFT JOIN dbo.[Catalog.Currency.v] [Currency.v] WITH (NOEXPAND) ON [Currency.v].id = d.[Currency]
     ;
 GO
@@ -4239,12 +4203,12 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([UserOrGroup.v].description, '') [UserOrGroup.value], d.[UserOrGroup] [UserOrGroup.id], [UserOrGroup.v].type [UserOrGroup.type]
-        , d.[ExcludeCompanys] [ExcludeCompanys]
-        , d.[ExcludeDepartments] [ExcludeDepartments]
-        , d.[ExcludeStorehouse] [ExcludeStorehouse]
-        , d.[ExcludeCashRegisters] [ExcludeCashRegisters]
-        , d.[ExcludeBankAccounts] [ExcludeBankAccounts]
-        , d.[ExcludeOperationGroups] [ExcludeOperationGroups]
+        , d.[COMP] [COMP]
+        , d.[DEPT] [DEPT]
+        , d.[STOR] [STOR]
+        , d.[CASH] [CASH]
+        , d.[BANK] [BANK]
+        , d.[GROUP] [GROUP]
       
         , ISNULL(l5.id, d.id) [UserSettings.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [UserSettings.Level4.id]

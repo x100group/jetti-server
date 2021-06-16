@@ -298,7 +298,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, Balance, Analytics
+        d.exchangeRate, currency, Department, Balance, Analytics, Analytics2, Analytics3, Analytics4, Analytics5
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out], Info
@@ -310,6 +310,10 @@
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [Balance] UNIQUEIDENTIFIER N'$.Balance'
         , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
+        , [Analytics3] UNIQUEIDENTIFIER N'$.Analytics3'
+        , [Analytics4] UNIQUEIDENTIFIER N'$.Analytics4'
+        , [Analytics5] UNIQUEIDENTIFIER N'$.Analytics5'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -688,6 +692,40 @@
     
 ------------------------------ END Register.Accumulation.CashToPay ------------------------------
 
+------------------------------ BEGIN Register.Accumulation.CharityAnalytic ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Accumulation.CharityAnalytic]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, MovementType, Creator, CreatorContract, Recipient, RecipientContract, Batch, Source, currency
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out], Info
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [MovementType] UNIQUEIDENTIFIER N'$.MovementType'
+        , [Creator] UNIQUEIDENTIFIER N'$.Creator'
+        , [CreatorContract] UNIQUEIDENTIFIER N'$.CreatorContract'
+        , [Recipient] UNIQUEIDENTIFIER N'$.Recipient'
+        , [RecipientContract] UNIQUEIDENTIFIER N'$.RecipientContract'
+        , [Batch] UNIQUEIDENTIFIER N'$.Batch'
+        , [Source] UNIQUEIDENTIFIER N'$.Source'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        , [Info] NVARCHAR(250) N'$.Info'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.CharityAnalytic';
+    GO
+    GRANT SELECT,DELETE ON [Register.Accumulation.CharityAnalytic] TO JETTI;
+    GO
+    
+------------------------------ END Register.Accumulation.CharityAnalytic ------------------------------
+
 ------------------------------ BEGIN Register.Accumulation.BudgetItemTurnover ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.BudgetItemTurnover]
@@ -802,7 +840,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Department, DepartmentCompany, StaffingTablePosition, Employee, Person
+        d.exchangeRate, Department, DepartmentCompany, StaffingType, StaffingTablePosition, Employee, Person
       , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], SalaryAnalytic, currency
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM [dbo].Accumulation r
@@ -811,6 +849,7 @@
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [DepartmentCompany] UNIQUEIDENTIFIER N'$.DepartmentCompany'
+        , [StaffingType] NVARCHAR(250) N'$.StaffingType'
         , [StaffingTablePosition] UNIQUEIDENTIFIER N'$.StaffingTablePosition'
         , [Employee] UNIQUEIDENTIFIER N'$.Employee'
         , [Person] UNIQUEIDENTIFIER N'$.Person'
