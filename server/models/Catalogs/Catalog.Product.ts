@@ -112,6 +112,9 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'boolean', order: 666, useIn: 'all', hiddenInList: true })
   isPromo = false;
 
+  @Props({ type: 'boolean', order: 666, useIn: 'all', hiddenInList: true })
+  isThermallabelPrinting = false;
+
   @Props({ type: 'string', order: 666, useIn: 'all', hiddenInList: true })
   Slug = '';
 
