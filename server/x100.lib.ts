@@ -316,7 +316,7 @@ async function getCompanyParentByDepartment(department: string, date: Date, type
       LEFT JOIN [dbo].[Catalog.Company.v] as CatCom with (noexpand) on CatCom.[id] = Res.[company]
       LEFT JOIN [dbo].[Catalog.Company.v] as CatCom_Parent with (noexpand) on CatCom_Parent.[id] = CatCom.[parent]
       LEFT JOIN [dbo].[Catalog.Currency.v] as CatCur_Parent with (noexpand) on CatCur_Parent.[id] = CatCom_Parent.[currency]
-      AND Res.[Department] = @p2
+      WHERE Res.[Department] = @p2
   `, [date, department, typeFranchise]);
   return result;
 }
