@@ -28,7 +28,7 @@ export class CatalogDepartment extends DocumentBase {
 
   @Props({
     type: 'string', required: false, hiddenInList: false
-    , label: 'Short name (max 15 symbols)', order: 16, validators: [{ key: 'maxLength', value: 15 }]
+    , label: 'Short name (max 25 symbols)', order: 16, validators: [{ key: 'maxLength', value: 25 }]
   })
   ShortName = '';
 
