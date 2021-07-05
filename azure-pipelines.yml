@@ -29,7 +29,7 @@ stages:
       inputs:
         command: 'push'
         artifactoryService: 'artifactory-x100'
-        targetRepo: 'docker-local'
+        targetRepo: 'docker-localv1'
         imageName: 'repository.jfd-prod.x100platforma.com/x100group-jetti-server:$(tag)'
         collectBuildInfo: true
         buildName: '$(Build.DefinitionName)'
