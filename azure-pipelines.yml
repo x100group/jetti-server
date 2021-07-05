@@ -20,19 +20,17 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
-    - task: Docker@2
-      displayName: Build an image
-      inputs:
-        command: build
-        dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
-        tags: |
-          repository.jfd-prod.x100platforma.com/finance.x100group.jetti-server:delelop
+    
+    - script: |
+        docker build -t repository.jfd-prod.x100platforma.com/finance/x100group.jetti-server:$(tag) .
+      displayName: 'Docker build'
+
     - task: ArtifactoryDocker@1
       inputs:
         command: 'push'
         artifactoryService: 'artifactory-x100'
         targetRepo: 'docker-local'
-        imageName: 'repository.jfd-prod.x100platforma.com/finance.x100group.jetti-server:develop'
+        imageName: 'repository.jfd-prod.x100platforma.com/finance.x100group.jetti-server:$(tag)'
         collectBuildInfo: true
         buildName: '$(Build.DefinitionName)'
         buildNumber: '$(Build.BuildNumber)'
