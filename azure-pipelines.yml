@@ -27,3 +27,12 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: |
           $(tag)
+    - task: ArtifactoryDocker@1
+      inputs:
+        command: 'push'
+        artifactoryService: 'artifactory-x100'
+        targetRepo: 'docker-local'
+        imageName: 'x100.finance/x100.jetti-server'
+        collectBuildInfo: true
+        buildName: '$(Build.DefinitionName)'
+        buildNumber: '$(Build.BuildNumber)'
