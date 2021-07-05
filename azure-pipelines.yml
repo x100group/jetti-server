@@ -34,3 +34,9 @@ stages:
         collectBuildInfo: true
         buildName: '$(Build.DefinitionName)'
         buildNumber: '$(Build.BuildNumber)'
+    
+    - task: ArtifactoryPublishBuildInfo@1
+      inputs:
+        artifactoryService: 'artifactory-x100'
+        buildName: '$(Build.DefinitionName)'
+        buildNumber: '$(Build.BuildNumber)'
