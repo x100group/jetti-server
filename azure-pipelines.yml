@@ -21,16 +21,22 @@ stages:
       vmImage: ubuntu-latest
     steps:
     
-    - script: |
-        docker build -t repository.jfd-prod.x100platforma.com/x100group-jetti-server:$(tag) .
-      displayName: 'Docker build'
+    # - script: |
+    #     docker build -t repository.jfd-prod.x100platforma.com/x100group-jetti-server:$(tag) .
+    #   displayName: 'Docker build'
 
-    - task: ArtifactoryDocker@1
+    - task: Docker@2
       inputs:
-        command: 'push'
-        artifactoryService: 'artifactory-x100'
-        targetRepo: 'docker-localv1'
-        imageName: 'repository.jfd-prod.x100platforma.com/x100group-jetti-server:$(tag)'
-        collectBuildInfo: true
-        buildName: '$(Build.DefinitionName)'
-        buildNumber: '$(Build.BuildNumber)'
+        containerRegistry: 'artifactory'
+        repository: 'finance'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+    # - task: ArtifactoryDocker@1
+    #   inputs:
+    #     command: 'push'
+    #     artifactoryService: 'artifactory-x100'
+    #     targetRepo: 'docker-localv1'
+    #     imageName: 'repository.jfd-prod.x100platforma.com/x100group-jetti-server:$(tag)'
+    #     collectBuildInfo: true
+    #     buildName: '$(Build.DefinitionName)'
+    #     buildNumber: '$(Build.BuildNumber)'
