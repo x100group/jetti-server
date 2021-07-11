@@ -767,6 +767,16 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
       query += `${this.typeSpliter(type.type, true)}`;
       query += SQLGenegatorMetadata.RegisterAccumulationViewQuery(register.Props(), register.Prop().type.toString());
       query += `${this.typeSpliter(type.type, false)}`;
+      query += `
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      `;
     }
     query = `
     ${query}
