@@ -32,6 +32,15 @@
     
 ------------------------------ END Register.Accumulation.AccountablePersons ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.PaymentBatch ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.PaymentBatch]
@@ -66,6 +75,15 @@
     
 ------------------------------ END Register.Accumulation.PaymentBatch ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Investment.Analytics ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Investment.Analytics]
@@ -106,6 +124,15 @@
     
 ------------------------------ END Register.Accumulation.Investment.Analytics ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.OrderPayment ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.OrderPayment]
@@ -140,6 +167,15 @@
     
 ------------------------------ END Register.Accumulation.OrderPayment ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.AP ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.AP]
@@ -174,6 +210,15 @@
     
 ------------------------------ END Register.Accumulation.AP ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.AR ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.AR]
@@ -208,6 +253,15 @@
     
 ------------------------------ END Register.Accumulation.AR ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Bank ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Bank]
@@ -237,6 +291,15 @@
     
 ------------------------------ END Register.Accumulation.Bank ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Balance ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Balance]
@@ -262,6 +325,15 @@
     
 ------------------------------ END Register.Accumulation.Balance ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Balance.RC ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Balance.RC]
@@ -292,6 +364,15 @@
     
 ------------------------------ END Register.Accumulation.Balance.RC ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Balance.Report ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Balance.Report]
@@ -326,6 +407,15 @@
     
 ------------------------------ END Register.Accumulation.Balance.Report ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Cash ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Cash]
@@ -355,6 +445,15 @@
     
 ------------------------------ END Register.Accumulation.Cash ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Cash.Transit ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Cash.Transit]
@@ -385,6 +484,15 @@
     
 ------------------------------ END Register.Accumulation.Cash.Transit ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.EmployeeTimekeeping ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.EmployeeTimekeeping]
@@ -414,6 +522,15 @@
     
 ------------------------------ END Register.Accumulation.EmployeeTimekeeping ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Inventory ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Inventory]
@@ -450,6 +567,15 @@
     
 ------------------------------ END Register.Accumulation.Inventory ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Loan ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Loan]
@@ -484,6 +610,15 @@
     
 ------------------------------ END Register.Accumulation.Loan ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.PL ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.PL]
@@ -510,6 +645,15 @@
     
 ------------------------------ END Register.Accumulation.PL ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.PL.RC ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.PL.RC]
@@ -540,6 +684,15 @@
     
 ------------------------------ END Register.Accumulation.PL.RC ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Sales ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Sales]
@@ -591,6 +744,15 @@
     
 ------------------------------ END Register.Accumulation.Sales ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Salary ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Salary]
@@ -627,6 +789,15 @@
     
 ------------------------------ END Register.Accumulation.Salary ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Depreciation ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Depreciation]
@@ -657,6 +828,15 @@
     
 ------------------------------ END Register.Accumulation.Depreciation ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.CashToPay ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.CashToPay]
@@ -692,6 +872,15 @@
     
 ------------------------------ END Register.Accumulation.CashToPay ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.CharityAnalytic ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.CharityAnalytic]
@@ -726,6 +915,15 @@
     
 ------------------------------ END Register.Accumulation.CharityAnalytic ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.BudgetItemTurnover ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.BudgetItemTurnover]
@@ -764,6 +962,15 @@
     
 ------------------------------ END Register.Accumulation.BudgetItemTurnover ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Intercompany ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Intercompany]
@@ -796,6 +1003,15 @@
     
 ------------------------------ END Register.Accumulation.Intercompany ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Acquiring ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Acquiring]
@@ -834,6 +1050,15 @@
     
 ------------------------------ END Register.Accumulation.Acquiring ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.StaffingTable ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.StaffingTable]
@@ -865,4 +1090,13 @@
     
 ------------------------------ END Register.Accumulation.StaffingTable ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
     

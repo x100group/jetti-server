@@ -1147,6 +1147,7 @@ GO
         , d.[Latitude] [Latitude]
         , d.[AreaTotal] [AreaTotal]
         , d.[AreaTrade] [AreaTrade]
+        , d.[AreaKitchen] [AreaKitchen]
         , d.[IntegrationType] [IntegrationType]
         , d.[timeZone] [timeZone]
       
@@ -2163,6 +2164,7 @@ GO
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([HeadPerson.v].description, '') [HeadPerson.value], d.[HeadPerson] [HeadPerson.id], [HeadPerson.v].type [HeadPerson.type]
         , d.[Gender] [Gender]
         , d.[FirstName] [FirstName]
         , d.[LastName] [LastName]
@@ -2213,6 +2215,7 @@ GO
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Counterpartie.v] [HeadPerson.v] WITH (NOEXPAND) ON [HeadPerson.v].id = d.[HeadPerson]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.JobTitle.v] [JobTitle.v] WITH (NOEXPAND) ON [JobTitle.v].id = d.[JobTitle]
         LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
@@ -2505,6 +2508,7 @@ GO
         , d.[isVegan] [isVegan]
         , d.[isHot] [isHot]
         , d.[isPromo] [isPromo]
+        , d.[isThermallabelPrinting] [isThermallabelPrinting]
         , d.[Slug] [Slug]
       
         , ISNULL(l5.id, d.id) [Product.Level5.id]
