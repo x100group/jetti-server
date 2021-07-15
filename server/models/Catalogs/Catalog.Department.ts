@@ -107,6 +107,9 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (торговая) кв.м.' })
   AreaTrade = '';
 
+  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (кухня) кв.м.' })
+  AreaKitchen = '';
+
   @Props({ type: 'enum', value: ['ANALYTICS', 'SYNTHETICS', 'NONE'] })
   IntegrationType = '';
 
