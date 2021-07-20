@@ -11,12 +11,12 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BankAccount"')) [BankAccount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Counterpartie"')) [Counterpartie]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isDefault"')), 0) [isDefault]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code1"')), '') [Code1]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BankAccount')) [BankAccount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Counterpartie')) [Counterpartie]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isDefault')), 0) [isDefault]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code1')), '') [Code1]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.AcquiringTerminal'
 ;
@@ -51,14 +51,14 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Attachment.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."AttachmentType"')) [AttachmentType]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Storage"')), '') [Storage]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Tags"')), '') [Tags]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."FileSize"')), 0) [FileSize]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FileName"')), '') [FileName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."MIMEType"')), '') [MIMEType]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.owner')) [owner]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.AttachmentType')) [AttachmentType]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Storage')), '') [Storage]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Tags')), '') [Tags]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.FileSize')), 0) [FileSize]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FileName')), '') [FileName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.MIMEType')), '') [MIMEType]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Attachment'
 ;
@@ -93,15 +93,15 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Attachment.Type.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."AllDocuments"')), 0) [AllDocuments]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."AllCatalogs"')), 0) [AllCatalogs]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."MaxFileSize"')), 0) [MaxFileSize]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FileFilter"')), '') [FileFilter]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."StorageType"')), '') [StorageType]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."IconURL"')), '') [IconURL]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Tags"')), '') [Tags]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."LoadDataOnInit"')), 0) [LoadDataOnInit]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.AllDocuments')), 0) [AllDocuments]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.AllCatalogs')), 0) [AllCatalogs]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.MaxFileSize')), 0) [MaxFileSize]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FileFilter')), '') [FileFilter]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.StorageType')), '') [StorageType]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.IconURL')), '') [IconURL]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Tags')), '') [Tags]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.LoadDataOnInit')), 0) [LoadDataOnInit]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Attachment.Type'
 ;
@@ -136,10 +136,10 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Balance.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isActive"')), 0) [isActive]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isPassive"')), 0) [isPassive]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isActive')), 0) [isActive]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isPassive')), 0) [isPassive]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.DescriptionENG')), '') [DescriptionENG]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Balance'
 ;
@@ -174,8 +174,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Balance.Analytics.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.DescriptionENG')), '') [DescriptionENG]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Balance.Analytics'
 ;
@@ -210,13 +210,13 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Bank.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code1"')), '') [Code1]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code2"')), '') [Code2]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Address"')), '') [Address]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."KorrAccount"')), '') [KorrAccount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ExportRule"')) [ExportRule]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isActive"')), 0) [isActive]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code1')), '') [Code1]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code2')), '') [Code2]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Address')), '') [Address]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.KorrAccount')), '') [KorrAccount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ExportRule')) [ExportRule]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isActive')), 0) [isActive]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Bank'
 ;
@@ -251,11 +251,11 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BankAccount.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank"')) [Bank]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isDefault"')), 0) [isDefault]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Bank')) [Bank]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isDefault')), 0) [isDefault]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.BankAccount'
 ;
@@ -290,7 +290,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Brand.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Brand'
 ;
@@ -325,11 +325,11 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BudgetItem.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."parent2"')) [parent2]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."kind"')), '') [kind]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."UnaryOperator"')), '') [UnaryOperator]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.parent2')) [parent2]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.kind')), '') [kind]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.UnaryOperator')), '') [UnaryOperator]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.DescriptionENG')), '') [DescriptionENG]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.BudgetItem'
 ;
@@ -364,8 +364,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BusinessCalendar.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Country"')) [Country]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Country')) [Country]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.BusinessCalendar'
 ;
@@ -400,7 +400,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BusinessDirection.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.BusinessDirection'
 ;
@@ -435,8 +435,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.CashFlow.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.DescriptionENG')), '') [DescriptionENG]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.CashFlow'
 ;
@@ -471,10 +471,10 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.CashRegister.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isAccounting"')), 0) [isAccounting]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isAccounting')), 0) [isAccounting]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.CashRegister'
 ;
@@ -509,15 +509,15 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Catalog.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."typeString"')), '') [typeString]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."prefix"')), '') [prefix]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."icon"')), '') [icon]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."menu"')), '') [menu]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."presentation"')), '') [presentation]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."hierarchy"')), '') [hierarchy]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."moduleClient"')), '') [moduleClient]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."moduleServer"')), '') [moduleServer]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.typeString')), '') [typeString]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.prefix')), '') [prefix]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.icon')), '') [icon]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.menu')), '') [menu]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.presentation')), '') [presentation]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.hierarchy')), '') [hierarchy]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$.moduleClient')), '') [moduleClient]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$.moduleServer')), '') [moduleServer]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Catalog'
 ;
@@ -552,26 +552,26 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Company.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."kind"')), '') [kind]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FullName"')), '') [FullName]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."prefix"')), '') [prefix]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Intercompany"')) [Intercompany]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Country"')) [Country]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessCalendar"')) [BusinessCalendar]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsibilityCenter"')) [ResponsibilityCenter]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."AddressShipping"')), '') [AddressShipping]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."AddressBilling"')), '') [AddressBilling]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Phone"')), '') [Phone]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code1"')), '') [Code1]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code2"')), '') [Code2]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code3"')), '') [Code3]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."BC"')), '') [BC]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."timeZone"')), '') [timeZone]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxOffice"')) [TaxOffice]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."GLN"')), '') [GLN]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.kind')), '') [kind]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FullName')), '') [FullName]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.prefix')), '') [prefix]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Intercompany')) [Intercompany]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Country')) [Country]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BusinessCalendar')) [BusinessCalendar]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ResponsibilityCenter')) [ResponsibilityCenter]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.AddressShipping')), '') [AddressShipping]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.AddressBilling')), '') [AddressBilling]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Phone')), '') [Phone]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code1')), '') [Code1]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code2')), '') [Code2]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code3')), '') [Code3]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.BC')), '') [BC]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.timeZone')), '') [timeZone]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.TaxOffice')) [TaxOffice]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.GLN')), '') [GLN]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Company'
 ;
@@ -606,8 +606,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Company.Group.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FullName"')), '') [FullName]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FullName')), '') [FullName]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Company.Group'
 ;
@@ -642,7 +642,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Configuration.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Configuration'
 ;
@@ -677,30 +677,30 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Contract.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."kind"')), '') [kind]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."StartDate"'),127) [StartDate]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."EndDate"'),127) [EndDate]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Indulgence"')), 0) [Indulgence]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Amount"')), 0) [Amount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessDirection"')) [BusinessDirection]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CashFlow"')) [CashFlow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BankAccount"')) [BankAccount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Manager"')) [Manager]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePerson"')) [ResponsiblePerson]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isDefault"')), 0) [isDefault]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."notAccounting"')), 0) [notAccounting]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."RoyaltyArrangements"')), '') [RoyaltyArrangements]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."RoyaltyDelayTo"'),127) [RoyaltyDelayTo]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."PaymentKC"')), '') [PaymentKC]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."RoyaltyPercent"')), 0) [RoyaltyPercent]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."PaymentOVM"')), '') [PaymentOVM]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."PaymentOKK"')), '') [PaymentOKK]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."PaymentKRO"')), '') [PaymentKRO]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."OtherServices"')), '') [OtherServices]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.owner')) [owner]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.kind')), '') [kind]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.StartDate'),127) [StartDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Indulgence')), 0) [Indulgence]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BusinessDirection')) [BusinessDirection]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CashFlow')) [CashFlow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BankAccount')) [BankAccount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Manager')) [Manager]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ResponsiblePerson')) [ResponsiblePerson]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isDefault')), 0) [isDefault]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.notAccounting')), 0) [notAccounting]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.RoyaltyArrangements')), '') [RoyaltyArrangements]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.RoyaltyDelayTo'),127) [RoyaltyDelayTo]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.PaymentKC')), '') [PaymentKC]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.RoyaltyPercent')), 0) [RoyaltyPercent]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.PaymentOVM')), '') [PaymentOVM]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.PaymentOKK')), '') [PaymentOKK]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.PaymentKRO')), '') [PaymentKRO]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.OtherServices')), '') [OtherServices]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Contract'
 ;
@@ -735,16 +735,16 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Contract.Intercompany.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."KorrCompany"')) [KorrCompany]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."StartDate"'),127) [StartDate]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."EndDate"'),127) [EndDate]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Amount"')), 0) [Amount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CashFlow"')) [CashFlow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isDefault"')), 0) [isDefault]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."notAccounting"')), 0) [notAccounting]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.KorrCompany')) [KorrCompany]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.StartDate'),127) [StartDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CashFlow')) [CashFlow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isDefault')), 0) [isDefault]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.notAccounting')), 0) [notAccounting]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Contract.Intercompany'
 ;
@@ -779,12 +779,12 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.BankAccount.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank"')) [Bank]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isDefault"')), 0) [isDefault]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Bank')) [Bank]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isDefault')), 0) [isDefault]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.owner')) [owner]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Counterpartie.BankAccount'
 ;
@@ -819,12 +819,12 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Country.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Currency"')) [Currency]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Alpha2Code"')), '') [Alpha2Code]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."PhoneCode"')), '') [PhoneCode]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."MobilePhoneMask"')), '') [MobilePhoneMask]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Language"')), '') [Language]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Currency')) [Currency]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Alpha2Code')), '') [Alpha2Code]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PhoneCode')), '') [PhoneCode]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.MobilePhoneMask')), '') [MobilePhoneMask]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Language')), '') [Language]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Country'
 ;
@@ -859,9 +859,9 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Currency.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."ShortName"')), '') [ShortName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."symbol"')), '') [symbol]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.ShortName')), '') [ShortName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.symbol')), '') [symbol]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Currency'
 ;
@@ -896,32 +896,31 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."ShortName"')), '') [ShortName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessRegion"')) [BusinessRegion]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessCalendar"')) [BusinessCalendar]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsibilityCenter"')) [ResponsibilityCenter]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."OpeningDate"'),127) [OpeningDate]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."OpeningDatePlanned"'),127) [OpeningDatePlanned]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."OpeningDateBeforePurchase"'),127) [OpeningDateBeforePurchase]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."ClosingDate"'),127) [ClosingDate]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxOffice"')) [TaxOffice]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Manager"')) [Manager]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Brand"')) [Brand]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."RetailNetwork"')) [RetailNetwork]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."kind"')) [kind]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Mail"')), '') [Mail]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Phone"')), '') [Phone]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Address"')), '') [Address]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."AddressLegal"')), '') [AddressLegal]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Longitude"')), '') [Longitude]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Latitude"')), '') [Latitude]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."AreaTotal"')), 0) [AreaTotal]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."AreaTrade"')), 0) [AreaTrade]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."AreaKitchen"')), 0) [AreaKitchen]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."IntegrationType"')), '') [IntegrationType]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."timeZone"')), '') [timeZone]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.ShortName')), '') [ShortName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BusinessRegion')) [BusinessRegion]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BusinessCalendar')) [BusinessCalendar]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ResponsibilityCenter')) [ResponsibilityCenter]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpeningDate'),127) [OpeningDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpeningDatePlanned'),127) [OpeningDatePlanned]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpeningDateBeforePurchase'),127) [OpeningDateBeforePurchase]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.ClosingDate'),127) [ClosingDate]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.TaxOffice')) [TaxOffice]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Manager')) [Manager]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Brand')) [Brand]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.kind')) [kind]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Mail')), '') [Mail]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Phone')), '') [Phone]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Address')), '') [Address]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.AddressLegal')), '') [AddressLegal]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Longitude')), '') [Longitude]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Latitude')), '') [Latitude]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.AreaTotal')), 0) [AreaTotal]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.AreaTrade')), 0) [AreaTrade]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.IntegrationType')), '') [IntegrationType]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.timeZone')), '') [timeZone]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Department'
 ;
@@ -956,12 +955,12 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.Company.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."kind"')), '') [kind]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."ShortName"')), '') [ShortName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."SecurityGroup"')), '') [SecurityGroup]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."StaffingPositionManager"')) [StaffingPositionManager]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."StaffingPositionAssistant"')) [StaffingPositionAssistant]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.kind')), '') [kind]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.ShortName')), '') [ShortName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.SecurityGroup')), '') [SecurityGroup]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.StaffingPositionManager')) [StaffingPositionManager]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.StaffingPositionAssistant')) [StaffingPositionAssistant]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Department.Company'
 ;
@@ -996,7 +995,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.Kind.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Department.Kind'
 ;
@@ -1031,7 +1030,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.StatusReason.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Department.StatusReason'
 ;
@@ -1066,7 +1065,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Dynamic.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Dynamic'
 ;
@@ -1101,9 +1100,9 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Employee.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."InnerPhone"')), '') [InnerPhone]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Person')) [Person]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.InnerPhone')), '') [InnerPhone]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Employee'
 ;
@@ -1138,11 +1137,11 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Expense.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Account"')) [Account]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BudgetItem"')) [BudgetItem]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Assign"')), '') [Assign]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Account')) [Account]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BudgetItem')) [BudgetItem]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Assign')), '') [Assign]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.DescriptionENG')), '') [DescriptionENG]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Expense'
 ;
@@ -1177,9 +1176,9 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Expense.Analytics.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BudgetItem"')) [BudgetItem]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BudgetItem')) [BudgetItem]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.DescriptionENG')), '') [DescriptionENG]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Expense.Analytics'
 ;
@@ -1214,8 +1213,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.GroupObjectsExploitation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Method"')), '') [Method]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Method')), '') [Method]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.GroupObjectsExploitation'
 ;
@@ -1250,11 +1249,11 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Income.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Account"')) [Account]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BudgetItem"')) [BudgetItem]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Assign"')), '') [Assign]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DescriptionENG"')), '') [DescriptionENG]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Account')) [Account]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BudgetItem')) [BudgetItem]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Assign')), '') [Assign]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.DescriptionENG')), '') [DescriptionENG]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Income'
 ;
@@ -1289,7 +1288,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.InvestorGroup.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.InvestorGroup'
 ;
@@ -1324,7 +1323,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.Category.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.JobTitle.Category'
 ;
@@ -1359,26 +1358,26 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Loan.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."PayDay"'),127) [PayDay]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."CloseDay"'),127) [CloseDay]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."OwnerBankAccount"')) [OwnerBankAccount]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."CashKind"')), '') [CashKind]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."kind"')), '') [kind]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."InvestorGroup"')) [InvestorGroup]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."InterestRate"')), 0) [InterestRate]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."InterestDeadline"'),127) [InterestDeadline]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."loanType"')) [loanType]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."AmountLoan"')), 0) [AmountLoan]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Country"')) [Country]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Lot"')) [Lot]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."LotQty"')), 0) [LotQty]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."LoanRepaymentProcedure"')) [LoanRepaymentProcedure]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."PayDeadline"'),127) [PayDeadline]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.PayDay'),127) [PayDay]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.CloseDay'),127) [CloseDay]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.owner')) [owner]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.OwnerBankAccount')) [OwnerBankAccount]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.CashKind')), '') [CashKind]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.kind')), '') [kind]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.InvestorGroup')) [InvestorGroup]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.InterestRate')), 0) [InterestRate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.InterestDeadline'),127) [InterestDeadline]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.loanType')) [loanType]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.AmountLoan')), 0) [AmountLoan]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Country')) [Country]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Lot')) [Lot]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.LotQty')), 0) [LotQty]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.LoanRepaymentProcedure')) [LoanRepaymentProcedure]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.PayDeadline'),127) [PayDeadline]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Loan'
 ;
@@ -1413,7 +1412,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.LoanRepaymentProcedure.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.LoanRepaymentProcedure'
 ;
@@ -1448,8 +1447,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.LoanTypes.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Balance"')) [Balance]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Balance')) [Balance]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.LoanTypes'
 ;
@@ -1484,10 +1483,10 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Manager.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FullName"')), '') [FullName]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."Gender"')), 0) [Gender]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."Birthday"'),127) [Birthday]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FullName')), '') [FullName]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.Gender')), 0) [Gender]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.Birthday'),127) [Birthday]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Manager'
 ;
@@ -1522,7 +1521,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ManufactureLocation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.ManufactureLocation'
 ;
@@ -1557,9 +1556,9 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ObjectsExploitation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."InventoryNumber"')), '') [InventoryNumber]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.InventoryNumber')), '') [InventoryNumber]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.ObjectsExploitation'
 ;
@@ -1594,15 +1593,15 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Operation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."shortName"')), '') [shortName]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Configuration"')) [Configuration]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."script"')), '') [script]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."scriptAccounting"')), '') [scriptAccounting]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."module"')), '') [module]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isManagment"')), 0) [isManagment]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isAccounting"')), 0) [isAccounting]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.shortName')), '') [shortName]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Configuration')) [Configuration]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$.script')), '') [script]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$.scriptAccounting')), '') [scriptAccounting]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$.module')), '') [module]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isManagment')), 0) [isManagment]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isAccounting')), 0) [isAccounting]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Operation'
 ;
@@ -1637,10 +1636,10 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Operation.Group.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Prefix"')), '') [Prefix]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."menu"')), '') [menu]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."icon"')), '') [icon]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Prefix')), '') [Prefix]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.menu')), '') [menu]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.icon')), '') [icon]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Operation.Group'
 ;
@@ -1675,10 +1674,10 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Operation.Type.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."PropType"')), '') [PropType]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Model"')) [Model]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."StoredIn"')), '') [StoredIn]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PropType')), '') [PropType]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Model')) [Model]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.StoredIn')), '') [StoredIn]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Operation.Type'
 ;
@@ -1713,36 +1712,36 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Person.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."HeadPerson"')) [HeadPerson]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Gender"')), '') [Gender]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FirstName"')), '') [FirstName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."LastName"')), '') [LastName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."MiddleName"')), '') [MiddleName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code1"')), '') [Code1]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code2"')), '') [Code2]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Address"')), '') [Address]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."AddressResidence"')), '') [AddressResidence]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."City"')), '') [City]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Phone"')), '') [Phone]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."PersonalPhone"')), '') [PersonalPhone]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Email"')), '') [Email]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."PersonalEmail"')), '') [PersonalEmail]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."Birthday"'),127) [Birthday]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."EmploymentDate"'),127) [EmploymentDate]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."JobTitle"')) [JobTitle]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Country"')) [Country]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Profile"')), '') [Profile]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."DocumentType"')) [DocumentType]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DocumentCode"')), '') [DocumentCode]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DocumentNumber"')), '') [DocumentNumber]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."DocumentDate"'),127) [DocumentDate]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DocumentAuthority"')), '') [DocumentAuthority]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."AccountAD"')), '') [AccountAD]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."SMAccount"')), '') [SMAccount]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Pincode"')), '') [Pincode]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."Fired"')), 0) [Fired]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ParentPerson')) [ParentPerson]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Gender')), '') [Gender]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FirstName')), '') [FirstName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.LastName')), '') [LastName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.MiddleName')), '') [MiddleName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code1')), '') [Code1]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code2')), '') [Code2]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Address')), '') [Address]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.AddressResidence')), '') [AddressResidence]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.City')), '') [City]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Phone')), '') [Phone]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PersonalPhone')), '') [PersonalPhone]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Email')), '') [Email]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.PersonalEmail')), '') [PersonalEmail]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.Birthday'),127) [Birthday]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EmploymentDate'),127) [EmploymentDate]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.JobTitle')) [JobTitle]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Country')) [Country]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Profile')), '') [Profile]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.DocumentType')) [DocumentType]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.DocumentCode')), '') [DocumentCode]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.DocumentNumber')), '') [DocumentNumber]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.DocumentDate'),127) [DocumentDate]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.DocumentAuthority')), '') [DocumentAuthority]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.AccountAD')), '') [AccountAD]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.SMAccount')), '') [SMAccount]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Pincode')), '') [Pincode]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.Fired')), 0) [Fired]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Person'
 ;
@@ -1780,11 +1779,11 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Person.BankAccount.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank"')) [Bank]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."SalaryProject"')) [SalaryProject]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."OpenDate"'),127) [OpenDate]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.owner')) [owner]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Bank')) [Bank]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.SalaryProject')) [SalaryProject]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpenDate'),127) [OpenDate]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Person.BankAccount'
 ;
@@ -1819,13 +1818,13 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Person.Contract.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."StartDate"'),127) [StartDate]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."EndDate"'),127) [EndDate]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BankAccount"')) [BankAccount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.owner')) [owner]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.StartDate'),127) [StartDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BankAccount')) [BankAccount]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Person.Contract'
 ;
@@ -1860,7 +1859,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PersonIdentity.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.PersonIdentity'
 ;
@@ -1895,7 +1894,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PlanningScenario.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.PlanningScenario'
 ;
@@ -1930,11 +1929,11 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PriceType.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."TaxInclude"')), 0) [TaxInclude]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Brand"')) [Brand]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."RetailNetwork"')) [RetailNetwork]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.TaxInclude')), 0) [TaxInclude]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Brand')) [Brand]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.PriceType'
 ;
@@ -1969,38 +1968,38 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ProductKind"')) [ProductKind]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ProductCategory"')) [ProductCategory]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Specification"')) [Specification]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Brand"')) [Brand]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."RetailNetwork"')) [RetailNetwork]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Unit"')) [Unit]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Expense"')) [Expense]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Analytics"')) [Analytics]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ProductReport"')) [ProductReport]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Settings"')) [Settings]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."Purchased"')), 0) [Purchased]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."ShortCode"')), '') [ShortCode]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."ShortName"')), '') [ShortName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Tags"')), '') [Tags]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Weight"')), 0) [Weight]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Volume"')), 0) [Volume]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Calorie"')), 0) [Calorie]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Carbohydrates"')), 0) [Carbohydrates]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Fat"')), 0) [Fat]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Proteins"')), 0) [Proteins]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."CookingTime"')), 0) [CookingTime]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Composition"')), '') [Composition]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."CookingPlace"')), '') [CookingPlace]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Order"')), 0) [Order]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Barcode"')), '') [Barcode]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Eancode"')), '') [Eancode]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isVegan"')), 0) [isVegan]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isHot"')), 0) [isHot]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isPromo"')), 0) [isPromo]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isThermallabelPrinting"')), 0) [isThermallabelPrinting]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Slug"')), '') [Slug]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ProductKind')) [ProductKind]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ProductCategory')) [ProductCategory]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Specification')) [Specification]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Brand')) [Brand]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Unit')) [Unit]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Expense')) [Expense]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Analytics')) [Analytics]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ProductReport')) [ProductReport]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Settings')) [Settings]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.Purchased')), 0) [Purchased]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.ShortCode')), '') [ShortCode]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.ShortName')), '') [ShortName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Tags')), '') [Tags]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Weight')), 0) [Weight]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Volume')), 0) [Volume]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Calorie')), 0) [Calorie]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Carbohydrates')), 0) [Carbohydrates]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Fat')), 0) [Fat]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Proteins')), 0) [Proteins]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.CookingTime')), 0) [CookingTime]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Composition')), '') [Composition]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.CookingPlace')), '') [CookingPlace]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Order')), 0) [Order]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Barcode')), '') [Barcode]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Eancode')), '') [Eancode]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isVegan')), 0) [isVegan]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isHot')), 0) [isHot]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isPromo')), 0) [isPromo]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isThermallabelPrinting')), 0) [isThermallabelPrinting]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Slug')), '') [Slug]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Product'
 ;
@@ -2036,10 +2035,10 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.Analytic.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Note"')), '') [Note]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isActive"')), 0) [isActive]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."SortOrder"')), 0) [SortOrder]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Note')), '') [Note]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isActive')), 0) [isActive]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.SortOrder')), 0) [SortOrder]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Product.Analytic'
 ;
@@ -2074,11 +2073,11 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.Package.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Product"')) [Product]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Qty"')), 0) [Qty]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isActive"')), 0) [isActive]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Label"')), '') [Label]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Product')) [Product]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Qty')), 0) [Qty]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isActive')), 0) [isActive]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Label')), '') [Label]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Product.Package'
 ;
@@ -2113,9 +2112,9 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Product.Report.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Brand"')) [Brand]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Unit"')) [Unit]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Brand')) [Brand]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Unit')) [Unit]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Product.Report'
 ;
@@ -2150,15 +2149,15 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ProductCategory.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Order"')), 0) [Order]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Presentation"')), '') [Presentation]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."RetailNetwork"')) [RetailNetwork]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isDefault"')), 0) [isDefault]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isDesktop"')), 0) [isDesktop]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isWeb"')), 0) [isWeb]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isMobile"')), 0) [isMobile]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Slug"')), '') [Slug]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Order')), 0) [Order]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Presentation')), '') [Presentation]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isDefault')), 0) [isDefault]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isDesktop')), 0) [isDesktop]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isWeb')), 0) [isWeb]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isMobile')), 0) [isMobile]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Slug')), '') [Slug]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.ProductCategory'
 ;
@@ -2193,8 +2192,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ProductKind.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."ProductType"')), '') [ProductType]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.ProductType')), '') [ProductType]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.ProductKind'
 ;
@@ -2229,7 +2228,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.PromotionChannel.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.PromotionChannel'
 ;
@@ -2264,10 +2263,10 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ReasonTypes.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."WriteOff"')), 0) [WriteOff]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Expense"')) [Expense]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ExpenseAnalynic"')) [ExpenseAnalynic]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.WriteOff')), 0) [WriteOff]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Expense')) [Expense]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ExpenseAnalynic')) [ExpenseAnalynic]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.ReasonTypes'
 ;
@@ -2302,11 +2301,11 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.ResponsibilityCenter.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."kind"')), '') [kind]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePerson"')) [ResponsiblePerson]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePersonFinance"')) [ResponsiblePersonFinance]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Currency"')) [Currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.kind')), '') [kind]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ResponsiblePerson')) [ResponsiblePerson]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ResponsiblePersonFinance')) [ResponsiblePersonFinance]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Currency')) [Currency]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.ResponsibilityCenter'
 ;
@@ -2341,17 +2340,17 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.RetailClient.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Gender"')), '') [Gender]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isActive"')), 0) [isActive]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."CreateDate"'),127) [CreateDate]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."Birthday"'),127) [Birthday]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FirstName"')), '') [FirstName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."LastName"')), '') [LastName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."MiddleName"')), '') [MiddleName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Phone"')), '') [Phone]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Address"')), '') [Address]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Email"')), '') [Email]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Gender')), '') [Gender]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isActive')), 0) [isActive]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.CreateDate'),127) [CreateDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.Birthday'),127) [Birthday]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FirstName')), '') [FirstName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.LastName')), '') [LastName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.MiddleName')), '') [MiddleName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Phone')), '') [Phone]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Address')), '') [Address]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Email')), '') [Email]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.RetailClient'
 ;
@@ -2386,7 +2385,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Role.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Role'
 ;
@@ -2421,9 +2420,9 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Salary.Analytics.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."SalaryKind"')), '') [SalaryKind]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Unit"')) [Unit]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.SalaryKind')), '') [SalaryKind]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Unit')) [Unit]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Salary.Analytics'
 ;
@@ -2458,13 +2457,13 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.SalaryProject.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."bank"')) [bank]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."OpenDate"'),127) [OpenDate]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."BankBranch"')), '') [BankBranch]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."BankBranchOffice"')), '') [BankBranchOffice]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."BankAccount"')), '') [BankAccount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.bank')) [bank]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.OpenDate'),127) [OpenDate]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.BankBranch')), '') [BankBranch]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.BankBranchOffice')), '') [BankBranchOffice]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.BankAccount')), '') [BankAccount]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.SalaryProject'
 ;
@@ -2499,8 +2498,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Scenario.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Scenario'
 ;
@@ -2535,15 +2534,15 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Specification.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Brand"')) [Brand]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."MainProduct"')) [MainProduct]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."StartDate"'),127) [StartDate]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."EndDate"'),127) [EndDate]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePerson"')) [ResponsiblePerson]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."RetailNetwork"')) [RetailNetwork]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Brand')) [Brand]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.MainProduct')) [MainProduct]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FullDescription')), '') [FullDescription]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.StartDate'),127) [StartDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.EndDate'),127) [EndDate]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ResponsiblePerson')) [ResponsiblePerson]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.RetailNetwork')) [RetailNetwork]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Specification'
 ;
@@ -2578,15 +2577,15 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.StaffingTable.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."JobTitle"')) [JobTitle]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."DepartmentCompany"')) [DepartmentCompany]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Currency"')) [Currency]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."ActivationDate"'),127) [ActivationDate]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."CloseDate"'),127) [CloseDate]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Qty"')), 0) [Qty]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Cost"')), 0) [Cost]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.JobTitle')) [JobTitle]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.DepartmentCompany')) [DepartmentCompany]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Currency')) [Currency]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.ActivationDate'),127) [ActivationDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.CloseDate'),127) [CloseDate]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Qty')), 0) [Qty]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Cost')), 0) [Cost]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.StaffingTable'
 ;
@@ -2621,8 +2620,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Storehouse.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Storehouse'
 ;
@@ -2657,8 +2656,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.SubSystem.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."icon"')), '') [icon]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.icon')), '') [icon]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.SubSystem'
 ;
@@ -2693,8 +2692,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxAssignmentCode.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FullDescription')), '') [FullDescription]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.TaxAssignmentCode'
 ;
@@ -2729,7 +2728,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxBasisPayment.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.TaxBasisPayment'
 ;
@@ -2764,11 +2763,11 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxOffice.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FullName"')), '') [FullName]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code1"')), '') [Code1]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code2"')), '') [Code2]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code3"')), '') [Code3]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FullName')), '') [FullName]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code1')), '') [Code1]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code2')), '') [Code2]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Code3')), '') [Code3]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.TaxOffice'
 ;
@@ -2803,8 +2802,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxPayerStatus.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FullDescription')), '') [FullDescription]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.TaxPayerStatus'
 ;
@@ -2839,9 +2838,9 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentCode.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FullDescription"')), '') [FullDescription]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BalanceAnalytics"')) [BalanceAnalytics]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.FullDescription')), '') [FullDescription]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BalanceAnalytics')) [BalanceAnalytics]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.TaxPaymentCode'
 ;
@@ -2876,7 +2875,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxPaymentPeriod.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.TaxPaymentPeriod'
 ;
@@ -2911,8 +2910,8 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.TaxRate.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Rate"')), 0) [Rate]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Rate')), 0) [Rate]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.TaxRate'
 ;
@@ -2947,10 +2946,10 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Unit.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BaseUnit"')) [BaseUnit]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Rate"')), 0) [Rate]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."kind"')), '') [kind]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BaseUnit')) [BaseUnit]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Rate')), 0) [Rate]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.kind')), '') [kind]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Unit'
 ;
@@ -2985,11 +2984,11 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.User.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isAdmin"')), 0) [isAdmin]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isDisabled"')), 0) [isDisabled]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isAdmin')), 0) [isAdmin]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isDisabled')), 0) [isDisabled]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Person')) [Person]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.User'
 ;
@@ -3024,7 +3023,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.UsersGroup'
 ;
@@ -3059,51 +3058,51 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Document.CashRequest.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Operation"')), '') [Operation]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."PaymentKind"')), '') [PaymentKind]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."EnforcementProceedings"')), '') [EnforcementProceedings]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."CashKind"')), '') [CashKind]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."PayRollKind"')), '') [PayRollKind]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CashRecipient"')) [CashRecipient]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Contract"')) [Contract]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."PersonContract"')) [PersonContract]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ContractIntercompany"')) [ContractIntercompany]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CashFlow"')) [CashFlow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."SalaryProject"')) [SalaryProject]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Loan"')) [Loan]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CashOrBank"')) [CashOrBank]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CashRecipientBankAccount"')) [CashRecipientBankAccount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CashOrBankIn"')) [CashOrBankIn]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."PayDay"'),127) [PayDay]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Amount"')), 0) [Amount]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."AmountPenalty"')), 0) [AmountPenalty]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."сurrency"')) [сurrency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ExpenseOrBalance"')) [ExpenseOrBalance]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ExpenseAnalytics"')) [ExpenseAnalytics]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."SalaryAnalitics"')) [SalaryAnalitics]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."SKU"')) [SKU]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxRate"')) [TaxRate]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."TaxKPP"')), '') [TaxKPP]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxPaymentCode"')) [TaxPaymentCode]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxAssignmentCode"')) [TaxAssignmentCode]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxPayerStatus"')) [TaxPayerStatus]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxBasisPayment"')) [TaxBasisPayment]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."TaxPaymentPeriod"')) [TaxPaymentPeriod]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."TaxDocNumber"')), '') [TaxDocNumber]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."TaxDocDate"'),127) [TaxDocDate]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."TaxOfficeCode2"')), '') [TaxOfficeCode2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BalanceAnalytics"')) [BalanceAnalytics]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."workflowID"')), '') [workflowID]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."ManualInfo"')), 0) [ManualInfo]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."BudgetPayment"')), 0) [BudgetPayment]
-      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."RelatedURL"')), '') [RelatedURL]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."tempCompanyParent"')) [tempCompanyParent]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."tempSalaryKind"')), '') [tempSalaryKind]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Manager"')) [Manager]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePerson"')) [ResponsiblePerson]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Operation')), '') [Operation]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.PaymentKind')), '') [PaymentKind]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.EnforcementProceedings')), '') [EnforcementProceedings]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.CashKind')), '') [CashKind]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.PayRollKind')), '') [PayRollKind]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CashRecipient')) [CashRecipient]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Contract')) [Contract]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.PersonContract')) [PersonContract]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ContractIntercompany')) [ContractIntercompany]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CashFlow')) [CashFlow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.SalaryProject')) [SalaryProject]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Loan')) [Loan]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CashOrBank')) [CashOrBank]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CashRecipientBankAccount')) [CashRecipientBankAccount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CashOrBankIn')) [CashOrBankIn]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.PayDay'),127) [PayDay]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.AmountPenalty')), 0) [AmountPenalty]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.сurrency')) [сurrency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ExpenseOrBalance')) [ExpenseOrBalance]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ExpenseAnalytics')) [ExpenseAnalytics]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.SalaryAnalitics')) [SalaryAnalitics]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.SKU')) [SKU]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.TaxRate')) [TaxRate]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.TaxKPP')), '') [TaxKPP]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.TaxPaymentCode')) [TaxPaymentCode]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.TaxAssignmentCode')) [TaxAssignmentCode]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.TaxPayerStatus')) [TaxPayerStatus]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.TaxBasisPayment')) [TaxBasisPayment]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.TaxPaymentPeriod')) [TaxPaymentPeriod]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.TaxDocNumber')), '') [TaxDocNumber]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.TaxDocDate'),127) [TaxDocDate]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.TaxOfficeCode2')), '') [TaxOfficeCode2]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BalanceAnalytics')) [BalanceAnalytics]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.workflowID')), '') [workflowID]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.ManualInfo')), 0) [ManualInfo]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.BudgetPayment')), 0) [BudgetPayment]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$.RelatedURL')), '') [RelatedURL]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.tempCompanyParent')) [tempCompanyParent]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.tempSalaryKind')), '') [tempSalaryKind]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Manager')) [Manager]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.ResponsiblePerson')) [ResponsiblePerson]
       FROM dbo.[Documents]
       WHERE [type] = N'Document.CashRequest'
 ;
@@ -3137,16 +3136,16 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Document.CashRequestRegistry.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Operation"')), '') [Operation]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."CashKind"')), '') [CashKind]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CashFlow"')) [CashFlow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessDirection"')) [BusinessDirection]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Amount"')), 0) [Amount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."сurrency"')) [сurrency]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."BankUploadDate"'),127) [BankUploadDate]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."DocumentsCreationDate"'),127) [DocumentsCreationDate]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Operation')), '') [Operation]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.CashKind')), '') [CashKind]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.CashFlow')) [CashFlow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.BusinessDirection')) [BusinessDirection]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.сurrency')) [сurrency]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.BankUploadDate'),127) [BankUploadDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.DocumentsCreationDate'),127) [DocumentsCreationDate]
       FROM dbo.[Documents]
       WHERE [type] = N'Document.CashRequestRegistry'
 ;
@@ -3180,7 +3179,7 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Document.ExchangeRates.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
       FROM dbo.[Documents]
       WHERE [type] = N'Document.ExchangeRates'
 ;
@@ -3214,16 +3213,16 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Document.Invoice.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Storehouse"')) [Storehouse]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Customer"')) [Customer]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Manager"')) [Manager]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Status"')), '') [Status]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."PayDay"'),127) [PayDay]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Amount"')), 0) [Amount]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Tax"')), 0) [Tax]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Department')) [Department]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Storehouse')) [Storehouse]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Customer')) [Customer]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Manager')) [Manager]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.Status')), '') [Status]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc, N'$.PayDay'),127) [PayDay]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Tax')), 0) [Tax]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
       FROM dbo.[Documents]
       WHERE [type] = N'Document.Invoice'
 ;
@@ -3257,14 +3256,14 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Document.Operation.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Operation"')) [Operation]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Amount"')), 0) [Amount]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f1"')) [f1]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f2"')) [f2]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."f3"')) [f3]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Group')) [Group]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Operation')) [Operation]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.Amount')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.currency')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f1')) [f1]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f2')) [f2]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.f3')) [f3]
       FROM dbo.[Documents]
       WHERE [type] = N'Document.Operation'
 ;
@@ -3298,9 +3297,9 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Document.PriceList.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."PriceType"')) [PriceType]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."TaxInclude"')), 0) [TaxInclude]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.PriceType')) [PriceType]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.TaxInclude')), 0) [TaxInclude]
       FROM dbo.[Documents]
       WHERE [type] = N'Document.PriceList'
 ;
@@ -3334,14 +3333,14 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Document.UserSettings.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."UserOrGroup"')) [UserOrGroup]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."COMP"')), 0) [COMP]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."DEPT"')), 0) [DEPT]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."STOR"')), 0) [STOR]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."CASH"')), 0) [CASH]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."BANK"')), 0) [BANK]
-      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."GROUP"')), 0) [GROUP]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.UserOrGroup')) [UserOrGroup]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.COMP')), 0) [COMP]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.DEPT')), 0) [DEPT]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.STOR')), 0) [STOR]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.CASH')), 0) [CASH]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.BANK')), 0) [BANK]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.GROUP')), 0) [GROUP]
       FROM dbo.[Documents]
       WHERE [type] = N'Document.UserSettings'
 ;
@@ -3375,9 +3374,9 @@ END CATCH;
 GO
 CREATE OR ALTER VIEW dbo.[Document.WorkFlow.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Document"')) [Document]
-      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.workflow')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.Document')) [Document]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.Status')), '') [Status]
       FROM dbo.[Documents]
       WHERE [type] = N'Document.WorkFlow'
 ;
