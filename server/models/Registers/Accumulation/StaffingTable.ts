@@ -13,7 +13,7 @@ export class RegisterAccumulationStaffingTable extends RegisterAccumulation {
   @Props({ type: 'Catalog.Department.Company', dimension: true })
   DepartmentCompany: Ref = null;
 
-  @Props({ type: 'enum', value: ['TEMP'] })
+  @Props({ type: 'enum', value: ['TEMP'], dimension: true })
   StaffingType = '';
 
   @Props({ type: 'Catalog.StaffingTable', dimension: true })

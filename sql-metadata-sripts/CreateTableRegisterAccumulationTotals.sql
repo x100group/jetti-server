@@ -1055,6 +1055,7 @@
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) AS [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"')) AS [DepartmentCompany]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."StaffingType"')) AS [StaffingType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingTablePosition"')) AS [StaffingTablePosition]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) AS [Employee]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) AS [Person]
@@ -1073,13 +1074,14 @@
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"'))
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."StaffingType"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingTablePosition"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SalaryAnalytic"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.TO] ON [dbo].[Register.Accumulation.StaffingTable.TO.v] ([date], [company], [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryAnalytic], [currency]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.TO] ON [dbo].[Register.Accumulation.StaffingTable.TO.v] ([date], [company], [Department], [DepartmentCompany], [StaffingType], [StaffingTablePosition], [Employee], [Person], [SalaryAnalytic], [currency]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.StaffingTable.TO] AS SELECT * FROM [dbo].[Register.Accumulation.StaffingTable.TO.v] WITH (NOEXPAND);
       GO

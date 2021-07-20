@@ -192,6 +192,8 @@ GO
         , d.[BC] [BC]
         , d.[GLN] [GLN]
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
+        , d.[Mail] [Mail]
+        , ISNULL([ParentCounterpartie.v].description, '') [ParentCounterpartie.value], d.[ParentCounterpartie] [ParentCounterpartie.id], [ParentCounterpartie.v].type [ParentCounterpartie.type]
       
         , ISNULL(l5.id, d.id) [Counterpartie.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Counterpartie.Level4.id]
@@ -216,6 +218,7 @@ GO
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.User.v] [Manager.v] WITH (NOEXPAND) ON [Manager.v].id = d.[Manager]
+        LEFT JOIN dbo.[Catalog.Counterpartie.v] [ParentCounterpartie.v] WITH (NOEXPAND) ON [ParentCounterpartie.v].id = d.[ParentCounterpartie]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Counterpartie] TO jetti;
