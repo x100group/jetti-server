@@ -13,6 +13,12 @@ export class RegisterInfoAdditionalProps extends RegisterInfo {
   @Props({ type: 'Types.Object', isIndexed: true })
   Object: Ref = null;
 
+  @Props({ type: 'Types.Object', isIndexed: true })
+  Analytic1: Ref = null;
+
+  @Props({ type: 'Types.Object', isIndexed: true })
+  Analytic2: Ref = null;
+
   @Props({ type: 'Types.Object' })
   ValueRef: Ref = null;
 
