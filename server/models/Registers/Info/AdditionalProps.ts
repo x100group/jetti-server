@@ -22,7 +22,7 @@ export class RegisterInfoAdditionalProps extends RegisterInfo {
   @Props({ type: 'string' })
   ValueString = '';
 
-  @Props({ type: 'date' })
+  @Props({ type: 'datetime', isIndexed: true })
   ValueDate = '';
 
   @Props({ type: 'boolean' })
