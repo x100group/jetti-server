@@ -37,6 +37,9 @@ export class RegisterAccumulationStaffingTable extends RegisterAccumulation {
   @Props({ type: 'number', resource: true })
   Amount = 0;
 
+  @Props({ type: 'number', resource: true })
+  AmountPrepay = 0;
+
   constructor(init: Partial<RegisterAccumulationStaffingTable>) {
     super(init);
     Object.assign(this, init);

@@ -33,17 +33,19 @@ export class CatalogDepartment extends DocumentBase {
   ShortName = '';
 
   @Props({
-    type: 'enum', value: [
-      '00. Planned',
-      '01. Investment search',
-      '02. Location search',
-      '03. Launch in progress',
-      '04. Trial launch',
-      '05. Launch postponed',
-      '10. Open',
-      '11. Temporary stop',
-      '12. Stop'
-    ]
+    type: 'enum', value:
+      [
+        'PLANED',
+        'INVESTMENT SEARCH',
+        'LOCATION SEARCH',
+        'LAUNCH IN PROGRESS',
+        'READY TO START',
+        'TRIAL LAUNCH',
+        'LAUNCH POSTPONED',
+        'OPEN',
+        'TEMPORARY STOP',
+        'STOP'
+      ]
   })
   Status: Ref = null;
 
