@@ -861,10 +861,13 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1) [Amount]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1,  null) [Amount.In]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null,  1) [Amount.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPrepay"')) * IIF(kind = 1, 1, -1) [AmountPrepay]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPrepay"')) * IIF(kind = 1, 1,  null) [AmountPrepay.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPrepay"')) * IIF(kind = 1, null,  1) [AmountPrepay.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.StaffingTable';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.id] ON [Register.Accumulation.StaffingTable.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable.v]([date], [document], [company], [calculated], [parent], [Department], [DepartmentCompany], [StaffingType], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryRate.In], [SalaryRate.Out], [SalaryAnalytic], [currency], [Amount], [Amount.In], [Amount.Out]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable.v]([date], [document], [company], [calculated], [parent], [Department], [DepartmentCompany], [StaffingType], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryRate.In], [SalaryRate.Out], [SalaryAnalytic], [currency], [Amount], [Amount.In], [Amount.Out], [AmountPrepay], [AmountPrepay.In], [AmountPrepay.Out]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.StaffingTable] AS SELECT * FROM [Register.Accumulation.StaffingTable.v] WITH (NOEXPAND);
     GO

@@ -1255,6 +1255,9 @@
         , SUM(ISNULL([Amount], 0)) [Amount]
         , SUM(ISNULL([Amount.In], 0)) [Amount.In]
         , SUM(ISNULL([Amount.Out], 0)) [Amount.Out]
+        , SUM(ISNULL([AmountPrepay], 0)) [AmountPrepay]
+        , SUM(ISNULL([AmountPrepay.In], 0)) [AmountPrepay.In]
+        , SUM(ISNULL([AmountPrepay.Out], 0)) [AmountPrepay.Out]
         , COUNT_BIG(*) AS COUNT
       FROM [dbo].[Register.Accumulation.StaffingTable]
       GROUP BY

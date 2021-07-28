@@ -39,11 +39,16 @@ CREATE OR ALTER VIEW dbo.[Operation.AdditionalParametersDepartment.v] WITH SCHEM
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.addressSMS')), '') [addressSMS]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.organisationCheck')), '') [organisationCheck]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.defaultCoockingTime')), 0) [defaultCoockingTime]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.currentCoockingTime')), 0) [currentCoockingTime]
+      , TRY_CONVERT(DATETIME, JSON_VALUE(doc, N'$.currentCookingTimeExpiredAt'),127) [currentCookingTimeExpiredAt]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.defaultDeliveryTime')), 0) [defaultDeliveryTime]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$.iikoTerminalId')), '') [iikoTerminalId]
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc, N'$.paymentGateway')), '') [paymentGateway]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc, N'$.keyVaultURL')), '') [keyVaultURL]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc, N'$.isTaxPayer')), 0) [isTaxPayer]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.AreaTotal')), 0) [AreaTotal]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.AreaTrade')), 0) [AreaTrade]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.AreaKitchen')), 0) [AreaKitchen]
       FROM dbo.[Documents]
       WHERE [operation] = 'CE62E430-3004-11E8-A0FF-732D589B1ACA'
 ; 
@@ -551,6 +556,7 @@ CREATE OR ALTER VIEW dbo.[Operation.Перенос операций LIQPAY (Пр
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.OperationForSearch')) [OperationForSearch]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.OperationForSet')) [OperationForSet]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$.AgregatorForSearch')) [AgregatorForSearch]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc, N'$.DocsCount')), 0) [DocsCount]
       FROM dbo.[Documents]
       WHERE [operation] = '4A271030-E53A-11EB-A1D6-8F6C25760D94'
 ; 

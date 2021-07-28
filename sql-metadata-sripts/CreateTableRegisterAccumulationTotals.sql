@@ -1067,6 +1067,9 @@
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1), 0)) [Amount]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, null), 0)) [Amount.In]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null, 1), 0)) [Amount.Out]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPrepay"')) * IIF(kind = 1, 1, -1), 0)) [AmountPrepay]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPrepay"')) * IIF(kind = 1, 1, null), 0)) [AmountPrepay.In]
+        , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPrepay"')) * IIF(kind = 1, null, 1), 0)) [AmountPrepay.Out]
         , COUNT_BIG(*) AS COUNT
       FROM [dbo].[Accumulation] WHERE [type] = N'Register.Accumulation.StaffingTable'
       GROUP BY

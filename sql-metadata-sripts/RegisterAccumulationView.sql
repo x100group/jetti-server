@@ -1068,6 +1068,7 @@
         d.exchangeRate, Department, DepartmentCompany, StaffingType, StaffingTablePosition, Employee, Person
       , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], SalaryAnalytic, currency
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountPrepay] * IIF(r.kind = 1, 1, -1) [AmountPrepay], d.[AmountPrepay] * IIF(r.kind = 1, 1, null) [AmountPrepay.In], d.[AmountPrepay] * IIF(r.kind = 1, null, 1) [AmountPrepay.Out]
         FROM [dbo].Accumulation r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
@@ -1082,6 +1083,7 @@
         , [SalaryAnalytic] UNIQUEIDENTIFIER N'$.SalaryAnalytic'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
+        , [AmountPrepay] MONEY N'$.AmountPrepay'
         ) AS d
         WHERE r.type = N'Register.Accumulation.StaffingTable';
     GO
