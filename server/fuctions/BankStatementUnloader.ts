@@ -710,8 +710,10 @@ export class BankStatementUnloader {
               const comNazn = `${naznStrings[0]} ${naznStrings[1]}`;
               if (comNazn.length > naznMaxLength) throw new Error(`Превышена максимально допустимая длина назначения платежа в документе №${row['Номер']} на ${comNazn.length - naznMaxLength} символов`);
               result += `${rowSpliter}НазначениеПлатежа=${comNazn}`;
-              result += `${rowSpliter}НазначениеПлатежа1=${naznStrings[0]}`;
-              result += `${rowSpliter}НазначениеПлатежа2=${naznStrings[1]}`;
+              if (!this.isKAZAKHSTAN()) {
+                result += `${rowSpliter}НазначениеПлатежа1=${naznStrings[0]}`;
+                result += `${rowSpliter}НазначениеПлатежа2=${naznStrings[1]}`;
+              }
               continue;
             case 'ПолучательИНН':
             case 'ПолучательБИН_ИИН':
