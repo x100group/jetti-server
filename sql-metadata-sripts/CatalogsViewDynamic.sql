@@ -108,6 +108,51 @@ GO
 
       
       
+------------------------------ BEGIN Catalog.BRMRules ------------------------------
+
+      
+      CREATE OR ALTER VIEW dbo.[Catalog.BRMRules] AS
+        
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "BRMRules", d.posted, d.deleted, d.isfolder, d.timestamp, d.version
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[functionName] [functionName]
+        , d.[weight] [weight]
+      
+        , ISNULL(l5.id, d.id) [BRMRules.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [BRMRules.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [BRMRules.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [BRMRules.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [BRMRules.Level1.id]
+        , ISNULL(l5.description, d.description) [BRMRules.Level5]
+        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BRMRules.Level4]
+        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [BRMRules.Level3]
+        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [BRMRules.Level2]
+        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [BRMRules.Level1]
+      FROM [Catalog.BRMRules.v] d WITH (NOEXPAND)
+        LEFT JOIN [Catalog.BRMRules.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.BRMRules.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.BRMRules.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.BRMRules.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.BRMRules.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+    ;
+GO
+GRANT SELECT ON dbo.[Catalog.BRMRules] TO jetti;
+GO
+
+      
+------------------------------ END Catalog.BRMRules ------------------------------
+
+      
+      
 ------------------------------ BEGIN Catalog.BusinessRegion ------------------------------
 
       

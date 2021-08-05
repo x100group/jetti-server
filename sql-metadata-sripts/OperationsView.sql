@@ -503,3 +503,42 @@ GO
 
       
 ------------------------------ END Operation.Перенос операций LIQPAY (Приватбанк) ------------------------------
+
+------------------------------ BEGIN Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода ------------------------------
+
+      CREATE OR ALTER VIEW dbo.[Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода] AS
+      
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "Перенос операций LIQPAY (Приватбанк) из прочего прихода",  d.posted, d.deleted, d.isfolder, d.timestamp, d.version
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
+        , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
+        , d.[Amount] [Amount]
+        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
+        , d.[DataStart] [DataStart]
+        , d.[DataEnd] [DataEnd]
+        , ISNULL([OperationForSearch.v].description, '') [OperationForSearch.value], d.[OperationForSearch] [OperationForSearch.id], [OperationForSearch.v].type [OperationForSearch.type]
+        , ISNULL([OperationForSet.v].description, '') [OperationForSet.value], d.[OperationForSet] [OperationForSet.id], [OperationForSet.v].type [OperationForSet.type]
+        , ISNULL([BankAccountForSearch.v].description, '') [BankAccountForSearch.value], d.[BankAccountForSearch] [BankAccountForSearch.id], [BankAccountForSearch.v].type [BankAccountForSearch.type]
+        , d.[DocsCount] [DocsCount]
+      FROM [Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода.v] d WITH (NOEXPAND)
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
+        LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
+        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
+        LEFT JOIN dbo.[Catalog.Operation.v] [OperationForSearch.v] WITH (NOEXPAND) ON [OperationForSearch.v].id = d.[OperationForSearch]
+        LEFT JOIN dbo.[Catalog.Operation.v] [OperationForSet.v] WITH (NOEXPAND) ON [OperationForSet.v].id = d.[OperationForSet]
+        LEFT JOIN dbo.[Catalog.BankAccount.v] [BankAccountForSearch.v] WITH (NOEXPAND) ON [BankAccountForSearch.v].id = d.[BankAccountForSearch]
+    ; 
+GO
+GRANT SELECT ON dbo.[Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода] TO jetti;
+GO
+
+      
+------------------------------ END Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода ------------------------------
