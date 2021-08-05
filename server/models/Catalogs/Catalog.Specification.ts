@@ -44,6 +44,8 @@ export class CatalogSpecification extends DocumentBase {
   @Props({ type: 'table', required: false, label: 'Ингредиенты' })
   Ingridients: Ingridient[] = [new Ingridient()];
 
+  @Props({ type: 'table', required: false, label: 'Этапы производства' })
+  ProductionStages: ProductionStage[] = [new ProductionStage()];
 }
 
 export class OutputProduct {
@@ -75,4 +77,18 @@ export class Ingridient {
 
 }
 
+export class ProductionStage {
 
+  @Props({
+    type: 'Catalog.Operation.Type', label: 'Этап',
+    owner: [{ dependsOn: '67676F80-F5E5-11EB-B33A-81E873583715', filterBy: 'parent', isOwnerFixed: true }]
+  })
+  Stage: Ref = null;
+
+  @Props({ type: 'number', label: 'Длительность, мин' })
+  Duration = 0;
+
+  @Props({ type: 'number', label: 'Порядок' })
+  Order = 0;
+
+}
