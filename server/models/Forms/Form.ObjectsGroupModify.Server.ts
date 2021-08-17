@@ -328,7 +328,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     ${queryOb.joins.join(`\n`)}
     WHERE 1 = 1
     AND d."type" = N'${(await this.getRecieverType())}'
-    AND ${filterBuilder(listFilter).where.replace(/"/g, '').replace('d.user', 'd."user"')}`.trim();
+    AND ${(await filterBuilder(listFilter, this.getTX())).where.replace(/"/g, '').replace('d.user', 'd."user"')}`.trim();
     if (this.OperationType) query += `AND d.Operation = '${this.OperationType}'`;
     return query;
   }
