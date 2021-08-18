@@ -344,6 +344,7 @@
     SELECT
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department2"')) [Department2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."company2"')) [company2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."TypeFranchise"')) [TypeFranchise]
@@ -362,6 +363,7 @@
     AS
     SELECT
       id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."BeginDate"'),127) [BeginDate]
         , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."EndDate"'),127) [EndDate]

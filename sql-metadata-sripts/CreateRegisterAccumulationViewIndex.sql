@@ -548,6 +548,7 @@
     CREATE OR ALTER VIEW [Register.Accumulation.Sales.v] WITH SCHEMABINDING AS
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"')) [Customer]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) [Product]
@@ -590,7 +591,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Sales';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales.v]([date], [document], [company], [calculated], [parent], [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [CashShift.In], [CashShift.Out], [Cost], [Cost.In], [Cost.Out], [Qty], [Qty.In], [Qty.Out], [Amount], [Amount.In], [Amount.Out], [Discount], [Discount.In], [Discount.Out], [Tax], [Tax.In], [Tax.Out], [AmountInDoc], [AmountInDoc.In], [AmountInDoc.Out], [AmountInAR], [AmountInAR.In], [AmountInAR.Out]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales.v]([date], [document], [company], [calculated], [parent], [currency], [RetailNetwork], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [CashShift.In], [CashShift.Out], [Cost], [Cost.In], [Cost.Out], [Qty], [Qty.In], [Qty.Out], [Amount], [Amount.In], [Amount.Out], [Discount], [Discount.In], [Discount.Out], [Tax], [Tax.In], [Tax.Out], [AmountInDoc], [AmountInDoc.In], [AmountInDoc.Out], [AmountInAR], [AmountInAR.In], [AmountInAR.Out]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Sales] AS SELECT * FROM [Register.Accumulation.Sales.v] WITH (NOEXPAND);
     GO

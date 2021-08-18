@@ -76,6 +76,8 @@ GO
         , d.[dateTill] [dateTill]
         , d.[availableCron] [availableCron]
         , d.[slug] [slug]
+        , d.[typeAction] [typeAction]
+        , d.[valueAction] [valueAction]
       
         , ISNULL(l5.id, d.id) [Advertising.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Advertising.Level4.id]

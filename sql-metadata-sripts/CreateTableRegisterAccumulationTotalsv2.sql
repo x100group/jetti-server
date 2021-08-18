@@ -809,6 +809,7 @@
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , [currency]
+        , [RetailNetwork]
         , [Department]
         , [Customer]
         , [Product]
@@ -842,6 +843,7 @@
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , [currency]
+        , [RetailNetwork]
         , [Department]
         , [Customer]
         , [Product]
@@ -853,6 +855,7 @@
           [date],
           [company]
         , [currency]
+        , [RetailNetwork]
         , [Department]
         , [Customer]
         , [Product]

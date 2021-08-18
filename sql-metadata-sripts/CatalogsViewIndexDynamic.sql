@@ -59,6 +59,8 @@ CREATE OR ALTER VIEW dbo.[Catalog.Advertising.v] WITH SCHEMABINDING AS
       , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."dateTill"'),127) [dateTill]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."availableCron"')), '') [availableCron]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."slug"')), '') [slug]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."typeAction"')), '') [typeAction]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."valueAction"')), '') [valueAction]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.Advertising'
 ;
