@@ -16,7 +16,7 @@ const defaultExcludesTypes = ['Catalog.Operation.Group', 'Catalog.User', 'Catalo
 
 export function userContextFilter(context: IUserContext, compField = '"company.id"') {
   return context.isAdmin ? '' :
-    ` AND EXISTS (s
+    ` AND EXISTS (
     SELECT 1 FROM [rls].[company]
     WHERE
       [user] = N'${context.email}'
