@@ -98,7 +98,7 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Catalog.User', hiddenInList: false, readOnly: true })
   user: Ref = null;
 
-  @Props({ type: 'Catalog.Department', hiddenInList: false })
+  @Props({ type: 'Catalog.Department', hiddenInList: false, storageType: 'all' })
   Department: Ref = null;
 
   @Props({ type: 'date', isAdditional: true })
