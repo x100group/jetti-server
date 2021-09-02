@@ -325,6 +325,7 @@ async function historyById(historyId: string, tx: MSSQL): Promise<IFlatDocument 
     ,isfolder
     ,company
     ,user
+    ,info
     ,_timestamp
  FROM "Documents.Hisroty" WHERE id = @p1`, [historyId]);
   if (result) return flatDocument(result); else return null;

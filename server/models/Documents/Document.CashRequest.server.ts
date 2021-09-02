@@ -25,9 +25,32 @@ import { Ref } from 'jetti-middle';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
+  private dynamicModuleId = '6FBD64C0-0BD7-11EC-8655-0B653CB53BE7';
+
+  async dynamicModule(tx: MSSQL) {
+    const dynamicModule = await lib.doc.byId(this.dynamicModuleId, tx);
+    if (!dynamicModule) return;
+    return new Function('', dynamicModule!['module']).bind(this)();
+  }
+
+  async dynamicHandler(eventKey: string, tx: MSSQL) {
+    const dynamicModule = await this.dynamicModule(tx);
+    if (!dynamicModule || !dynamicModule[eventKey]) return false;
+    await dynamicModule[eventKey](this, tx);
+    return true;
+  }
+
   async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
+    if (await this.dynamicHandler(`onValueChanged_${prop}`, tx)) return this;
+
     let query = '';
     switch (prop) {
+      case 'Operation':
+        if (this.Operation === 'Выплата ЗП для самозанятых') {
+          const props = this.Props();
+          this.Props = () => ({ ...props, PersonContract: { ...props.PersonContract, required: true } });
+        }
+        return this;
       case 'company':
         this.CashOrBank = null;
         this.tempCompanyParent = null;
@@ -42,6 +65,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.CashRecipientBankAccount = null;
         this.Contract = null;
         this.Department = null;
+        this.PersonContract = null;
         this.TaxKPP = '';
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
         if (company) {
@@ -80,6 +104,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       case 'CashRecipient':
         this.Contract = null;
         this.CashRecipientBankAccount = null;
+        this.PersonContract = null;
         if (this.Operation === 'Оплата ДС в другую организацию') { this.CashOrBankIn = null; return this; }
         if (!value.id || value.type !== 'Catalog.Counterpartie') { this.Contract = null; return this; }
         query = `
@@ -117,6 +142,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async onCommand(command: string, args: any, tx: MSSQL): Promise<{ [x: string]: any }> {
+    if (await this.dynamicHandler(`onCommand_${command}`, tx)) return this;
+
     switch (command) {
       case 'returnToStatusPrepared':
         await this.returnToStatusPrepared(tx);
@@ -159,9 +186,9 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 
   async FillByWebAPIBody(body: { [x: string]: any }, tx: MSSQL) {
     const query = `
-          SELECT [id]
-                ,[company]
-            FROM [dbo].[Documents] where ExchangeCode = @p1 and type = 'Catalog.Department'`;
+          SELECT[id]
+        , [company]
+    FROM[dbo].[Documents] where ExchangeCode = @p1 and type = 'Catalog.Department'`;
     const dep = await tx.oneOrNone<{ id, company }>(query, [body.DepartmentId]);
     if (dep) {
       this['Department'] = dep.id;
@@ -213,12 +240,12 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     let taxInfo = '';
     if (countryCode === 'UKR') {
       // tslint:disable-next-line: max-line-length
-      taxInfo = taxRate ? `В т.ч. ПДВ (${taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без податку (ПДВ)';
+      taxInfo = taxRate ? `В т.ч.ПДВ(${taxRate} %) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без податку (ПДВ)';
     } else {
-      taxInfo = taxRate ? `В т.ч. НДС (${taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без налога (НДС)';
+      taxInfo = taxRate ? `В т.ч.НДС(${taxRate} %) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без налога (НДС)';
     }
     newInfo.push(infoArr[0].trim());
-    newInfo.push(`${countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(amount.toFixed(2)).replace('.', '-')} ${currencyShortName}. ${taxInfo}`);
+    newInfo.push(`${countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(amount.toFixed(2)).replace('.', '-')} ${currencyShortName}.${taxInfo} `);
     return newInfo.join('\n');
   }
 
@@ -235,7 +262,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       if (relatedDocs.length) {
         let relatedDocsString = '';
         relatedDocs.forEach(doc => { relatedDocsString += '\n' + doc.description; });
-        throw new Error(`Операция не может быть выполнена, есть связанные документы: \n ${relatedDocsString}`);
+        throw new Error(`Операция не может быть выполнена, есть связанные документы: \n ${relatedDocsString} `);
       }
       if (this.workflowID) {
         await DeleteProcess(this.workflowID);
@@ -390,6 +417,8 @@ ORDER BY
   }
 
   async beforeSave(tx: MSSQL): Promise<this> {
+    if (await this.dynamicHandler('beforeSave', tx))
+      return this;
     if (this.PayDay && this.PayDay.setHours(0) < this.date.setHours(0, 0, 0, 0)) throw new Error(`Дата платежа не может быть раньше даты документа`);
     if (this.Amount < 0.01) throw new Error(`${this.description} неверно указана сумма`);
     if (!this.CashKind) throw new Error(`${this.description} не указан тип платежа`);

@@ -98,7 +98,10 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
           copyDoc.posted = false; copyDoc.deleted = false; copyDoc.timestamp = null;
           copyDoc.parent = copyDoc.parent;
           if (userID) copyDoc.user = userID;
+          const notCopied = ServerDoc.getPropsWithOption('isNotCopy', true);
+          const emptyDoc = { ...ServerDoc };
           ServerDoc.map(copyDoc);
+          Object.keys(notCopied).forEach(k => ServerDoc[k] = emptyDoc[k]);
           addIncomeParamsIntoDoc(params, ServerDoc);
           ServerDoc.description = 'Copy: ' + ServerDoc.description;
           if (ServerDoc.onCopy) await ServerDoc.onCopy(sdb);

@@ -85,28 +85,28 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.Department.Kind', required: true, isProtected: true })
   kind: Ref = null;
 
-  @Props({ type: 'string', required: false })
+  @Props({ type: 'string', required: false, isNotCopy: true })
   Mail = '';
 
-  @Props({ type: 'string', required: false })
+  @Props({ type: 'string', required: false, isNotCopy: true })
   Phone = '';
 
-  @Props({ type: 'string', required: false })
+  @Props({ type: 'string', required: false, isNotCopy: true })
   Address = '';
 
-  @Props({ type: 'string', required: false })
+  @Props({ type: 'string', required: false, isNotCopy: true })
   AddressLegal = '';
 
-  @Props({ type: 'string', required: false, isAdditional: true, label: 'Долгота' })
+  @Props({ type: 'string', required: false, isAdditional: true, label: 'Долгота', isNotCopy: true })
   Longitude = '';
 
-  @Props({ type: 'string', required: false, isAdditional: true, label: 'Широта' })
+  @Props({ type: 'string', required: false, isAdditional: true, label: 'Широта', isNotCopy: true })
   Latitude = '';
 
-  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (общая) кв.м.' })
+  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (общая) кв.м.', isNotCopy: true })
   AreaTotal = '';
 
-  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (торговая) кв.м.' })
+  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (торговая) кв.м.', isNotCopy: true })
   AreaTrade = '';
 
   @Props({ type: 'enum', value: ['ANALYTICS', 'SYNTHETICS', 'NONE'] })
