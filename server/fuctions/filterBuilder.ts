@@ -16,7 +16,7 @@ const defaultExcludesTypes = ['Catalog.Operation.Group', 'Catalog.User', 'Catalo
 
 export function userContextFilter(context: IUserContext, compField = '"company.id"') {
   return context.isAdmin ? '' :
-    ` AND EXISTS (s
+    ` AND EXISTS (
     SELECT 1 FROM [rls].[company]
     WHERE
       [user] = N'${context.email}'
@@ -35,6 +35,7 @@ export async function filterBuilder(filter: FormListFilter[], tx: MSSQL, exclude
   });
 
   const useDescendants = async (f: FormListFilter) => {
+    if (['in group', 'not in group'].includes(f.center) && typeof f.right !== 'object') return true;
     if (!f.right?.id || f.left === 'parent.id' || typeof f.right !== 'object' || excludesTypes.includes(f.right.type))
       return false;
     if (!tx) tx = lib.util.jettiPoolTx();
@@ -115,6 +116,12 @@ export async function filterBuilder(filter: FormListFilter[], tx: MSSQL, exclude
         break;
       case 'not in':
         where += ` AND ${f.column} NOT IN (${(f.right['value'] || f.right)}) `;
+        break;
+      case 'in group': case 'not in group':
+        if (tempTable.indexOf(`[#${f.left}]`) < 0) {
+          tempTable += `SELECT id INTO [#${f.left}] FROM dbo.[Descendants]('${f.right.id}', '${f.right.type}');\n`;
+          where += ` AND ${f.column} ${f.center.replace(' group', '').toUpperCase()} (SELECT id FROM [#${f.left}])`;
+        }
         break;
       case 'is null':
         where += ` AND ${f.column} IS NULL `;
