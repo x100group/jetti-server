@@ -25,10 +25,12 @@ import { RegisterAccumulationPLRC } from './PL.RC';
 import { RegisterAccumulationInvestmentAnalytics } from './Investment.Analytics';
 import { RegisterAccumulationEmployeeTimekeeping } from './EmployeeTimekeeping';
 import { RegisterAccumulationCharityAnalytic } from './CharityAnalytic';
+import { RegisterAccumulationPromotionPoints } from './PromotionPoints';
 
 export type RegisterAccumulationTypes =
   'Register.Accumulation.AccountablePersons' |
   'Register.Accumulation.Investment.Analytics' |
+  'Register.Accumulation.PromotionPoints' |
   'Register.Accumulation.PaymentBatch' |
   'Register.Accumulation.OrderPayment' |
   'Register.Accumulation.Acquiring' |
@@ -81,6 +83,7 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.BudgetItemTurnover', Class: RegisterAccumulationBudgetItemTurnover },
   { type: 'Register.Accumulation.Intercompany', Class: RegisterAccumulationIntercompany },
   { type: 'Register.Accumulation.Acquiring', Class: RegisterAccumulationAcquiring },
+  { type: 'Register.Accumulation.PromotionPoints', Class: RegisterAccumulationPromotionPoints },
   { type: 'Register.Accumulation.StaffingTable', Class: RegisterAccumulationStaffingTable },
 ];
 
