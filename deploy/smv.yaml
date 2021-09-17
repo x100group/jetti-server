@@ -55,7 +55,7 @@ spec:
         - name: REGISTER_ACCUMULATION_SOURCE
           value: "[x100-data]."
         - name: REFRESH_ID
-          value: "0006"
+          value: "0007"
         - name: NODE_ENV
           value: production
         image: eu.gcr.io/jetti-x100/jetti-api:latest
