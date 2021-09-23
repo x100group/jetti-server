@@ -13,6 +13,9 @@ export class RegisterAccumulationPromotionPoints extends RegisterAccumulation {
   @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
 
+  @Props({ type: 'string', dimension: true })
+  OrderId = '';
+
   @Props({ type: 'Catalog.RetailClient', dimension: true })
   OwnerInner: Ref = null;
 
