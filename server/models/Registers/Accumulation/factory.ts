@@ -26,6 +26,7 @@ import { RegisterAccumulationInvestmentAnalytics } from './Investment.Analytics'
 import { RegisterAccumulationEmployeeTimekeeping } from './EmployeeTimekeeping';
 import { RegisterAccumulationCharityAnalytic } from './CharityAnalytic';
 import { RegisterAccumulationPromotionPoints } from './PromotionPoints';
+import { RegisterAccumulationOrderGoods } from './OrderGoods';
 
 export type RegisterAccumulationTypes =
   'Register.Accumulation.AccountablePersons' |
@@ -33,6 +34,7 @@ export type RegisterAccumulationTypes =
   'Register.Accumulation.PromotionPoints' |
   'Register.Accumulation.PaymentBatch' |
   'Register.Accumulation.OrderPayment' |
+  'Register.Accumulation.OrderGoods' |
   'Register.Accumulation.Acquiring' |
   'Register.Accumulation.AP' |
   'Register.Accumulation.AR' |
@@ -62,6 +64,7 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.PaymentBatch', Class: RegisterAccumulationPaymentBatch },
   { type: 'Register.Accumulation.Investment.Analytics', Class: RegisterAccumulationInvestmentAnalytics },
   { type: 'Register.Accumulation.OrderPayment', Class: RegisterAccumulationOrderPayment },
+  { type: 'Register.Accumulation.OrderGoods', Class: RegisterAccumulationOrderGoods },
   { type: 'Register.Accumulation.AP', Class: RegisterAccumulationAP },
   { type: 'Register.Accumulation.AR', Class: RegisterAccumulationAR },
   { type: 'Register.Accumulation.Bank', Class: RegisterAccumulationBank },
