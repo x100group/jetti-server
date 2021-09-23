@@ -2,11 +2,11 @@ import { Props, Ref } from 'jetti-middle';
 import { JRegisterAccumulation, RegisterAccumulation } from 'jetti-middle';
 
 @JRegisterAccumulation({
-  type: 'Register.Accumulation.OrderGoods',
-  description: 'Заказы на товары'
+  type: 'Register.Accumulation.OrderProduct',
+  description: 'Заказанная номенклатура'
 })
 
-export class RegisterAccumulationOrderGoods extends RegisterAccumulation {
+export class RegisterAccumulationOrderProduct extends RegisterAccumulation {
   @Props({ type: 'Catalog.Operation.Type', required: true, dimension: true })
   OrderType: Ref = null;
 
@@ -58,7 +58,7 @@ export class RegisterAccumulationOrderGoods extends RegisterAccumulation {
   @Props({ type: 'number', resource: true })
   AmountInAccounting = 0;
 
-  constructor(init: Partial<RegisterAccumulationOrderGoods>) {
+  constructor(init: Partial<RegisterAccumulationOrderProduct>) {
     super(init);
     Object.assign(this, init);
   }
