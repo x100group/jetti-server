@@ -39,9 +39,12 @@ export class CatalogDepartmentCompany extends DocumentBase {
   @Props({ type: 'string', required: false, hiddenInList: false, label: 'Security group', order: 4, useIn: 'all' })
   SecurityGroup = '';
 
-  @Props({ type: 'Catalog.StaffingTable', label: 'Должность руководителя', useIn: 'all', order: 5 })
+  @Props({ type: 'Catalog.Department', label: 'Подразделение фин. структуры', storageType: 'elements', order: 5, required: true, useIn: 'all' })
+  Department: Ref = null;
+
+  @Props({ type: 'Catalog.StaffingTable', label: 'Должность руководителя', useIn: 'all', order: 6 })
   StaffingPositionManager: Ref = null;
 
-  @Props({ type: 'Catalog.StaffingTable', label: 'Должность помощника руководителя', useIn: 'all', order: 6 })
+  @Props({ type: 'Catalog.StaffingTable', label: 'Должность помощника руководителя', useIn: 'all', order: 7 })
   StaffingPositionAssistant: Ref = null;
 }
