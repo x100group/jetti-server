@@ -176,6 +176,55 @@
 
       ------------+++++++++++SPECIAL END++++++++++++------------------
       
+------------------------------ BEGIN Register.Accumulation.OrderProduct ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Accumulation.OrderProduct]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, OrderType, MovementType, RetailNetwork, Supplier, Customer, SenderDepartment, SenderStorehouse, RecipientDepartment, RecipientStorehouse, currency, Product, OrderBatch, OrderRow
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [OrderType] UNIQUEIDENTIFIER N'$.OrderType'
+        , [MovementType] UNIQUEIDENTIFIER N'$.MovementType'
+        , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
+        , [Supplier] UNIQUEIDENTIFIER N'$.Supplier'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [SenderDepartment] UNIQUEIDENTIFIER N'$.SenderDepartment'
+        , [SenderStorehouse] UNIQUEIDENTIFIER N'$.SenderStorehouse'
+        , [RecipientDepartment] UNIQUEIDENTIFIER N'$.RecipientDepartment'
+        , [RecipientStorehouse] UNIQUEIDENTIFIER N'$.RecipientStorehouse'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [OrderBatch] UNIQUEIDENTIFIER N'$.OrderBatch'
+        , [OrderRow] NVARCHAR(250) N'$.OrderRow'
+        , [Qty] MONEY N'$.Qty'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.OrderProduct';
+    GO
+    GRANT SELECT,DELETE ON [Register.Accumulation.OrderProduct] TO JETTI;
+    GO
+    
+------------------------------ END Register.Accumulation.OrderProduct ------------------------------
+
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.AP ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.AP]
@@ -1050,6 +1099,51 @@
     GO
     
 ------------------------------ END Register.Accumulation.Acquiring ------------------------------
+
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
+------------------------------ BEGIN Register.Accumulation.PromotionPoints ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Accumulation.PromotionPoints]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, RetailNetwork, Department, OrderId, OwnerInner, OwnerExternal, PromotionChannel, currency, batch, ExpiredAt
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [OrderId] NVARCHAR(250) N'$.OrderId'
+        , [OwnerInner] UNIQUEIDENTIFIER N'$.OwnerInner'
+        , [OwnerExternal] NVARCHAR(250) N'$.OwnerExternal'
+        , [PromotionChannel] UNIQUEIDENTIFIER N'$.PromotionChannel'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [batch] UNIQUEIDENTIFIER N'$.batch'
+        , [ExpiredAt] DATE N'$.ExpiredAt'
+        , [Qty] MONEY N'$.Qty'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.PromotionPoints';
+    GO
+    GRANT SELECT,DELETE ON [Register.Accumulation.PromotionPoints] TO JETTI;
+    GO
+    
+------------------------------ END Register.Accumulation.PromotionPoints ------------------------------
 
       ------------+++++++++++SPECIAL START++++++++++++--------------------
 

@@ -224,6 +224,80 @@
       RAISERROR('Register.Accumulation.OrderPayment end', 0 ,1) WITH NOWAIT;
       GO
 
+      RAISERROR('Register.Accumulation.OrderProduct start', 0 ,1) WITH NOWAIT;
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.OrderProduct.TO.v] WITH SCHEMABINDING AS
+      SELECT
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+        , [company]
+        , [OrderType]
+        , [MovementType]
+        , [RetailNetwork]
+        , [Supplier]
+        , [Customer]
+        , [SenderDepartment]
+        , [SenderStorehouse]
+        , [RecipientDepartment]
+        , [RecipientStorehouse]
+        , [currency]
+        , [Product]
+        , [OrderBatch]
+        , [OrderRow]
+        , SUM(ISNULL([Qty], 0)) [Qty]
+        , SUM(ISNULL([Qty.In], 0)) [Qty.In]
+        , SUM(ISNULL([Qty.Out], 0)) [Qty.Out]
+        , SUM(ISNULL([Amount], 0)) [Amount]
+        , SUM(ISNULL([Amount.In], 0)) [Amount.In]
+        , SUM(ISNULL([Amount.Out], 0)) [Amount.Out]
+        , SUM(ISNULL([AmountInBalance], 0)) [AmountInBalance]
+        , SUM(ISNULL([AmountInBalance.In], 0)) [AmountInBalance.In]
+        , SUM(ISNULL([AmountInBalance.Out], 0)) [AmountInBalance.Out]
+        , SUM(ISNULL([AmountInAccounting], 0)) [AmountInAccounting]
+        , SUM(ISNULL([AmountInAccounting.In], 0)) [AmountInAccounting.In]
+        , SUM(ISNULL([AmountInAccounting.Out], 0)) [AmountInAccounting.Out]
+        , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[Register.Accumulation.OrderProduct]
+      GROUP BY
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
+        , [company]
+        , [OrderType]
+        , [MovementType]
+        , [RetailNetwork]
+        , [Supplier]
+        , [Customer]
+        , [SenderDepartment]
+        , [SenderStorehouse]
+        , [RecipientDepartment]
+        , [RecipientStorehouse]
+        , [currency]
+        , [Product]
+        , [OrderBatch]
+        , [OrderRow]
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.OrderProduct.TO] ON [dbo].[Register.Accumulation.OrderProduct.TO.v] (
+          [date],
+          [company]
+        , [OrderType]
+        , [MovementType]
+        , [RetailNetwork]
+        , [Supplier]
+        , [Customer]
+        , [SenderDepartment]
+        , [SenderStorehouse]
+        , [RecipientDepartment]
+        , [RecipientStorehouse]
+        , [currency]
+        , [Product]
+        , [OrderBatch]
+        , [OrderRow]);
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.OrderProduct.TO] AS SELECT * FROM [dbo].[Register.Accumulation.OrderProduct.TO.v] WITH (NOEXPAND);
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.OrderProduct.TO] TO jetti;
+      GO
+      RAISERROR('Register.Accumulation.OrderProduct end', 0 ,1) WITH NOWAIT;
+      GO
+
       RAISERROR('Register.Accumulation.AP start', 0 ,1) WITH NOWAIT;
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AP.TO.v] WITH SCHEMABINDING AS
@@ -1236,6 +1310,65 @@
       GRANT SELECT ON [dbo].[Register.Accumulation.Acquiring.TO] TO jetti;
       GO
       RAISERROR('Register.Accumulation.Acquiring end', 0 ,1) WITH NOWAIT;
+      GO
+
+      RAISERROR('Register.Accumulation.PromotionPoints start', 0 ,1) WITH NOWAIT;
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PromotionPoints.TO.v] WITH SCHEMABINDING AS
+      SELECT
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+        , [company]
+        , [RetailNetwork]
+        , [Department]
+        , [OrderId]
+        , [OwnerInner]
+        , [OwnerExternal]
+        , [PromotionChannel]
+        , [currency]
+        , [batch]
+        , SUM(ISNULL([Qty], 0)) [Qty]
+        , SUM(ISNULL([Qty.In], 0)) [Qty.In]
+        , SUM(ISNULL([Qty.Out], 0)) [Qty.Out]
+        , SUM(ISNULL([Amount], 0)) [Amount]
+        , SUM(ISNULL([Amount.In], 0)) [Amount.In]
+        , SUM(ISNULL([Amount.Out], 0)) [Amount.Out]
+        , SUM(ISNULL([AmountInBalance], 0)) [AmountInBalance]
+        , SUM(ISNULL([AmountInBalance.In], 0)) [AmountInBalance.In]
+        , SUM(ISNULL([AmountInBalance.Out], 0)) [AmountInBalance.Out]
+        , SUM(ISNULL([AmountInAccounting], 0)) [AmountInAccounting]
+        , SUM(ISNULL([AmountInAccounting.In], 0)) [AmountInAccounting.In]
+        , SUM(ISNULL([AmountInAccounting.Out], 0)) [AmountInAccounting.Out]
+        , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[Register.Accumulation.PromotionPoints]
+      GROUP BY
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
+        , [company]
+        , [RetailNetwork]
+        , [Department]
+        , [OrderId]
+        , [OwnerInner]
+        , [OwnerExternal]
+        , [PromotionChannel]
+        , [currency]
+        , [batch]
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PromotionPoints.TO] ON [dbo].[Register.Accumulation.PromotionPoints.TO.v] (
+          [date],
+          [company]
+        , [RetailNetwork]
+        , [Department]
+        , [OrderId]
+        , [OwnerInner]
+        , [OwnerExternal]
+        , [PromotionChannel]
+        , [currency]
+        , [batch]);
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.PromotionPoints.TO] AS SELECT * FROM [dbo].[Register.Accumulation.PromotionPoints.TO.v] WITH (NOEXPAND);
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.PromotionPoints.TO] TO jetti;
+      GO
+      RAISERROR('Register.Accumulation.PromotionPoints end', 0 ,1) WITH NOWAIT;
       GO
 
       RAISERROR('Register.Accumulation.StaffingTable start', 0 ,1) WITH NOWAIT;

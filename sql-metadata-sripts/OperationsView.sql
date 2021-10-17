@@ -44,6 +44,7 @@
         , d.[keyVaultURL] [keyVaultURL]
         , d.[isTaxPayer] [isTaxPayer]
         , ISNULL([WayStoreHouse.v].description, '') [WayStoreHouse.value], d.[WayStoreHouse] [WayStoreHouse.id], [WayStoreHouse.v].type [WayStoreHouse.type]
+        , d.[StickerSettings] [StickerSettings]
         , d.[AreaTotal] [AreaTotal]
         , d.[AreaTrade] [AreaTrade]
         , d.[AreaKitchen] [AreaKitchen]
@@ -85,6 +86,7 @@ GO
         , d.[AdditionalType] [AdditionalType]
         , ISNULL([MainSKU.v].description, '') [MainSKU.value], d.[MainSKU] [MainSKU.id], [MainSKU.v].type [MainSKU.type]
         , d.[Qty] [Qty]
+        , d.[defaultQty] [defaultQty]
         , d.[DeliveryType] [DeliveryType]
       FROM [Operation.AutoAdditionSettings.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
@@ -172,6 +174,8 @@ GO
         , d.[TypeDocument] [TypeDocument]
         , d.[PrintTime] [PrintTime]
         , d.[TypeOfFranchise] [TypeOfFranchise]
+        , d.[DeliveryType] [DeliveryType]
+        , d.[OrderSource] [OrderSource]
         , d.[counterpartyId] [counterpartyId]
         , d.[orderId] [orderId]
       FROM [Operation.CHECK_JETTI_FRONT.v] d WITH (NOEXPAND)
@@ -335,6 +339,7 @@ GO
         , d.[Status] [Status]
         , d.[DateBegin] [DateBegin]
         , d.[DateEnd] [DateEnd]
+        , ISNULL([SourceAggr.v].description, '') [SourceAggr.value], d.[SourceAggr] [SourceAggr.id], [SourceAggr.v].type [SourceAggr.type]
       FROM [Operation.OnlineSalesManagementSettings.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -345,6 +350,7 @@ GO
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
         LEFT JOIN dbo.[Catalog.BusinessRegion.v] [BusinessRegion.v] WITH (NOEXPAND) ON [BusinessRegion.v].id = d.[BusinessRegion]
         LEFT JOIN dbo.[Catalog.RetailNetwork.v] [RetailNetwork.v] WITH (NOEXPAND) ON [RetailNetwork.v].id = d.[RetailNetwork]
+        LEFT JOIN dbo.[Catalog.OrderSource.v] [SourceAggr.v] WITH (NOEXPAND) ON [SourceAggr.v].id = d.[SourceAggr]
     ; 
 GO
 GRANT SELECT ON dbo.[Operation.OnlineSalesManagementSettings] TO jetti;

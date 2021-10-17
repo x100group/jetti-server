@@ -291,6 +291,7 @@ GO
         , d.[TO] [TO]
         , d.[CO] [CO]
         , ISNULL([FunctionalStructure.v].description, '') [FunctionalStructure.value], d.[FunctionalStructure] [FunctionalStructure.id], [FunctionalStructure.v].type [FunctionalStructure.type]
+        , d.[ShortName] [ShortName]
       
         , ISNULL(l5.id, d.id) [JobTitle.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [JobTitle.Level4.id]
@@ -384,6 +385,7 @@ GO
         , d.[Kind] [Kind]
         , d.[SourceType] [SourceType]
         , ISNULL([Country.v].description, '') [Country.value], d.[Country] [Country.id], [Country.v].type [Country.type]
+        , ISNULL([Counterpartie.v].description, '') [Counterpartie.value], d.[Counterpartie] [Counterpartie.id], [Counterpartie.v].type [Counterpartie.type]
       
         , ISNULL(l5.id, d.id) [OrderSource.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [OrderSource.Level4.id]
@@ -407,6 +409,7 @@ GO
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
+        LEFT JOIN dbo.[Catalog.Counterpartie.v] [Counterpartie.v] WITH (NOEXPAND) ON [Counterpartie.v].id = d.[Counterpartie]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.OrderSource] TO jetti;
@@ -435,6 +438,12 @@ GO
         , d.[BonusPercent] [BonusPercent]
         , d.[smsGateway] [smsGateway]
         , d.[keyVaultURL] [keyVaultURL]
+        , d.[publicOfferUrl] [publicOfferUrl]
+        , d.[aboutCompanyUrl] [aboutCompanyUrl]
+        , d.[customerSupportPhone] [customerSupportPhone]
+        , d.[isDeleted] [isDeleted]
+        , ISNULL([ServiceProduct.v].description, '') [ServiceProduct.value], d.[ServiceProduct] [ServiceProduct.id], [ServiceProduct.v].type [ServiceProduct.type]
+        , d.[PlaceHolder] [PlaceHolder]
       
         , ISNULL(l5.id, d.id) [RetailNetwork.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [RetailNetwork.Level4.id]
@@ -461,6 +470,7 @@ GO
         LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
         LEFT JOIN dbo.[Catalog.BusinessRegion.v] [BusinessRegion.v] WITH (NOEXPAND) ON [BusinessRegion.v].id = d.[BusinessRegion]
         LEFT JOIN dbo.[Catalog.Currency.v] [Currency.v] WITH (NOEXPAND) ON [Currency.v].id = d.[Currency]
+        LEFT JOIN dbo.[Catalog.Product.v] [ServiceProduct.v] WITH (NOEXPAND) ON [ServiceProduct.v].id = d.[ServiceProduct]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.RetailNetwork] TO jetti;

@@ -237,6 +237,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."TO"')), 0) [TO]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."CO"')), 0) [CO]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."FunctionalStructure"')) [FunctionalStructure]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."ShortName"')), '') [ShortName]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.JobTitle'
 ;
@@ -311,6 +312,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.OrderSource.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Kind"')), '') [Kind]
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."SourceType"')), '') [SourceType]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Country"')) [Country]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Counterpartie"')) [Counterpartie]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.OrderSource'
 ;
@@ -353,6 +355,12 @@ CREATE OR ALTER VIEW dbo.[Catalog.RetailNetwork.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."BonusPercent"')), 0) [BonusPercent]
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."smsGateway"')), '') [smsGateway]
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."keyVaultURL"')), '') [keyVaultURL]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."publicOfferUrl"')), '') [publicOfferUrl]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."aboutCompanyUrl"')), '') [aboutCompanyUrl]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."customerSupportPhone"')), '') [customerSupportPhone]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isDeleted"')), 0) [isDeleted]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ServiceProduct"')) [ServiceProduct]
+      , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."PlaceHolder"')), '') [PlaceHolder]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.RetailNetwork'
 ;

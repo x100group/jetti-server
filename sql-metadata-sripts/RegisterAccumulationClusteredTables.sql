@@ -322,6 +322,96 @@
     
 ------------------------------ END Register.Accumulation.OrderPayment ------------------------------
 
+------------------------------ BEGIN Register.Accumulation.OrderProduct ------------------------------
+
+    RAISERROR('Register.Accumulation.OrderProduct start', 0 ,1) WITH NOWAIT;
+    GO
+    CREATE OR ALTER TRIGGER [Register.Accumulation.OrderProduct.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.OrderProduct');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.OrderProduct] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.OrderProduct');
+      IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.OrderProduct] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.OrderProduct');
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.OrderProduct') = 0 RETURN;
+
+      INSERT INTO [Register.Accumulation.OrderProduct]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [OrderType], [MovementType], [RetailNetwork], [Supplier], [Customer], [SenderDepartment], [SenderStorehouse], [RecipientDepartment], [RecipientStorehouse], [currency], [Product], [OrderBatch], [OrderRow]
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [OrderType] UNIQUEIDENTIFIER N'$.OrderType'
+        , [MovementType] UNIQUEIDENTIFIER N'$.MovementType'
+        , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
+        , [Supplier] UNIQUEIDENTIFIER N'$.Supplier'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [SenderDepartment] UNIQUEIDENTIFIER N'$.SenderDepartment'
+        , [SenderStorehouse] UNIQUEIDENTIFIER N'$.SenderStorehouse'
+        , [RecipientDepartment] UNIQUEIDENTIFIER N'$.RecipientDepartment'
+        , [RecipientStorehouse] UNIQUEIDENTIFIER N'$.RecipientStorehouse'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [OrderBatch] UNIQUEIDENTIFIER N'$.OrderBatch'
+        , [OrderRow] NVARCHAR(250) N'$.OrderRow'
+        , [Qty] MONEY N'$.Qty'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.OrderProduct';
+    END
+    GO
+    DROP TABLE IF EXISTS [Register.Accumulation.OrderProduct];
+    DROP VIEW IF EXISTS [Register.Accumulation.OrderProduct];
+    DROP VIEW IF EXISTS [Register.Accumulation.OrderProduct.v];
+    SELECT
+      r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
+      d.exchangeRate, [OrderType], [MovementType], [RetailNetwork], [Supplier], [Customer], [SenderDepartment], [SenderStorehouse], [RecipientDepartment], [RecipientStorehouse], [currency], [Product], [OrderBatch], [OrderRow]
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+    INTO [Register.Accumulation.OrderProduct]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [OrderType] UNIQUEIDENTIFIER N'$.OrderType'
+        , [MovementType] UNIQUEIDENTIFIER N'$.MovementType'
+        , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
+        , [Supplier] UNIQUEIDENTIFIER N'$.Supplier'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [SenderDepartment] UNIQUEIDENTIFIER N'$.SenderDepartment'
+        , [SenderStorehouse] UNIQUEIDENTIFIER N'$.SenderStorehouse'
+        , [RecipientDepartment] UNIQUEIDENTIFIER N'$.RecipientDepartment'
+        , [RecipientStorehouse] UNIQUEIDENTIFIER N'$.RecipientStorehouse'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [OrderBatch] UNIQUEIDENTIFIER N'$.OrderBatch'
+        , [OrderRow] NVARCHAR(250) N'$.OrderRow'
+        , [Qty] MONEY N'$.Qty'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.OrderProduct';
+    GO
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.OrderProduct] TO JETTI;
+    GO
+    ALTER TABLE [Register.Accumulation.OrderProduct] ADD CONSTRAINT [PK_Register.Accumulation.OrderProduct] PRIMARY KEY NONCLUSTERED ([id]);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.OrderProduct] ON [Register.Accumulation.OrderProduct];
+    RAISERROR('Register.Accumulation.OrderProduct finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+------------------------------ END Register.Accumulation.OrderProduct ------------------------------
+
 ------------------------------ BEGIN Register.Accumulation.AP ------------------------------
 
     RAISERROR('Register.Accumulation.AP start', 0 ,1) WITH NOWAIT;
@@ -1921,6 +2011,88 @@
     GO
     
 ------------------------------ END Register.Accumulation.Acquiring ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.PromotionPoints ------------------------------
+
+    RAISERROR('Register.Accumulation.PromotionPoints start', 0 ,1) WITH NOWAIT;
+    GO
+    CREATE OR ALTER TRIGGER [Register.Accumulation.PromotionPoints.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.PromotionPoints');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.PromotionPoints] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PromotionPoints');
+      IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.PromotionPoints] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.PromotionPoints');
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.PromotionPoints') = 0 RETURN;
+
+      INSERT INTO [Register.Accumulation.PromotionPoints]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [RetailNetwork], [Department], [OrderId], [OwnerInner], [OwnerExternal], [PromotionChannel], [currency], [batch], [ExpiredAt]
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [OrderId] NVARCHAR(250) N'$.OrderId'
+        , [OwnerInner] UNIQUEIDENTIFIER N'$.OwnerInner'
+        , [OwnerExternal] NVARCHAR(250) N'$.OwnerExternal'
+        , [PromotionChannel] UNIQUEIDENTIFIER N'$.PromotionChannel'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [batch] UNIQUEIDENTIFIER N'$.batch'
+        , [ExpiredAt] DATE N'$.ExpiredAt'
+        , [Qty] MONEY N'$.Qty'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.PromotionPoints';
+    END
+    GO
+    DROP TABLE IF EXISTS [Register.Accumulation.PromotionPoints];
+    DROP VIEW IF EXISTS [Register.Accumulation.PromotionPoints];
+    DROP VIEW IF EXISTS [Register.Accumulation.PromotionPoints.v];
+    SELECT
+      r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
+      d.exchangeRate, [RetailNetwork], [Department], [OrderId], [OwnerInner], [OwnerExternal], [PromotionChannel], [currency], [batch], [ExpiredAt]
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+    INTO [Register.Accumulation.PromotionPoints]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [OrderId] NVARCHAR(250) N'$.OrderId'
+        , [OwnerInner] UNIQUEIDENTIFIER N'$.OwnerInner'
+        , [OwnerExternal] NVARCHAR(250) N'$.OwnerExternal'
+        , [PromotionChannel] UNIQUEIDENTIFIER N'$.PromotionChannel'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [batch] UNIQUEIDENTIFIER N'$.batch'
+        , [ExpiredAt] DATE N'$.ExpiredAt'
+        , [Qty] MONEY N'$.Qty'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.PromotionPoints';
+    GO
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.PromotionPoints] TO JETTI;
+    GO
+    ALTER TABLE [Register.Accumulation.PromotionPoints] ADD CONSTRAINT [PK_Register.Accumulation.PromotionPoints] PRIMARY KEY NONCLUSTERED ([id]);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PromotionPoints] ON [Register.Accumulation.PromotionPoints];
+    RAISERROR('Register.Accumulation.PromotionPoints finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+------------------------------ END Register.Accumulation.PromotionPoints ------------------------------
 
 ------------------------------ BEGIN Register.Accumulation.StaffingTable ------------------------------
 
