@@ -47,6 +47,7 @@ CREATE OR ALTER VIEW dbo.[Operation.AdditionalParametersDepartment.v] WITH SCHEM
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."keyVaultURL"')), '') [keyVaultURL]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isTaxPayer"')), 0) [isTaxPayer]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."WayStoreHouse"')) [WayStoreHouse]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."StickerSettings"')), '') [StickerSettings]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."AreaTotal"')), 0) [AreaTotal]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."AreaTrade"')), 0) [AreaTrade]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."AreaKitchen"')), 0) [AreaKitchen]
@@ -94,6 +95,7 @@ CREATE OR ALTER VIEW dbo.[Operation.AutoAdditionSettings.v] WITH SCHEMABINDING A
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."AdditionalType"')), '') [AdditionalType]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."MainSKU"')) [MainSKU]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Qty"')), 0) [Qty]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."defaultQty"')), 0) [defaultQty]
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."DeliveryType"')), '') [DeliveryType]
       FROM dbo.[Documents]
       WHERE [operation] = '73F98550-33E2-11EB-A7C3-274B4A063111'
@@ -195,6 +197,8 @@ CREATE OR ALTER VIEW dbo.[Operation.CHECK_JETTI_FRONT.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."TypeDocument"')), '') [TypeDocument]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc,N'$."PrintTime"'),127) [PrintTime]
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."TypeOfFranchise"')), '') [TypeOfFranchise]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."DeliveryType"')), '') [DeliveryType]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."OrderSource"')), '') [OrderSource]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."counterpartyId"')), '') [counterpartyId]
       , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."orderId"')), '') [orderId]
       FROM dbo.[Documents]
@@ -382,6 +386,7 @@ CREATE OR ALTER VIEW dbo.[Operation.OnlineSalesManagementSettings.v] WITH SCHEMA
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc,N'$."DateBegin"'),127) [DateBegin]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc,N'$."DateEnd"'),127) [DateEnd]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."SourceAggr"')) [SourceAggr]
       FROM dbo.[Documents]
       WHERE [operation] = '12917090-5CCB-11EB-AAD1-616C53FDF9AB'
 ; 
