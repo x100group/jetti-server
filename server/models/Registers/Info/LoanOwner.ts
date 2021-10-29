@@ -7,6 +7,9 @@ import { JRegisterInfo, RegisterInfo } from 'jetti-middle';
 })
 export class RegisterInfoLoanOwner extends RegisterInfo {
 
+  @Props({ type: 'Catalog.InvestorGroup', dimension: true })
+  InvestorGroup: Ref = null;
+
   @Props({ type: 'Catalog.User', required: true })
   User: Ref = null;
 
