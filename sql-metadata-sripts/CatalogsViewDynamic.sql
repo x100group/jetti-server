@@ -179,6 +179,7 @@ GO
         , d.[TimeZoneId] [TimeZoneId]
         , ISNULL([PriceType.v].description, '') [PriceType.value], d.[PriceType] [PriceType.id], [PriceType.v].type [PriceType.type]
         , d.[GeocodeRadius] [GeocodeRadius]
+        , d.[CallCenterPhone] [CallCenterPhone]
       
         , ISNULL(l5.id, d.id) [BusinessRegion.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [BusinessRegion.Level4.id]

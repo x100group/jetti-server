@@ -535,6 +535,7 @@
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.PL.v] WITH SCHEMABINDING AS
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PL"')) [PL]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) [Analytics]
@@ -546,7 +547,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.PL';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.id] ON [Register.Accumulation.PL.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL.v]([date], [document], [company], [calculated], [parent], [Department], [PL], [Analytics], [Analytics2], [Amount], [Amount.In], [Amount.Out], [Info]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL.v]([date], [document], [company], [calculated], [parent], [RetailNetwork], [Department], [PL], [Analytics], [Analytics2], [Amount], [Amount.In], [Amount.Out], [Info]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.PL] AS SELECT * FROM [Register.Accumulation.PL.v] WITH (NOEXPAND);
     GO
@@ -744,6 +745,7 @@
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.CharityAnalytic.v] WITH SCHEMABINDING AS
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) [Analytics]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."MovementType"')) [MovementType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Creator"')) [Creator]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CreatorContract"')) [CreatorContract]
@@ -765,7 +767,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.CharityAnalytic';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CharityAnalytic.id] ON [Register.Accumulation.CharityAnalytic.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CharityAnalytic] ON [Register.Accumulation.CharityAnalytic.v]([date], [document], [company], [calculated], [parent], [MovementType], [Creator], [CreatorContract], [Recipient], [RecipientContract], [Batch], [Source], [currency], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [Info]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CharityAnalytic] ON [Register.Accumulation.CharityAnalytic.v]([date], [document], [company], [calculated], [parent], [Analytics], [MovementType], [Creator], [CreatorContract], [Recipient], [RecipientContract], [Batch], [Source], [currency], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [Info]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.CharityAnalytic] AS SELECT * FROM [Register.Accumulation.CharityAnalytic.v] WITH (NOEXPAND);
     GO

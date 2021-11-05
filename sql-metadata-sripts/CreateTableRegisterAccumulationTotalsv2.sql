@@ -797,6 +797,7 @@
       SELECT
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
+        , [RetailNetwork]
         , [Department]
         , [PL]
         , [Analytics]
@@ -809,6 +810,7 @@
       GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
+        , [RetailNetwork]
         , [Department]
         , [PL]
         , [Analytics]
@@ -817,6 +819,7 @@
       CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.TO] ON [dbo].[Register.Accumulation.PL.TO.v] (
           [date],
           [company]
+        , [RetailNetwork]
         , [Department]
         , [PL]
         , [Analytics]
@@ -1121,6 +1124,7 @@
       SELECT
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
+        , [Analytics]
         , [MovementType]
         , [Creator]
         , [CreatorContract]
@@ -1143,6 +1147,7 @@
       GROUP BY
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
+        , [Analytics]
         , [MovementType]
         , [Creator]
         , [CreatorContract]
@@ -1155,6 +1160,7 @@
       CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CharityAnalytic.TO] ON [dbo].[Register.Accumulation.CharityAnalytic.TO.v] (
           [date],
           [company]
+        , [Analytics]
         , [MovementType]
         , [Creator]
         , [CreatorContract]
