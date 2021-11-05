@@ -467,8 +467,10 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) [OperationType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Expense"')) [Expense]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ExpenseAnalytics"')) [ExpenseAnalytics]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ExpenseAnalytics2"')) [ExpenseAnalytics2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Income"')) [Income]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."IncomeAnalytics"')) [IncomeAnalytics]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."IncomeAnalytics2"')) [IncomeAnalytics2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BalanceIn"')) [BalanceIn]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BalanceInAnalytics"')) [BalanceInAnalytics]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BalanceOut"')) [BalanceOut]
@@ -486,7 +488,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Inventory';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory.id] ON [Register.Accumulation.Inventory.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory.v]([date], [document], [company], [calculated], [parent], [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Cost.In], [Cost.Out], [Qty], [Qty.In], [Qty.Out]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory.v]([date], [document], [company], [calculated], [parent], [OperationType], [Expense], [ExpenseAnalytics], [ExpenseAnalytics2], [Income], [IncomeAnalytics], [IncomeAnalytics2], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Cost.In], [Cost.Out], [Qty], [Qty.In], [Qty.Out]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Inventory] AS SELECT * FROM [Register.Accumulation.Inventory.v] WITH (NOEXPAND);
     GO

@@ -1066,7 +1066,7 @@
       INSERT INTO [Register.Accumulation.Inventory]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department]
+        d.exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [ExpenseAnalytics2], [Income], [IncomeAnalytics], [IncomeAnalytics2], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
         FROM inserted r
@@ -1076,8 +1076,10 @@
         , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
         , [Expense] UNIQUEIDENTIFIER N'$.Expense'
         , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
+        , [ExpenseAnalytics2] UNIQUEIDENTIFIER N'$.ExpenseAnalytics2'
         , [Income] UNIQUEIDENTIFIER N'$.Income'
         , [IncomeAnalytics] UNIQUEIDENTIFIER N'$.IncomeAnalytics'
+        , [IncomeAnalytics2] UNIQUEIDENTIFIER N'$.IncomeAnalytics2'
         , [BalanceIn] UNIQUEIDENTIFIER N'$.BalanceIn'
         , [BalanceInAnalytics] UNIQUEIDENTIFIER N'$.BalanceInAnalytics'
         , [BalanceOut] UNIQUEIDENTIFIER N'$.BalanceOut'
@@ -1097,7 +1099,7 @@
     DROP VIEW IF EXISTS [Register.Accumulation.Inventory.v];
     SELECT
       r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department]
+      d.exchangeRate, [OperationType], [Expense], [ExpenseAnalytics], [ExpenseAnalytics2], [Income], [IncomeAnalytics], [IncomeAnalytics2], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
     INTO [Register.Accumulation.Inventory]
@@ -1108,8 +1110,10 @@
         , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
         , [Expense] UNIQUEIDENTIFIER N'$.Expense'
         , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
+        , [ExpenseAnalytics2] UNIQUEIDENTIFIER N'$.ExpenseAnalytics2'
         , [Income] UNIQUEIDENTIFIER N'$.Income'
         , [IncomeAnalytics] UNIQUEIDENTIFIER N'$.IncomeAnalytics'
+        , [IncomeAnalytics2] UNIQUEIDENTIFIER N'$.IncomeAnalytics2'
         , [BalanceIn] UNIQUEIDENTIFIER N'$.BalanceIn'
         , [BalanceInAnalytics] UNIQUEIDENTIFIER N'$.BalanceInAnalytics'
         , [BalanceOut] UNIQUEIDENTIFIER N'$.BalanceOut'

@@ -41,6 +41,8 @@ CREATE OR ALTER VIEW dbo.[Operation.AdditionalParametersDepartment.v] WITH SCHEM
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."defaultCoockingTime"')), 0) [defaultCoockingTime]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."currentCoockingTime"')), 0) [currentCoockingTime]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc,N'$."currentCookingTimeExpiredAt"'),127) [currentCookingTimeExpiredAt]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."CookingTimeshift"')), 0) [CookingTimeshift]
+      , TRY_CONVERT(DATETIME, JSON_VALUE(doc,N'$."CookingTimeshiftExpiredAt"'),127) [CookingTimeshiftExpiredAt]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."defaultDeliveryTime"')), 0) [defaultDeliveryTime]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."DeliveryTimeShift"')), 0) [DeliveryTimeShift]
       , TRY_CONVERT(DATETIME, JSON_VALUE(doc,N'$."DeliveryTimeShiftExpiredAt"'),127) [DeliveryTimeShiftExpiredAt]

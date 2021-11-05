@@ -38,6 +38,8 @@
         , d.[defaultCoockingTime] [defaultCoockingTime]
         , d.[currentCoockingTime] [currentCoockingTime]
         , d.[currentCookingTimeExpiredAt] [currentCookingTimeExpiredAt]
+        , d.[CookingTimeshift] [CookingTimeshift]
+        , d.[CookingTimeshiftExpiredAt] [CookingTimeshiftExpiredAt]
         , d.[defaultDeliveryTime] [defaultDeliveryTime]
         , d.[DeliveryTimeShift] [DeliveryTimeShift]
         , d.[DeliveryTimeShiftExpiredAt] [DeliveryTimeShiftExpiredAt]
