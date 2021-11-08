@@ -17,7 +17,7 @@ export class RegisterAccumulationMoneyDocuments extends RegisterAccumulation {
   MoneyDocumentId: Ref = null;
 
   @Props({ type: 'TypesCounterpartieOrPerson', required: true })
-  Owner: Ref = null;
+  OwnedBy: Ref = null;
 
   @Props({ type: 'Types.Catalog', required: true, dimension: true })
   Sourse: Ref = null;
