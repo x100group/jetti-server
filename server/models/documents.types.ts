@@ -42,6 +42,7 @@ export type CatalogTypes =
   'Catalog.Product.Analytic' |
   'Catalog.Storehouse' |
   'Catalog.ManufactureLocation' |
+  'Catalog.MoneyDocument' |
   'Catalog.Salary.Analytics' |
   'Catalog.Subcount' |
   'Catalog.Documents' |

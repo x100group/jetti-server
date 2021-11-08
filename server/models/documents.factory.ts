@@ -97,6 +97,7 @@ import { CatalogConfiguration } from './Catalogs/Catalog.Configuration';
 import { CatalogRetailNetwork } from './Catalogs/Catalog.RetailNetwork';
 import { CatalogBusinessCalendar } from './Catalogs/Catalog.BusinessCalendar';
 import { IFlatDocument } from 'jetti-middle';
+import { CatalogMoneyDocument } from './Catalogs/Catalog.MoneyDocument';
 
 export function createDocument<T extends DocumentBase>(type: string, document?: IFlatDocument): T {
 
@@ -198,6 +199,7 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.ReasonTypes', Class: CatalogReasonTypes },
   { type: 'Catalog.Product.Package', Class: CatalogProductPackage },
   { type: 'Catalog.Product.Analytic', Class: CatalogProductAnalytic },
+  { type: 'Catalog.MoneyDocument', Class: CatalogMoneyDocument },
 
   { type: 'Catalog.Documents', Class: CatalogDocuments },
   { type: 'Catalog.Catalogs', Class: CatalogCatalogs },

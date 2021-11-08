@@ -27,6 +27,7 @@ import { RegisterAccumulationEmployeeTimekeeping } from './EmployeeTimekeeping';
 import { RegisterAccumulationCharityAnalytic } from './CharityAnalytic';
 import { RegisterAccumulationPromotionPoints } from './PromotionPoints';
 import { RegisterAccumulationOrderProduct } from './OrderProduct';
+import { RegisterAccumulationMoneyDocuments } from './MoneyDocuments';
 
 export type RegisterAccumulationTypes =
   'Register.Accumulation.AccountablePersons' |
@@ -56,6 +57,7 @@ export type RegisterAccumulationTypes =
   'Register.Accumulation.CashToPay' |
   'Register.Accumulation.CharityAnalytic' |
   'Register.Accumulation.StaffingTable' |
+  'Register.Accumulation.MoneyDocuments' |
   'Register.Accumulation.BudgetItemTurnover';
 
 interface IRegisteredRegisterAccumulation { type: RegisterAccumulationTypes; Class: typeof RegisterAccumulation; }
@@ -88,6 +90,7 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.Acquiring', Class: RegisterAccumulationAcquiring },
   { type: 'Register.Accumulation.PromotionPoints', Class: RegisterAccumulationPromotionPoints },
   { type: 'Register.Accumulation.StaffingTable', Class: RegisterAccumulationStaffingTable },
+  { type: 'Register.Accumulation.MoneyDocuments', Class: RegisterAccumulationMoneyDocuments },
 ];
 
 export function createRegisterAccumulation(init: Partial<RegisterAccumulation>) {
