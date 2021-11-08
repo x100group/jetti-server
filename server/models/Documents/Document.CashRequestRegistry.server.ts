@@ -7,18 +7,24 @@ import { RegisterAccumulationCashToPay } from '../Registers/Accumulation/CashToP
 import { lib } from '../../std.lib';
 import { DocumentCashRequest } from './Document.CashRequest';
 import { createDocument } from '../documents.factory';
-import { insertDocument, updateDocument } from '../../routes/utils/post';
+import { insertDocument, upsertDocument } from '../../routes/utils/post';
 import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
 import { DocumentOperation } from './Document.Operation';
 import { Ref } from 'jetti-middle';
-
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
-    return this;
+  async getDynamicModule(tx: MSSQL) {
+    const dynamicModule = await lib.doc.byId('8F58AE90-963C-11EB-B245-F3054AA54AB9', tx);
+    return new Function('', dynamicModule!['module']).bind(this)();
   }
 
   async onCommand(command: string, args: any, tx: MSSQL) {
+    const dynamicModule = await this.getDynamicModule(tx);
+    if (dynamicModule[command]) {
+      await dynamicModule[command](this, tx);
+      return this;
+    }
+
     switch (command) {
       case 'Fill':
         await this.Fill(tx);
@@ -71,7 +77,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     if (this.Status !== 'APPROVED') throw new Error(`${this.description} cоздание возможно только в документе со статусом "APPROVED"!`);
     if (this.CashRequests.filter(c => !c.OperationType || (this.Operation && this.Operation !== c.OperationType))) {
       await this.FillOperationTypes(tx);
-      await updateDocument(this, tx);
+      await upsertDocument(this, tx);
     }
     await lib.doc.postById(this.id, tx);
     const OperationTypes = [...new Set(this.CashRequests.filter(c => (c.Amount > 0)).map(x => x.OperationType))];
@@ -79,7 +85,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
       await this.CreateByOperationType(OperationType, tx);
     }
     this.DocumentsCreationDate = new Date as any;
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
     await lib.doc.postById(this.id, tx);
   }
 
@@ -143,7 +149,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
         if (cashOper) { OperationServer['CashRegister'] = row.CashRegister; OperationServer['f1'] = OperationServer['CashRegister']; }
         if (OperationType === 'Выплата заработной платы без ведомости' && row.Amount < OperationServer['Amount'] && cashOper) OperationServer['Amount'] = row.Amount;
-        if (OperationServer.timestamp) await updateDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
+        if (OperationServer.timestamp) await upsertDocument(OperationServer, tx); else await insertDocument(OperationServer, tx);
         await lib.doc.postById(OperationServer.id, tx);
         rowsByCashReqest.filter(el => (el.CashRequest === currentCR && (!cashOper || el.CashRegister === row.CashRegister))).forEach(el => { el.LinkedDocument = OperationServer.id; });
       }
@@ -153,23 +159,23 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   }
 
   private async UnloadToText(tx: MSSQL) {
-    if (this.Status !== 'APPROVED') throw new Error(`${this.description} выгрузка возможна только в документе со статусом "APPROVED"!`);
+    if (!['APPROVED', 'PAID'].includes(this.Status)) throw new Error(`${this.description} выгрузка возможна только в документе со статусом "APPROVED" или "PAID"!`);
     const Operations = this.CashRequests.filter(c => (c.LinkedDocument)).map(c => (c.LinkedDocument));
     this.info = await BankStatementUnloader.getBankStatementAsString(Operations, tx);
     this.BankUploadDate = new Date as any;
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
     await lib.doc.postById(this.id, tx);
   }
 
   private async ExportSalaryToCSV(tx: MSSQL) {
-    if (this.Status !== 'APPROVED') throw new Error(`Possible only in the APPROVED document!`);
+    if (!['APPROVED', 'PAID'].includes(this.Status)) throw new Error(`Possible only in the APPROVED or PAID document!`);
     // if (this.Operation !== 'Выплата заработной платы (наличные)') throw new Error(`Доступно только для операции "Выплата заработной платы (наличные)"`);
     const query = `
     SELECT
     per.description Person,
     ISNULL(jt.description,'') JobTitle,
     ISNULL(CR.description,'') CashRegister,
-    ISNULL(bap.code,'') BankAccountPerson,
+    ISNULL(bap.description,'') BankAccountPerson,
     Amount
     FROM Documents d
         CROSS APPLY OPENJSON (d.doc, N'$.CashRequests')
@@ -184,12 +190,12 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     LEFT JOIN [dbo].[Catalog.Person.BankAccount.v] bap on bap.id = CashRequests.BankAccountPerson
       where d.id = @p1 and @p2 <> N'Оплата по кредитам и займам полученным'
       AND Amount > 0
-    UNION
+    UNION ALL
       SELECT
 	  cp.description Person,
     '' JobTitle,
     ISNULL(ba.description,'') CashRegister,
-    crb.code BankAccountPerson,
+    crb.description BankAccountPerson,
     Amount
     FROM Documents d
         CROSS APPLY OPENJSON (d.doc, N'$.CashRequests')
@@ -215,7 +221,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     }
 
     this.info = result;
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
     await lib.doc.postById(this.id, tx);
   }
 
@@ -233,29 +239,48 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     return [
       'Прочий расход ДС',
       'Возврат оплаты клиенту',
-      'Перемещение ДС',
       'Внутренний займ'
     ];
   }
 
+  async isSuperuser(tx: MSSQL) {
+    return lib.util.isRoleAvailable('Cash request registry admin', tx);
+  }
+
+  async beforePost(tx: MSSQL) {
+
+    if (!['APPROVED', 'PAID'].includes(this.Status) || (await this.isSuperuser(tx))) return this;
+
+    const emptyRows = this.CashRequests
+      .filter(row => !row.LinkedDocument)
+      .map((row, ind) => ind++)
+      .join(',');
+    if (emptyRows) throw new Error(`Не созданы операции в строках: ${emptyRows}`);
+
+    const operations = this.CashRequests.map(row => `'${row.LinkedDocument}'`).join(',');
+    const query = `SELECT amount, posted, id, code FROM [dbo].[Document.Operation.v] WHERE id IN (${operations})`;
+    const operData = await tx.manyOrNone<{ amount: number, posted: boolean, id: string, code: string }>(query);
+    const crRowIndex = (opId: string) => this.CashRequests.indexOf(this.CashRequests.find(cr => cr.LinkedDocument === opId)!);
+
+    const unposted = operData
+      .filter(op => !op.posted)
+      .map(op => crRowIndex(op.id) + 1).join(',');
+    if (unposted) throw new Error(`Не проведены операции в строках: ${unposted}`);
+
+    const unamounted = operData
+      .filter(op => this.CashRequests.find(cr => cr.LinkedDocument === op.id)!.Amount !== op.amount)
+      .map(op => crRowIndex(op.id) + 1)
+      .join(',');
+    if (unamounted) throw new Error(`Отраженные операциями суммы не соответствуют данным реестра, строки: ${unamounted}`);
+
+    return this;
+  }
+
   private async Fill(tx: MSSQL) {
     if (this.Status !== 'PREPARED') throw new Error(`Filling is possible only in the PREPARED document!`);
-    if (this.unsupportedOperations().indexOf(this.Operation) !== -1) throw new Error(`Unsupported operation type ${this.Operation}`);
+    if (this.unsupportedOperations().includes(this.Operation)) throw new Error(`Unsupported operation type ${this.Operation}`);
     let query = '';
-    // let salaryProject: any;
     const isCashSalary = this.Operation === 'Выплата заработной платы (наличные)';
-    // if (isCashSalary) {
-    //   query = `
-    //   SELECT TOP 1 id
-    //   FROM dbo.[Catalog.SalaryProject.v]
-    //   WHERE currency = @p1
-    //   and company = @p2
-    //   and deleted = 0`;
-    //   salaryProject = await tx.oneOrNone<{ id: string }>(query, [this.сurrency, this.company]);
-    //   if (!salaryProject) throw new Error(`Не найден зарплатный проект по организации и валюте `);
-    //   salaryProject = salaryProject.id;
-    // }
-
     this.CashRequests = [];
     query = `
     DROP TABLE IF EXISTS #CashRequestBalance;
@@ -406,7 +431,7 @@ HAVING SUM(Balance.[Amount]) > 0;
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
 
-    if (this.Status === 'REJECTED' || this.Status === 'APPROVED') return Registers;
+    if (['REJECTED', 'APPROVED', 'PAID'].includes(this.Status)) return Registers;
 
     for (const row of this.CashRequests
       .filter(c => (c.AmountRequest > 0 || c.Amount > 0) && !c.LinkedDocument)) {

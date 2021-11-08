@@ -1,4 +1,3 @@
-import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as cors from 'cors';
 import * as express from 'express';
@@ -40,8 +39,8 @@ export const HTTP = httpServer.createServer(app);
 const root = './';
 app.use(compression());
 app.use(cors());
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: false }));
 
 const api = `/api`;
 app.use(api, authHTTP, jettiDB, utils);

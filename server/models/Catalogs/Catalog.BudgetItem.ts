@@ -23,16 +23,13 @@ export class CatalogBudgetItem extends DocumentBase {
   @Props({ type: 'boolean', hiddenInList: false })
   isfolder = false;
 
-  @Props({ type: 'enum', useIn: 'all', value: [
-    '+',
-    '-',
-    '*',
-    '/',
-    '~',
-  ]})
+  @Props({ type: 'enum', value: ['REGULAR', 'VARIABLE'] })
+  kind = false;
+
+  @Props({ type: 'enum', useIn: 'all', value: ['+', '-', '*', '/', '~'] })
   UnaryOperator = '';
 
-  @Props({ type: 'string'})
+  @Props({ type: 'string' })
   DescriptionENG = '';
 
 }

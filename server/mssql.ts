@@ -2,6 +2,7 @@ import { Connection, Request, ColumnValue, RequestError, ConnectionError, ISOLAT
 import { Pool } from 'tarn';
 import { ConnectionConfigAndPool } from './env/environment';
 import { dateReviverUTC } from 'jetti-middle';
+import { IUserContext } from './fuctions/filterBuilder';
 
 export class SqlPool {
 
@@ -51,6 +52,22 @@ export class MSSQL {
     this.user = { email: '', isAdmin: false, env: {}, description: '', roles: [], ...user };
   }
 
+  userId() {
+    return this.user.env.view ? this.user.env.view.id : null;
+  }
+
+  get isAdmin(): boolean {
+    return this.user?.isAdmin || false;
+  }
+
+  get email(): string {
+    return this.user?.email || '';
+  }
+
+  get userContext(): IUserContext {
+    return { email: this.email, isAdmin: this.isAdmin };
+  }
+
   private setParams(params: any[], request: Request) {
     for (let i = 0; i < params.length; i++) {
       if (params[i] instanceof Date) {
@@ -67,8 +84,8 @@ export class MSSQL {
   private prepareSession(sql: string) {
     return `
       SET NOCOUNT ON;
-      EXEC sys.sp_set_session_context N'user_id', N'${this.user.email}';
-      EXEC sys.sp_set_session_context N'isAdmin', N'${this.user.isAdmin}';
+      EXEC sys.sp_set_session_context N'user_id', N'${this.email}';
+      EXEC sys.sp_set_session_context N'isAdmin', N'${this.isAdmin}';
       EXEC sys.sp_set_session_context N'roles', N'${JSON.stringify(this.user.roles)}';
       SET NOCOUNT OFF;
       ${sql}
@@ -122,7 +139,7 @@ export class MSSQL {
         const request = new Request(this.prepareSession(sql), (error: RequestError, rowCount: number, rows: ColumnValue[][]) => {
           if (!this.connection) this.sqlPool.pool.release(connection);
           if (error) {
-            if (!global['isProd']) console.error(`${error.code}: ${error.message}\n${params}`); return reject(error);
+            if (!global['isProd']) console.error(`${error.code}: ${error.message}\n${params}\n${sql}`); return reject(error);
           }
           return resolve();
         });
@@ -192,7 +209,7 @@ export class MSSQL {
     });
   }
 
-  private complexObject<T>(data: any) {
+  private _complexObject<T>(data: any) {
     if (!data) return data;
     const row = {};
     // tslint:disable-next-line:forin
@@ -200,12 +217,44 @@ export class MSSQL {
       const value = this.toJSON(data[k]);
       if (k.includes('.')) {
         const keys = k.split('.');
-        row[keys[0]] = { ...row[keys[0]], [keys[1]]: value };
+        if (keys.length > 2)
+          row[keys[0]][keys[1]] = { ...row[keys[0]][keys[1]], [keys[2]]: value };
+        else
+          row[keys[0]] = { ...row[keys[0]], [keys[1]]: value };
       } else
         row[k] = value;
     }
     return row;
   }
+
+  private complexObject<T>(data: any) {
+    if (!data) return data;
+    const row = {};
+    // tslint:disable-next-line:forin
+    for (const k in data) {
+      const value = this.toJSON(data[k]);
+      const keys = k.split('.');
+      switch (keys.length) {
+        case 1:
+          row[k] = value;
+          break;
+        case 2:
+          row[keys[0]] = { ...row[keys[0]], [keys[1]]: value };
+          break;
+        case 3:
+          row[keys[0]][keys[1]] = { ...row[keys[0]][keys[1]], [keys[2]]: value };
+          break;
+        case 4:
+          row[keys[0]][keys[1]][keys[2]] = { ...row[keys[0]][keys[1]][keys[2]], [keys[3]]: value };
+          break;
+        default:
+          throw new Error('SQL Query: JSON path is to long!');
+          break;
+      }
+    }
+    return row;
+  }
+
 
   private toJSON(value: any): any {
     if (typeof value === 'string' && (
@@ -232,7 +281,9 @@ export class MSSQL {
   async metaSequenceCreate(name: string, startWith = 0) {
     if (!name) return `Sequence name is not defined`;
     if (await this.metaSequenceByName(name)) return `Sequence "${name}" is exist`;
-    await this.none(`CREATE SEQUENCE [dbo].[${name}] START WITH ${startWith}`);
+    await this.none(
+      `CREATE SEQUENCE [dbo].[${name}] START WITH ${startWith};
+       GRANT UPDATE ON [dbo].[${name}] TO ${this.sqlPool.config.authentication?.options.userName}`);
     return '';
   }
 

@@ -3,11 +3,14 @@ import { IDeleteTaskParams, IGetTaskParams, execQueueAPIPostRequest } from './mo
 import { CatalogUser } from './models/Catalogs/Catalog.User';
 import { EXCHANGE_POOL } from './sql.pool.exchange';
 import { getUserPermissions } from './fuctions/UsersPermissions';
-import { configSchema } from './models/config';
-import { DocumentBase, Ref, IFlatDocument, INoSqlDocument, RefValue, RegisterAccumulation, Type, RegisterInfo } from 'jetti-middle';
+import { configSchema, IConfigSchema } from './models/config';
+import {
+  DocumentBase, Ref, IFlatDocument, INoSqlDocument, RefValue, RegisterAccumulation,
+  Type, RegisterInfo, PropOptions, RegisterAccumulationOptions
+} from 'jetti-middle';
 import { createDocumentServer, DocumentBaseServer } from './models/documents.factory.server';
-import { RegisterAccumulationTypes } from './models/Registers/Accumulation/factory';
-import { adminMode, postDocument, unpostDocument, updateDocument, setPostedSate, insertDocument, IUpdateInsertDocumentOptions } from './routes/utils/post';
+import { createRegisterAccumulation as createAccumulationRegister, RegisterAccumulationTypes, } from './models/Registers/Accumulation/factory';
+import { adminMode, postDocument, unpostDocument, setPostedSate, IUpdateInsertDocumentOptions, upsertDocument } from './routes/utils/post';
 import { MSSQL } from './mssql';
 import { v1 } from 'uuid';
 import { BankStatementUnloader } from './fuctions/BankStatementUnloader';
@@ -22,6 +25,12 @@ import { getIndexedOperationById } from './models/indexedOperation';
 import { createDocument } from './models/documents.factory';
 import * as iconv from 'iconv-lite';
 import { DocumentOperation } from './models/Documents/Document.Operation';
+import { DocumentOperationServer } from './models/Documents/Document.Operation.server';
+import { createRegisterInfo } from './models/Registers/Info/factory';
+import { createFormServer, FormBaseServer } from './models/Forms/form.factory.server';
+import { Event } from './fuctions/Event';
+import { JETTI_POOL_META } from './sql.pool.meta';
+import * as xml2js from 'xml2js';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 export interface FillDocBasedOnParams {
@@ -121,9 +130,14 @@ export interface JTL {
   meta: {
     updateSQLViewsByType: (type: string, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
     updateSQLViewsByOperationId: (id: string, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
-    riseUpdateMetadataEvent: () => void
+    riseUpdateMetadataEvent: () => void,
+    propsByType: (type: string, operation?: string, tx?: MSSQL) => Promise<{ [x: string]: PropOptions }>,
+    propByType: (type: string, operation?: string, tx?: MSSQL) => Promise<PropOptions | RegisterAccumulationOptions>,
+    config: () => Map<string, IConfigSchema>
   };
   util: {
+    // tslint:disable-next-line: max-line-length
+    createObject: (init: any, tx?: MSSQL | undefined) => Promise<DocumentOperationServer | RegisterAccumulation | RegisterInfo | FormBaseServer>
     groupArray: <T>(array: T[], groupField?: string) => T[],
     formatDate: (date: Date) => string,
     parseDate: (date: string, format: string, delimiter: string) => Date,
@@ -147,9 +161,11 @@ export interface JTL {
     taskPoolTx: () => MSSQL,
     jettiPoolTx: () => MSSQL,
     executeGETRequest: (opts: { baseURL: string, query: string }) => Promise<any>,
+    executePOSTRequest: (opts: { url: string, data: any, config?: any }) => Promise<any>,
     isEqualObjects: (object1: Object, object2: Object) => boolean,
     decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string,
-    converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string
+    converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string,
+    xmlStringToJSON: (xml: string) => Promise<string>
   };
   queue: {
     insertQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
@@ -162,6 +178,9 @@ export interface JTL {
   };
   queuePost: {
     addId: (id: string, flow: number, taskPoolTX?: MSSQL) => Promise<void>
+  };
+  log: {
+    newEvent: (init: Partial<Event>) => Event
   };
 }
 
@@ -204,7 +223,10 @@ export const lib: JTL = {
   meta: {
     updateSQLViewsByType,
     updateSQLViewsByOperationId,
-    riseUpdateMetadataEvent
+    riseUpdateMetadataEvent,
+    propsByType,
+    propByType,
+    config
   },
   info: {
     sliceLast,
@@ -215,6 +237,7 @@ export const lib: JTL = {
     turnover
   },
   util: {
+    createObject,
     groupArray,
     formatDate,
     parseDate,
@@ -236,10 +259,12 @@ export const lib: JTL = {
     exchangeDB,
     taskPoolTx,
     executeGETRequest,
+    executePOSTRequest,
     jettiPoolTx,
     isEqualObjects,
     decodeBase64StringAsUTF8,
     converStringEncoding,
+    xmlStringToJSON
   },
   queue: {
     insertQueue,
@@ -252,8 +277,15 @@ export const lib: JTL = {
   },
   queuePost: {
     addId
+  },
+  log: {
+    newEvent
   }
 };
+
+function config() {
+  return configSchema();
+}
 
 async function GUID(): Promise<string> {
   return v1().toLocaleUpperCase();
@@ -293,6 +325,7 @@ async function historyById(historyId: string, tx: MSSQL): Promise<IFlatDocument 
     ,isfolder
     ,company
     ,user
+    ,info
     ,_timestamp
  FROM "Documents.Hisroty" WHERE id = @p1`, [historyId]);
   if (result) return flatDocument(result); else return null;
@@ -389,11 +422,11 @@ async function fillDocBasedOn(params: FillDocBasedOnParams, tx: MSSQL): Promise<
   if (!ServerDoc.baseOn) throw new Error(`Based on method is not defined`);
   // process baseOn
   const resDoc = await ServerDoc.baseOn(base, tx);
-  resDoc.user = tx.user.env.id;
+  resDoc.user = tx.userId();
   // document saving
   if (saveMode === 'save' || saveMode === 'post') {
     resDoc.posted = saveMode.toLowerCase() === 'post';
-    saveDoc(resDoc, tx);
+    await saveDoc(resDoc, tx);
   }
   return noSqlDocument(resDoc);
 }
@@ -422,9 +455,9 @@ async function executeCommand(params: ExecuteCommandParams, tx: MSSQL): Promise<
 
   // document saving
   if (saveMode === 'save' || saveMode === 'post') {
-    serverDoc.user = tx.user.env.id;
+    serverDoc.user = tx.userId();
     serverDoc.posted = saveMode.toLowerCase() === 'post';
-    saveDoc(serverDoc, tx);
+    await saveDoc(serverDoc, tx);
   }
   return noSqlDocument(serverDoc);
 }
@@ -439,8 +472,7 @@ async function saveDoc(
   const isPostedAfter = Type.isDocument(servDoc.type) && servDoc.posted;
   if (isPostedBefore) await unpostDocument(servDoc, tx);
   if (!servDoc.code) servDoc.code = await lib.doc.docPrefix(servDoc.type, tx);
-  if (!servDoc.timestamp) servDoc = await insertDocument(servDoc, tx, opts);
-  else servDoc = await updateDocument(servDoc, tx, opts);
+  await upsertDocument(servDoc, tx, opts);
   if (isPostedAfter) {
     if (queuePostFlow) await lib.queuePost.addId(servDoc.id, queuePostFlow, tx);
     else await postDocument(servDoc, tx);
@@ -449,7 +481,7 @@ async function saveDoc(
 }
 
 async function updateDoc(servDoc: DocumentBaseServer, tx): Promise<DocumentBaseServer> {
-  return await updateDocument(servDoc, tx);
+  return await upsertDocument(servDoc, tx);
 }
 
 async function isDocumentUsedInAccumulationWithPropValueById(docId: string, tx: MSSQL): Promise<boolean> {
@@ -481,7 +513,7 @@ async function Ancestors(id: string, tx: MSSQL, level?: number): Promise<{ id: R
 
 async function Descendants(id: string, tx: MSSQL): Promise<{ id: Ref, parent: Ref }[] | null> {
   if (!id) return null;
-  return await tx.manyOrNone<{ id: Ref, parent: Ref }>(`SELECT id, parent FROM dbo.[Descendants](@p1, '')`, [id]);
+  return await tx.manyOrNone<{ id: Ref, parent: Ref }>(`SELECT id, parent FROM dbo.[Descendants](@p1,'')`, [id]);
 
 }
 
@@ -514,7 +546,7 @@ async function docPrefix(type: string, tx: MSSQL): Promise<string> {
   const metadata = configSchema().get(sqType);
   if (metadata && metadata.prefix) {
     const prefix = metadata.prefix;
-    const queryText = `SELECT '${prefix}' + FORMAT((NEXT VALUE FOR "Sq.${sqType}"), '0000000000') result`;
+    const queryText = `SELECT '${prefix}' + FORMAT((NEXT VALUE FOR "Sq.${sqType}"), '0000000000') result `;
     const result = await tx.oneOrNone<{ result: string }>(queryText);
     return result ? result.result : '';
   }
@@ -531,7 +563,7 @@ async function debit(account: Ref, date = new Date(), company: Ref, tx: MSSQL): 
   const result = await tx.oneOrNone<{ result: number }>(`
     SELECT SUM(sum) result FROM "Register.Account"
     WHERE dt = @p1 AND datetime <= @p2 AND company = @p3
-      `, [account, date, company]);
+  `, [account, date, company]);
   return result ? result.result : 0;
 }
 
@@ -539,22 +571,22 @@ async function kredit(account: Ref, date = new Date(), company: Ref, tx: MSSQL):
   const result = await tx.oneOrNone<{ result: number }>(`
     SELECT SUM(sum) result FROM "Register.Account"
     WHERE kt = @p1 AND datetime <= @p2 AND company = @p3
-      `, [account, date, company]);
+  `, [account, date, company]);
   return result ? result.result : 0;
 }
 
 async function balance(account: Ref, date = new Date(), company: Ref, tx: MSSQL): Promise<number> {
   const result = await tx.oneOrNone<{ result: number }>(`
-    SELECT(SUM(u.dt) - SUM(u.kt)) result FROM(
+  SELECT (SUM(u.dt) - SUM(u.kt)) result FROM (
       SELECT SUM(sum) dt, 0 kt
       FROM "Register.Account"
       WHERE dt = @p1 AND datetime <= @p2 AND company = @p3
 
-    UNION ALL
+      UNION ALL
 
-    SELECT 0 dt, SUM(sum) kt
-    FROM "Register.Account"
-    WHERE kt = @p1 AND datetime <= @p2 AND company = @p3
+      SELECT 0 dt, SUM(sum) kt
+      FROM "Register.Account"
+      WHERE kt = @p1 AND datetime <= @p2 AND company = @p3
   ) u`, [account, date, company]);
   return result ? result.result : 0;
 }
@@ -562,19 +594,19 @@ async function balance(account: Ref, date = new Date(), company: Ref, tx: MSSQL)
 async function registerBalance(type: RegisterAccumulationTypes, date = new Date(),
   resource: string[], analytics: { [key: string]: Ref }, tx: MSSQL): Promise<{ [x: string]: number }> {
 
-  const addFields = (key) => `SUM("${key}") "${key}", \n`;
+  const addFields = (key) => `SUM("${key}") "${key}",\n`;
   let fields = ''; for (const el of resource) { fields += addFields(el); } fields = fields.slice(0, -2);
 
   const addWhere = (key) => `AND "${key}" = '${analytics[key]}'\n`;
   let where = ''; for (const el of resource) { where += addWhere(el); } where = where.slice(0, -2);
 
   const queryText = `
-    SELECT ${fields}
-    FROM "${type}"
-    WHERE(1 = 1)
+  SELECT ${fields}
+  FROM "${type}"
+  WHERE (1=1)
     AND date <= @p1
     ${where}
-    `;
+  `;
 
   const result = await tx.oneOrNone<any>(queryText, [date]);
   return (result ? result : {});
@@ -583,12 +615,12 @@ async function registerBalance(type: RegisterAccumulationTypes, date = new Date(
 async function exchangeRate(date = new Date(), company: Ref, currency: Ref, tx: MSSQL): Promise<number> {
 
   const queryText = `
-    SELECT TOP 1 CAST([Rate] AS FLOAT) / CASE WHEN[Mutiplicity] > 0 THEN[Mutiplicity] ELSE 1 END result
-    FROM[Register.Info.ExchangeRates] WITH(NOEXPAND)
-    WHERE(1 = 1)
-    AND date <= @p1
-    AND company = @p2
-    AND[currency] = @p3
+    SELECT TOP 1 CAST([Rate] AS FLOAT) / CASE WHEN [Mutiplicity] > 0 THEN [Mutiplicity] ELSE 1 END result
+    FROM [Register.Info.ExchangeRates] WITH (NOEXPAND)
+    WHERE (1=1)
+      AND date <= @p1
+      AND company = @p2
+      AND [currency] = @p3
     ORDER BY date DESC`;
   const result = await tx.oneOrNone<{ result: number }>(queryText, [date, company, currency]);
   return result ? result.result : 1;
@@ -601,11 +633,11 @@ async function sliceLast<T extends RegisterInfo>(type: string, date = new Date()
   let where = ''; for (const el of Object.keys(analytics)) { where += addWhere(el); }
 
   const queryText = `
-    SELECT TOP 1 * FROM[Register.Info.${type}]WITH(NOEXPAND)
-    WHERE(1 = 1)
-    AND date <= @p1
-    AND company = @p2
-    ${where}
+    SELECT TOP 1 * FROM [Register.Info.${type}] WITH (NOEXPAND)
+    WHERE (1=1)
+      AND date <= @p1
+      AND company = @p2
+      ${where}
     ORDER BY date DESC`;
   const result = await tx.oneOrNone<T>(queryText, [date, company]);
   return result;
@@ -620,8 +652,8 @@ async function accumBalance<T>(
   topRows?: number
 ): Promise<T[] | null> {
 
-  const where = Object.keys(filter).map((key, index) => `AND "${key}" = @p${index + 2} `).join('\n');
-  const select = fields.split(',').map(key => `SUM(${key}) ${key} `).join(',\n');
+  const where = Object.keys(filter).map((key, index) => `AND "${key}" = @p${index + 2}`).join('\n');
+  const select = fields.split(',').map(key => `SUM(${key}) ${key}`).join(',\n');
   const having = fields.split(',').map(key => `SUM(${key}) <> 0`).join('\n AND ');
   const params = Object.values(filter);
 
@@ -629,12 +661,12 @@ async function accumBalance<T>(
     SELECT TOP ${topRows || 1000}
     ${groupBy},
     ${select}
-    FROM[Register.Accumulation.${registerName}]
+    FROM [Register.Accumulation.${registerName}]
     WHERE
-    date <= @p1
-    ${where}
-    ${groupBy ? `GROUP BY ${groupBy}` : ''}
-    HAVING ${having} `;
+      date <= @p1
+      ${where}
+      ${groupBy ? `GROUP BY ${groupBy}` : ''}
+    HAVING ${having}`;
 
   const tx = x100.util.x100DataDB();
   const result = await tx.manyOrNone<T>(queryText, [date, ...params]);
@@ -651,21 +683,21 @@ async function turnover<T>(
   topRows?: number
 ): Promise<T[] | null> {
 
-  const where = Object.keys(filter).map((key, index) => `AND "${key}" = @p${index + 3} `).join('\n');
-  const select = fields.split(',').map(key => `SUM(${key}) ${key} `).join(',\n');
+  const where = Object.keys(filter).map((key, index) => `AND "${key}" = @p${index + 3}`).join('\n');
+  const select = fields.split(',').map(key => `SUM(${key}) ${key}`).join(',\n');
   const having = fields.split(',').map(key => `SUM(${key}) <> 0`).join('\n AND ');
   const params = Object.values(filter);
 
   const queryText = `
     SELECT TOP ${topRows || 1000}
-    ${groupBy},
-    ${select}
-    FROM[Register.Accumulation.${registerName}]
+      ${groupBy},
+      ${select}
+    FROM [Register.Accumulation.${registerName}]
     WHERE
-    date BETWEEN @p1 AND @p2
-    ${where}
-    ${groupBy ? `GROUP BY ${groupBy}` : ''}
-    HAVING ${having} `;
+      date BETWEEN @p1 AND @p2
+      ${where}
+      ${groupBy ? `GROUP BY ${groupBy}` : ''}
+      HAVING ${having}`;
 
   const tx = x100.util.x100DataDB();
   const result = await tx.manyOrNone<T>(queryText, [period.begin, period.end, ...params]);
@@ -692,7 +724,7 @@ export async function unPostById(id: Ref, tx: MSSQL) {
     // if (!doc.posted) return serverDoc;
     serverDoc.posted = false;
     await unpostDocument(serverDoc, tx);
-    await updateDocument(serverDoc, tx);
+    await upsertDocument(serverDoc, tx);
     return serverDoc;
   } catch (ex) { throw new Error(ex); }
   finally { await lib.util.adminMode(false, tx); }
@@ -708,8 +740,13 @@ async function executeGETRequest(opts: { baseURL: string, query: string }): Prom
   return await instance.get(opts.query);
 }
 
+async function executePOSTRequest(opts: { url: string, data: any, config?: any }): Promise<any> {
+  const instance = axios.create({ baseURL: opts.url });
+  return await instance.post(opts.url, opts.data, opts.config);
+}
+
 async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
-  if (!tx) tx = getAdminTX();
+  if (!tx) tx = metaPoolTx();
   const queries = [
     ...SQLGenegatorMetadata.CreateViewCatalogIndex(type, withSecurityPolicy, true),
     ...SQLGenegatorMetadata.CreateViewCatalog(type, true)
@@ -727,7 +764,7 @@ async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy
 async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
   const indexedOperation = getIndexedOperationById(id);
   if (!indexedOperation) throw new Error(`Operation ${id} is not indexed`);
-  if (!tx) tx = getAdminTX();
+  if (!tx) tx = metaPoolTx();
   const queries = [
     ...await SQLGenegatorMetadata.CreateViewOperationIndex(indexedOperation, tx, true, withSecurityPolicy),
     ...await SQLGenegatorMetadata.CreateViewOperation(indexedOperation, true)
@@ -740,6 +777,45 @@ async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityP
       if (queries.indexOf(querText)) throw new Error(error);
     }
   }
+}
+
+async function propsByType(type: string, operation?: string, tx?: MSSQL): Promise<{ [x: string]: PropOptions }> {
+  return (await createObject({ type, operation }, tx)).Props();
+}
+
+async function propByType(type: string, operation?: string, tx?: MSSQL): Promise<PropOptions | RegisterAccumulationOptions> {
+  return (await createObject({ type, operation })).Prop();
+}
+
+async function createDocumentOperationServer(init: Partial<DocumentOperation>, tx: MSSQL): Promise<DocumentOperationServer> {
+  const fakeDoc = {
+    type: 'Document.Operation',
+    Operation: init.Operation,
+    Group: init.Group || (await lib.util.getObjectPropertyById(init.Operation as string, 'Group', tx)).id
+  };
+  const doc: IFlatDocument = { ...createDocument(fakeDoc.type), ...fakeDoc };
+  return await createDocumentServer<DocumentOperationServer>(fakeDoc.type, doc, tx);
+}
+
+async function createObject(init: any, tx?: MSSQL) {
+
+  if (Type.isOperation(init.type) && init.Operation)
+    return await createDocumentOperationServer(init, tx!);
+
+  if (init.type.startsWith('Document.') || init.type.startsWith('Catalog.'))
+    return await createDocumentServer<DocumentOperationServer>(init.type, init, tx!);
+
+  if (init.type.startsWith('Register.Accumulation.'))
+    return createAccumulationRegister(init);
+
+  if (init.type.startsWith('Register.Info.'))
+    return createRegisterInfo(init);
+
+  if (init.type.startsWith('Form.'))
+    return createFormServer(init);
+
+  throw new Error(`createObject: type ${init!.type} is not registered`);
+
 }
 
 export function isEqualObjects(object1: Object, object2: Object): boolean {
@@ -765,6 +841,10 @@ function converStringEncoding(string: string, encodingIn: string, ecnodingOut: s
   return iconv.decode(buff, ecnodingOut).toString();
 }
 
+async function xmlStringToJSON(xml: string): Promise<string> {
+  return await xml2js.parseStringPromise(xml);
+}
+
 export function getAdminTX(): MSSQL {
   return new MSSQL(TASKS_POOL);
 }
@@ -773,13 +853,17 @@ function jettiPoolTx(): MSSQL {
   return new MSSQL(JETTI_POOL);
 }
 
+function metaPoolTx(): MSSQL {
+  return new MSSQL(JETTI_POOL_META);
+}
+
 async function insertQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRow> {
 
   if (!row.date) row.date = new Date();
   if (!taskPoolTX) taskPoolTX = taskPoolTx();
 
-  const query = `INSERT INTO[exc].[Queue]([type], [doc], [status], [ExchangeCode], [ExchangeBase], [Date], [id])
-    VALUES(@p1, JSON_QUERY(@p2), @p3, @p4, @p5, @p6, @p7)`;
+  const query = `INSERT INTO [exc].[Queue]([type],[doc],[status],[ExchangeCode],[ExchangeBase],[Date],[id])
+  VALUES (@p1, JSON_QUERY(@p2), @p3, @p4, @p5, @p6, @p7)`;
 
   if (!row.id) row.id = v1().toLocaleUpperCase();
 
@@ -794,8 +878,8 @@ async function insertQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRo
 async function addId(id: string, flow: number, taskPoolTX?: MSSQL): Promise<void> {
   if (!id) return;
   if (!taskPoolTX) taskPoolTX = taskPoolTx();
-  await taskPoolTX!.none(`INSERT INTO[exc].[QueuePost]([id], [flow])
-    VALUES(@p1, @p2)`, [id, flow]);
+  await taskPoolTX!.none(`INSERT INTO [exc].[QueuePost]([id],[flow])
+  VALUES (@p1, @p2)`, [id, flow]);
 }
 
 async function updateQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRow> {
@@ -803,14 +887,14 @@ async function updateQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRo
   if (!row.date) row.date = new Date();
   if (!taskPoolTX) taskPoolTX = taskPoolTx();
 
-  const query = `UPDATE[exc].[Queue]
+  const query = `UPDATE [exc].[Queue]
     SET
-    [type] = @p1,
-    [doc] = JSON_QUERY(@p2),
-    [status] = @p3,
-    [ExchangeCode] = @p4,
-    [ExchangeBase] = @p5,
-    [Date] = @p6 WHERE id = @p7`;
+      [type] = @p1,
+      [doc] = JSON_QUERY(@p2),
+      [status] = @p3,
+      [ExchangeCode] = @p4,
+      [ExchangeBase] = @p5,
+      [Date] = @p6 WHERE id = @p7`;
 
   if (!row.id) row.id = v1().toLocaleUpperCase();
 
@@ -824,33 +908,33 @@ async function updateQueue(row: IQueueRow, taskPoolTX?: MSSQL): Promise<IQueueRo
 
 async function deleteQueue(id: string, taskPoolTX?: MSSQL): Promise<void> {
   if (!taskPoolTX) taskPoolTX = taskPoolTx();
-  const query = `DELETE FROM[exc].[Queue] WHERE id = @p1`;
+  const query = `DELETE FROM [exc].[Queue] WHERE id = @p1`;
   await taskPoolTX!.none(query, [id]);
 }
 
 async function getQueueById(id: string, taskPoolTX?: MSSQL): Promise<IQueueRow | null> {
   if (taskPoolTX) taskPoolTX = taskPoolTx();
-  const query = `SELECT * FROM[exc].[Queue] WHERE id = @p1`;
+  const query = `SELECT * FROM  [exc].[Queue] WHERE id = @p1`;
   return await taskPoolTX!.oneOrNone(query, [id]);
 }
 
 async function addTask(queueId: string, taskParams, taskOpts): Promise<any> {
-  return await execQueueAPIPostRequest(queueId, `api / v1.0 / task / add`, { params: taskParams, opts: taskOpts });
+  return await execQueueAPIPostRequest(queueId, `api/v1.0/task/add`, { params: taskParams, opts: taskOpts });
 }
 
 async function getTasks(queueId: string, params: IGetTaskParams): Promise<{ repeatable: any[], jobs: any[] }> {
-  return await execQueueAPIPostRequest(queueId, `api / v1.0 / task / get`, params);
+  return await execQueueAPIPostRequest(queueId, `api/v1.0/task/get`, params);
 }
 
 async function deleteTasks(queueId: string, params: IDeleteTaskParams): Promise<void> {
-  return await execQueueAPIPostRequest(queueId, `api / v1.0 / task / delete `, params);
+  return await execQueueAPIPostRequest(queueId, `api/v1.0/task/delete`, params);
 }
 
 function formatDate(date: Date): string {
   const dd = date.getDate();
   const mm = date.getMonth() + 1;
   const yy = date.getFullYear();
-  return `${dd < 10 ? '0' + dd : dd}.${mm < 10 ? '0' + mm : mm}.${yy} `;
+  return `${dd < 10 ? '0' + dd : dd}.${mm < 10 ? '0' + mm : mm}.${yy}`;
 
 }
 
@@ -870,7 +954,7 @@ function groupArray<T>(array: T[], groupField = ''): T[] {
 }
 
 function round(num: number, precision = 4): number {
-  const factor = +`1${'0'.repeat(precision)} `;
+  const factor = +`1${'0'.repeat(precision)}`;
   return Math.round(num * factor) / factor;
 }
 
@@ -887,7 +971,7 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
     if (attachment.id && attachment.timestamp) ob = await createDocServerById(attachment.id, tx);
     else {
       ob = await createDocServer<CatalogAttachment>('Catalog.Attachment', undefined, tx);
-      if (!userId) userId = tx.user.env.id;
+      if (!userId) userId = tx.userId();
       ob.user = userId;
       ob.date = new Date;
       ob.company = (await byId(attachment.owner, tx))!.company;
@@ -919,54 +1003,54 @@ async function delAttachments(attachmentsId: Ref[], tx: MSSQL): Promise<boolean>
     if (!ob || ob.deleted) continue;
     ob.Storage = '';
     ob.deleted = true;
-    await updateDocument(ob, tx);
+    await upsertDocument(ob, tx);
   }
   return true;
 }
 
 async function getAttachmentsByOwner(ownerId: Ref, withDeleted: boolean, tx: MSSQL): Promise<CatalogAttachment[]> {
   const query = `
-    SELECT
+  SELECT
     attach.*,
-      stor.Storage
-    FROM
-      (
+    stor.Storage
+FROM
+    (
         SELECT
             a.id,
-        a.description,
-        a.timestamp,
-        a.owner,
-        a.date,
-        a.AttachmentType,
-        a.Tags,
-        a.MIMEType,
-        a.FileSize,
-        a.FileName,
-        us.description userDescription,
-        at.description AttachmentTypeDescription,
-        at.IconURL,
-        at.StorageType,
-        at.LoadDataOnInit
+            a.description,
+            a.timestamp,
+            a.owner,
+            a.date,
+            a.AttachmentType,
+            a.Tags,
+            a.MIMEType,
+            a.FileSize,
+            a.FileName,
+            us.description userDescription,
+            at.description AttachmentTypeDescription,
+            at.IconURL,
+            at.StorageType,
+            at.LoadDataOnInit
         FROM
-        [Catalog.Attachment.v] a
-            LEFT JOIN[Catalog.Attachment.Type.v] at ON a.AttachmentType = at.id
-            LEFT JOIN[Catalog.User.v] us ON a.[user] = us.id
+            [Catalog.Attachment.v] a
+            LEFT JOIN [Catalog.Attachment.Type.v] at ON a.AttachmentType = at.id
+            LEFT JOIN [Catalog.User.v] us ON a.[user] = us.id
         WHERE
             a.owner = @p1
-    ${withDeleted ? '' : 'and a.deleted = 0'}
+            ${withDeleted ? '' : 'and a.deleted = 0'}
     ) attach
     LEFT JOIN dbo.[Documents] doc
-    CROSS APPLY OPENJSON(doc.doc, N'$') WITH(Storage NVARCHAR(MAX) N'$.Storage') stor ON attach.id = doc.id
+    CROSS APPLY OPENJSON (doc.doc, N'$') WITH (Storage NVARCHAR(MAX) N'$.Storage') stor ON attach.id = doc.id
     and attach.LoadDataOnInit = 1
-    ORDER BY
+ORDER BY
     attach.timestamp DESC`;
   return await tx.manyOrNone(query, [ownerId]);
 }
 
 async function getAttachmentStorageById(attachmentId: Ref, tx: MSSQL): Promise<string> {
   const query = `
-    SELECT stor.Storage FROM dbo.[Documents] doc
-    CROSS APPLY OPENJSON(doc.doc, N'$') WITH(Storage NVARCHAR(MAX) N'$.Storage') stor WHERE doc.id = @p1`;
+  SELECT stor.Storage FROM dbo.[Documents] doc
+    CROSS APPLY OPENJSON (doc.doc, N'$') WITH (Storage NVARCHAR(MAX) N'$.Storage') stor WHERE doc.id = @p1`;
   const res = await tx.oneOrNone<{ Storage: string }>(query, [attachmentId]);
   return res ? res.Storage : '';
 }
@@ -976,33 +1060,33 @@ async function getAttachmentsSettingsByOwner(ownerId: Ref, tx: MSSQL): Promise<I
   if (!owner) return [];
   let query = `SELECT d.id AttachmentType,
       d.description AttachmentTypeDescription,
-        JSON_VALUE(d.doc, N'$.StorageType')  StorageType,
-          JSON_VALUE(d.doc, N'$.FileFilter')  FileFilter,
-            JSON_VALUE(d.doc, N'$.MaxFileSize')  MaxFileSize,
-              JSON_VALUE(d.doc, N'$.IconURL')  IconURL,
-                JSON_VALUE(d.doc, N'$.Tags')  Tags
-    FROM[dbo].[Documents] d
+      JSON_VALUE(d.doc, N'$.StorageType')  StorageType,
+      JSON_VALUE(d.doc, N'$.FileFilter')  FileFilter,
+      JSON_VALUE(d.doc, N'$.MaxFileSize')  MaxFileSize,
+      JSON_VALUE(d.doc, N'$.IconURL')  IconURL,
+      JSON_VALUE(d.doc, N'$.Tags')  Tags
+  FROM [dbo].[Documents] d
 
-    where d.type = 'Catalog.Attachment.Type'
-    and d.deleted = 0
-    and JSON_VALUE(d.doc, N'$.AllDocuments') = 'true'
-    UNION
-    SELECT d.id AttachmentType,
+  where d.type = 'Catalog.Attachment.Type'
+      and d.deleted = 0
+      and JSON_VALUE(d.doc, N'$.AllDocuments') = 'true'
+  UNION
+  SELECT d.id AttachmentType,
       d.description AttachmentTypeDescription,
-        JSON_VALUE(d.doc, N'$.StorageType') StorageType,
-          JSON_VALUE(d.doc, N'$.FileFilter') FileFilter,
-            JSON_VALUE(d.doc, N'$.MaxFileSize') MaxFileSize,
-              JSON_VALUE(d.doc, N'$.IconURL')  IconURL,
-                JSON_VALUE(d.doc, N'$.Tags')  Tags
-    FROM[dbo].[Documents] d
-    CROSS APPLY OPENJSON(d.doc, N'$.Owners')
-    WITH(
+      JSON_VALUE(d.doc, N'$.StorageType') StorageType,
+      JSON_VALUE(d.doc, N'$.FileFilter') FileFilter,
+      JSON_VALUE(d.doc, N'$.MaxFileSize') MaxFileSize,
+      JSON_VALUE(d.doc, N'$.IconURL')  IconURL,
+      JSON_VALUE(d.doc, N'$.Tags')  Tags
+  FROM [dbo].[Documents] d
+  CROSS APPLY OPENJSON (d.doc, N'$.Owners')
+  WITH (
       [OwnerType] VARCHAR(MAX)
-    ) AS owners
-    where d.type = 'Catalog.Attachment.Type'
-    and d.deleted = 0
-    and owners.[OwnerType] = @p1
-    ORDER by AttachmentTypeDescription`;
+  ) AS owners
+  where d.type = 'Catalog.Attachment.Type'
+      and d.deleted = 0
+      and owners.[OwnerType] = @p1
+  ORDER by AttachmentTypeDescription`;
   if (Type.isCatalog(owner.type)) query = query.replace('.AllDocuments', '.AllCatalogs');
   const qRes = await tx.manyOrNone(query, [owner.type]) as any[];
   if (!qRes.length) return [];
@@ -1015,7 +1099,7 @@ async function getAttachmentsSettingsByOwner(ownerId: Ref, tx: MSSQL): Promise<I
 
 export async function movementsByDoc<T extends RegisterAccumulation>(type: RegisterAccumulationTypes, doc: Ref, tx: MSSQL) {
   const queryText = `
-    SELECT * FROM[Accumulation] WHERE type = @p1 AND document = @p2`;
+  SELECT * FROM [Accumulation] WHERE type = @p1 AND document = @p2`;
   return await tx.manyOrNone<T>(queryText, [type, doc]);
 }
 
@@ -1028,24 +1112,24 @@ async function getUserRoles(user: CatalogUser): Promise<string[]> {
 }
 
 async function isRoleAvailable(role: string, tx: MSSQL): Promise<boolean> {
-  return tx && tx.user && tx.user.roles && tx.user.roles && tx.user.roles.includes(role);
+  return tx && tx.user && tx.user.roles && tx.user.roles.length && tx.user.roles.includes(role);
 }
 
 async function closeMonth(company: Ref, date: Date, tx: MSSQL): Promise<void> {
   // const sdb = new MSSQL(TASKS_POOL, { email: '', isAdmin: true, env: {}, description: '', roles: []} );
   await tx.none(`
-    EXEC[Invetory.Close.Month - MEM] @company = '${company}', @date = '${date.toJSON()}'`);
+    EXEC [Invetory.Close.Month-MEM] @company = '${company}', @date = '${date.toJSON()}'`);
 }
 
 async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
   const result = await tx.manyOrNone<{ Storehouse: Ref, SKU: Ref, Cost: number }>(`
-    SELECT q.*, Storehouse.Department Department FROM(
-      SELECT Storehouse, SKU, SUM([Cost])[Cost]
-      FROM[dbo].[Register.Accumulation.Inventory] r
+    SELECT q.*, Storehouse.Department Department FROM (
+      SELECT Storehouse, SKU, SUM([Cost]) [Cost]
+      FROM [dbo].[Register.Accumulation.Inventory] r
       WHERE date < DATEADD(DAY, 1, EOMONTH(@p1)) AND company = @p2
-    GROUP BY Storehouse, SKU
-    HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
-    LEFT JOIN[Catalog.Storehouse.v] Storehouse WITH(NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
+      GROUP BY Storehouse, SKU
+      HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
+    LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
   return result;
 }
 
@@ -1079,3 +1163,8 @@ async function getObjectPropertyById(id: Ref, propPath: string, tx: MSSQL) {
 function exchangeDB() {
   return new MSSQL(EXCHANGE_POOL);
 }
+
+function newEvent(init: Partial<Event>) {
+  return new Event(init);
+}
+

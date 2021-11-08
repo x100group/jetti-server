@@ -11,7 +11,7 @@ import { RegisterInfoDepreciation } from './Depreciation';
 import { RegisterInfoExchangeRates } from './ExchangeRates';
 import { RegisterInfoPriceList } from './PriceList';
 import { RegisterInfoRLS } from './RLS';
-import { RegisterInfoSettings } from './Settings';
+import { RegisterInfoAdditionalProps } from './AdditionalProps';
 import { RegisterInfoBudgetItemRule } from './BudgetItemRule';
 import { DepartmentCompanyHistory } from './DepartmentCompanyHistory';
 import { RegisterInfoCounterpartiePriceList } from './CounterpartiePriceList';
@@ -44,7 +44,7 @@ export type RegistersInfo =
     RegisterInfoExchangeRates |
     RegisterInfoExchangeRatesNational |
     RegisterInfoDepreciation |
-    RegisterInfoSettings |
+    RegisterInfoAdditionalProps |
     RegisterInfoIntl |
     RegisterInfoSelfEmployed |
     RegisterInfoProductSpecificationByDepartment |
@@ -77,7 +77,7 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.ExchangeRates', Class: RegisterInfoExchangeRates },
     { type: 'Register.Info.ExchangeRates.National', Class: RegisterInfoExchangeRatesNational },
     { type: 'Register.Info.ProductSpecificationByDepartment', Class: RegisterInfoProductSpecificationByDepartment },
-    { type: 'Register.Info.Settings', Class: RegisterInfoSettings },
+    { type: 'Register.Info.AdditionalProps', Class: RegisterInfoAdditionalProps },
     { type: 'Register.Info.Depreciation', Class: RegisterInfoDepreciation },
     { type: 'Register.Info.RLS.Period', Class: RegisterInfoRLSPeriod },
     { type: 'Register.Info.RLS', Class: RegisterInfoRLS },

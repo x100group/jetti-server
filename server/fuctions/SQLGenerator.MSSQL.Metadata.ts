@@ -309,6 +309,11 @@ export class SQLGenegatorMetadata {
       let name = '';
       for (let i = 1; i < typeSplit.length; i++) name += typeSplit[i];
       select = select.replace(`FROM [${type}.v] d WITH (NOEXPAND)`, `
+        , ISNULL(l5.id, d.id) [${name}.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [${name}.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [${name}.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [${name}.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [${name}.Level1.id]
         , ISNULL(l5.description, d.description) [${name}.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [${name}.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [${name}.Level3]
@@ -358,6 +363,17 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2] ON [Document.Operation.v](f2,id);
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3] ON [Document.Operation.v](f3,id);
     CREATE NONCLUSTERED INDEX [Document.Operation.v.timestamp] ON [Document.Operation.v]([timestamp],[Operation]);
+
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Amount.rls] ON [Document.Operation.v](company,Amount,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group.rls] ON [dbo].[Document.Operation.v](company,[Group],[date],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Group.user.rls] ON [dbo].[Document.Operation.v](company,[user],[Group],[date],[id]);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.Operation.rls] ON [Document.Operation.v](company,Operation,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.currency.rls] ON [Document.Operation.v](company,currency,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f1.rls] ON [Document.Operation.v](company,f1,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f2.rls] ON [Document.Operation.v](company,f2,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.f3.rls] ON [Document.Operation.v](company,f3,id);
+
+    CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.CompanyGroup] ON [dbo].[Document.Operation.v]([company],[Group],[date],[id])INCLUDE([deleted])
     `;
 
     return query;
@@ -751,6 +767,16 @@ ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn
       query += `${this.typeSpliter(type.type, true)}`;
       query += SQLGenegatorMetadata.RegisterAccumulationViewQuery(register.Props(), register.Prop().type.toString());
       query += `${this.typeSpliter(type.type, false)}`;
+      query += `
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      `;
     }
     query = `
     ${query}

@@ -206,11 +206,18 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
 
   }
 
+  async ExecuteQuery<T>(queryText: string) {
+    return await this.getTX().manyOrNone<T>(queryText);
+  }
+
   async selectFilter() {
 
     const setId = 'selectFilter';
-    const filterFields = this.PropSettings.filter(e => e.isFilter).map(e => e.PropName);
     const listFilter: FormListFilter[] = [];
+
+    if (this.QueryText) listFilter.push({ left: 'id', center: 'in', right: (await this.ExecuteQuery<{ id: string }>(this.QueryText)).map(e => `'${e.id}'`) });
+
+    const filterFields = this.PropSettings.filter(e => e.isFilter).map(e => e.PropName);
     const props = await this.getRecieverProps();
     this.DynamicPropsClearSet(setId);
     for (const filterField of filterFields) {
@@ -219,11 +226,11 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       listFilter.push({ left: filterField, center: this[`${filterField}_center`], right: this[`${filterField}_right`] });
     }
 
-    if (this.OperationType) listFilter.push({
-      left: 'Operation',
-      center: '=',
-      right: this.OperationType
-    });
+    // if (this.OperationType) listFilter.push({
+    //   left: 'Operation',
+    //   center: '=',
+    //   right: this.OperationType
+    // });
 
     const complexProps: string[] = ['Object'];
     this.DynamicPropsPush('add', 'panel', 'Список объектов', '', 'ObjectsList', setId);
@@ -266,13 +273,13 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
           return res;
         });
     } else {
-      const query = this.getSelectQueryText(props, listFilter);
+      const query = await this.getSelectQueryText(props, listFilter);
       resData = await this.getTX().manyOrNone(query);
     }
     this['ObjectsList'] = resData;
   }
 
-  getSelectQueryText(schema: { [x: string]: PropOptions }, listFilter: FormListFilter[]) {
+  async getSelectQueryText(schema: { [x: string]: PropOptions }, listFilter: FormListFilter[]) {
 
     const jsonProp = (prop: string, type: string) => {
       if (type === 'boolean') { return `ISNULL(CAST(JSON_VALUE(d.doc, N'$."${prop}"') AS BIT), 0) "${prop}"`; }
@@ -313,13 +320,17 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       if (prop.isComplex) queryOb.joins.push(leftJoin(prop.key, prop.type));
     }
 
-    return `
+    let query = `
     SELECT
     d.id "Object",
     ${queryOb.fields.join(`,\n`)}
     FROM "Documents" d
     ${queryOb.joins.join(`\n`)}
-    WHERE ${filterBuilder(listFilter).where}`.trim();
+    WHERE 1 = 1
+    AND d."type" = N'${(await this.getRecieverType())}'
+    AND ${(await filterBuilder(listFilter, this.getTX())).where.replace(/"/g, '').replace('d.user', 'd."user"')}`.trim();
+    if (this.OperationType) query += `AND d.Operation = '${this.OperationType}'`;
+    return query;
   }
 
   async getRecieverType(): Promise<DocTypes | string> {

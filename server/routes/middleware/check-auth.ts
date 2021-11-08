@@ -13,8 +13,8 @@ export function authHTTP(req: Request, res: Response, next: NextFunction) {
   });
 }
 
-export function authIO(socket: SocketIO.Socket, next) {
-  const token = socket.handshake.query['token'];
+export function authIO(socket: SocketIO.Socket, next: NextFunction) {
+  const token = socket.handshake.query['token'] as string;
   jwt.verify(token, JTW_KEY as string, undefined, (error, decoded: IJWTPayload) => {
     if (!error) socket.handshake.query['user'] = decoded.email;
     next();

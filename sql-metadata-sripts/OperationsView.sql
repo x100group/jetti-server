@@ -13,12 +13,47 @@
         , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
         , d.[Amount] [Amount]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
-        , ISNULL([MainStoreHouse.v].description, '') [MainStoreHouse.value], d.[MainStoreHouse] [MainStoreHouse.id], [MainStoreHouse.v].type [MainStoreHouse.type]
         , d.[FrontType] [FrontType]
+        , ISNULL([MainStoreHouse.v].description, '') [MainStoreHouse.value], d.[MainStoreHouse] [MainStoreHouse.id], [MainStoreHouse.v].type [MainStoreHouse.type]
+        , d.[TimeOpen] [TimeOpen]
+        , d.[TimeClose] [TimeClose]
+        , d.[MaxTotalOrder] [MaxTotalOrder]
+        , d.[DeliveryTimeOpen] [DeliveryTimeOpen]
+        , d.[DeliveryTimeClose] [DeliveryTimeClose]
+        , d.[isDeliveringService] [isDeliveringService]
+        , d.[PickupTimeOpen] [PickupTimeOpen]
+        , d.[PickupTimeClose] [PickupTimeClose]
+        , d.[isPickupService] [isPickupService]
+        , d.[isComentRequired] [isComentRequired]
+        , d.[isOnlinePayAccepted] [isOnlinePayAccepted]
+        , d.[isCoordinatesCheck] [isCoordinatesCheck]
+        , d.[isSailPlayPromocodeCheck] [isSailPlayPromocodeCheck]
+        , d.[isSailPlayBonusCheck] [isSailPlayBonusCheck]
+        , d.[wifiSSID] [wifiSSID]
+        , d.[timeZoneOffset] [timeZoneOffset]
+        , d.[addressCheck] [addressCheck]
+        , d.[addressSMS] [addressSMS]
+        , d.[organisationCheck] [organisationCheck]
+        , d.[defaultCoockingTime] [defaultCoockingTime]
+        , d.[currentCoockingTime] [currentCoockingTime]
+        , d.[currentCookingTimeExpiredAt] [currentCookingTimeExpiredAt]
+        , d.[CookingTimeshift] [CookingTimeshift]
+        , d.[CookingTimeshiftExpiredAt] [CookingTimeshiftExpiredAt]
+        , d.[defaultDeliveryTime] [defaultDeliveryTime]
+        , d.[DeliveryTimeShift] [DeliveryTimeShift]
+        , d.[DeliveryTimeShiftExpiredAt] [DeliveryTimeShiftExpiredAt]
+        , d.[iikoTerminalId] [iikoTerminalId]
+        , d.[paymentGateway] [paymentGateway]
+        , d.[keyVaultURL] [keyVaultURL]
+        , ISNULL([WayStoreHouse.v].description, '') [WayStoreHouse.value], d.[WayStoreHouse] [WayStoreHouse.id], [WayStoreHouse.v].type [WayStoreHouse.type]
+        , d.[isTaxPayer] [isTaxPayer]
+        , d.[StickerSettings] [StickerSettings]
+        , d.[ThermalName] [ThermalName]
+        , d.[AreaTotal] [AreaTotal]
+        , d.[AreaTrade] [AreaTrade]
+        , d.[AreaKitchen] [AreaKitchen]
+        , d.[MaxOrdersPerHour] [MaxOrdersPerHour]
       FROM [Operation.AdditionalParametersDepartment.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -27,11 +62,9 @@
         LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
         LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.Storehouse.v] [MainStoreHouse.v] WITH (NOEXPAND) ON [MainStoreHouse.v].id = d.[MainStoreHouse]
+        LEFT JOIN dbo.[Catalog.Storehouse.v] [WayStoreHouse.v] WITH (NOEXPAND) ON [WayStoreHouse.v].id = d.[WayStoreHouse]
     ; 
 GO
 GRANT SELECT ON dbo.[Operation.AdditionalParametersDepartment] TO jetti;
@@ -54,13 +87,12 @@ GO
         , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
         , d.[Amount] [Amount]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
         , ISNULL([RetailNetwork.v].description, '') [RetailNetwork.value], d.[RetailNetwork] [RetailNetwork.id], [RetailNetwork.v].type [RetailNetwork.type]
         , d.[AdditionalType] [AdditionalType]
         , ISNULL([MainSKU.v].description, '') [MainSKU.value], d.[MainSKU] [MainSKU.id], [MainSKU.v].type [MainSKU.type]
         , d.[Qty] [Qty]
+        , d.[defaultQty] [defaultQty]
+        , d.[DeliveryType] [DeliveryType]
       FROM [Operation.AutoAdditionSettings.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -69,9 +101,6 @@ GO
         LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
         LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
         LEFT JOIN dbo.[Catalog.RetailNetwork.v] [RetailNetwork.v] WITH (NOEXPAND) ON [RetailNetwork.v].id = d.[RetailNetwork]
         LEFT JOIN dbo.[Catalog.Product.v] [MainSKU.v] WITH (NOEXPAND) ON [MainSKU.v].id = d.[MainSKU]
     ; 
@@ -96,9 +125,6 @@ GO
         , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
         , d.[Amount] [Amount]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , ISNULL([UserId.v].description, '') [UserId.value], d.[UserId] [UserId.id], [UserId.v].type [UserId.type]
         , d.[CashShiftNumber] [CashShiftNumber]
@@ -109,6 +135,8 @@ GO
         , d.[ProductionCalculated] [ProductionCalculated]
         , d.[startBalance] [startBalance]
         , d.[endBalance] [endBalance]
+        , d.[ErrorCount] [ErrorCount]
+        , d.[ProductionId] [ProductionId]
       FROM [Operation.CashShifts.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -117,9 +145,6 @@ GO
         LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
         LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.Person.v] [UserId.v] WITH (NOEXPAND) ON [UserId.v].id = d.[UserId]
     ; 
@@ -144,17 +169,18 @@ GO
         , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
         , d.[Amount] [Amount]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
-        , ISNULL([Customer.v].description, '') [Customer.value], d.[Customer] [Customer.id], [Customer.v].type [Customer.type]
+        , ISNULL([RetailNetwork.v].description, '') [RetailNetwork.value], d.[RetailNetwork] [RetailNetwork.id], [RetailNetwork.v].type [RetailNetwork.type]
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
+        , ISNULL([Customer.v].description, '') [Customer.value], d.[Customer] [Customer.id], [Customer.v].type [Customer.type]
         , ISNULL([Storehouse.v].description, '') [Storehouse.value], d.[Storehouse] [Storehouse.id], [Storehouse.v].type [Storehouse.type]
         , d.[DiscountDoc] [DiscountDoc]
         , d.[NumCashShift] [NumCashShift]
         , d.[TypeDocument] [TypeDocument]
         , d.[PrintTime] [PrintTime]
+        , d.[TypeOfFranchise] [TypeOfFranchise]
+        , d.[DeliveryType] [DeliveryType]
+        , d.[OrderSource] [OrderSource]
         , d.[counterpartyId] [counterpartyId]
         , d.[orderId] [orderId]
       FROM [Operation.CHECK_JETTI_FRONT.v] d WITH (NOEXPAND)
@@ -165,12 +191,10 @@ GO
         LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
         LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
-        LEFT JOIN dbo.[Catalog.Counterpartie.v] [Customer.v] WITH (NOEXPAND) ON [Customer.v].id = d.[Customer]
+        LEFT JOIN dbo.[Catalog.RetailNetwork.v] [RetailNetwork.v] WITH (NOEXPAND) ON [RetailNetwork.v].id = d.[RetailNetwork]
         LEFT JOIN dbo.[Catalog.Person.v] [Manager.v] WITH (NOEXPAND) ON [Manager.v].id = d.[Manager]
+        LEFT JOIN dbo.[Catalog.Counterpartie.v] [Customer.v] WITH (NOEXPAND) ON [Customer.v].id = d.[Customer]
         LEFT JOIN dbo.[Catalog.Storehouse.v] [Storehouse.v] WITH (NOEXPAND) ON [Storehouse.v].id = d.[Storehouse]
     ; 
 GO
@@ -179,85 +203,6 @@ GO
 
       
 ------------------------------ END Operation.CHECK_JETTI_FRONT ------------------------------
-
------------------------------- BEGIN Operation.CRAUD_INTEGRATION ------------------------------
-
-      CREATE OR ALTER VIEW dbo.[Operation.CRAUD_INTEGRATION] AS
-      
-      SELECT
-        d.id, d.type, d.date, d.code, d.description "CRAUD_INTEGRATION",  d.posted, d.deleted, d.isfolder, d.timestamp, d.version
-        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
-        , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
-        , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
-        , d.[Amount] [Amount]
-        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
-        , d.[alias] [alias]
-        , ISNULL([OperationJETTI.v].description, '') [OperationJETTI.value], d.[OperationJETTI] [OperationJETTI.id], [OperationJETTI.v].type [OperationJETTI.type]
-        , d.[Status] [Status]
-        , d.[StatusPosted] [StatusPosted]
-      FROM [Operation.CRAUD_INTEGRATION.v] d WITH (NOEXPAND)
-        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
-        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
-        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
-        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-        LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
-        LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
-        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
-        LEFT JOIN dbo.[Catalog.Operation.v] [OperationJETTI.v] WITH (NOEXPAND) ON [OperationJETTI.v].id = d.[OperationJETTI]
-    ; 
-GO
-GRANT SELECT ON dbo.[Operation.CRAUD_INTEGRATION] TO jetti;
-GO
-
-      
------------------------------- END Operation.CRAUD_INTEGRATION ------------------------------
-
------------------------------- BEGIN Operation.CRAUD_INTEGRATION_CREATE_LOAN ------------------------------
-
-      CREATE OR ALTER VIEW dbo.[Operation.CRAUD_INTEGRATION_CREATE_LOAN] AS
-      
-      SELECT
-        d.id, d.type, d.date, d.code, d.description "CRAUD_INTEGRATION_CREATE_LOAN",  d.posted, d.deleted, d.isfolder, d.timestamp, d.version
-        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
-        , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
-        , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
-        , d.[Amount] [Amount]
-        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
-        , d.[Status] [Status]
-        , d.[ScriptFindLoan] [ScriptFindLoan]
-      FROM [Operation.CRAUD_INTEGRATION_CREATE_LOAN.v] d WITH (NOEXPAND)
-        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
-        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
-        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
-        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-        LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
-        LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
-        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
-    ; 
-GO
-GRANT SELECT ON dbo.[Operation.CRAUD_INTEGRATION_CREATE_LOAN] TO jetti;
-GO
-
-      
------------------------------- END Operation.CRAUD_INTEGRATION_CREATE_LOAN ------------------------------
 
 ------------------------------ BEGIN Operation.DeliveryAreas ------------------------------
 
@@ -273,9 +218,6 @@ GO
         , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
         , d.[Amount] [Amount]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
         , ISNULL([RetailNetwork.v].description, '') [RetailNetwork.value], d.[RetailNetwork] [RetailNetwork.id], [RetailNetwork.v].type [RetailNetwork.type]
         , d.[MapUrl] [MapUrl]
         , d.[LoadFolder] [LoadFolder]
@@ -287,9 +229,6 @@ GO
         LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
         LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
         LEFT JOIN dbo.[Catalog.RetailNetwork.v] [RetailNetwork.v] WITH (NOEXPAND) ON [RetailNetwork.v].id = d.[RetailNetwork]
     ; 
 GO
@@ -298,71 +237,6 @@ GO
 
       
 ------------------------------ END Operation.DeliveryAreas ------------------------------
-
------------------------------- BEGIN Operation.IncomeBank_CRAUD_LoanInternational ------------------------------
-
-      CREATE OR ALTER VIEW dbo.[Operation.IncomeBank_CRAUD_LoanInternational] AS
-      
-      SELECT
-        d.id, d.type, d.date, d.code, d.description "IncomeBank_CRAUD_LoanInternational",  d.posted, d.deleted, d.isfolder, d.timestamp, d.version
-        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
-        , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
-        , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
-        , d.[Amount] [Amount]
-        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
-        , ISNULL([BankAccountIN.v].description, '') [BankAccountIN.value], d.[BankAccountIN] [BankAccountIN.id], [BankAccountIN.v].type [BankAccountIN.type]
-        , ISNULL([CashFlow.v].description, '') [CashFlow.value], d.[CashFlow] [CashFlow.id], [CashFlow.v].type [CashFlow.type]
-        , ISNULL([IntercompanyIN.v].description, '') [IntercompanyIN.value], d.[IntercompanyIN] [IntercompanyIN.id], [IntercompanyIN.v].type [IntercompanyIN.type]
-        , ISNULL([IntercompanyOUT.v].description, '') [IntercompanyOUT.value], d.[IntercompanyOUT] [IntercompanyOUT.id], [IntercompanyOUT.v].type [IntercompanyOUT.type]
-        , ISNULL([CurrencyVia.v].description, '') [CurrencyVia.value], d.[CurrencyVia] [CurrencyVia.id], [CurrencyVia.v].type [CurrencyVia.type]
-        , ISNULL([LoanViaIntercompanyIN.v].description, '') [LoanViaIntercompanyIN.value], d.[LoanViaIntercompanyIN] [LoanViaIntercompanyIN.id], [LoanViaIntercompanyIN.v].type [LoanViaIntercompanyIN.type]
-        , ISNULL([LoanViaIntercompanyOUT.v].description, '') [LoanViaIntercompanyOUT.value], d.[LoanViaIntercompanyOUT] [LoanViaIntercompanyOUT.id], [LoanViaIntercompanyOUT.v].type [LoanViaIntercompanyOUT.type]
-        , d.[AmountVia] [AmountVia]
-        , d.[BankConfirm] [BankConfirm]
-        , d.[BankDocNumber] [BankDocNumber]
-        , d.[BankConfirmDate] [BankConfirmDate]
-        , ISNULL([Intercompany_CRAUD.v].description, '') [Intercompany_CRAUD.value], d.[Intercompany_CRAUD] [Intercompany_CRAUD.id], [Intercompany_CRAUD.v].type [Intercompany_CRAUD.type]
-        , ISNULL([Customer.v].description, '') [Customer.value], d.[Customer] [Customer.id], [Customer.v].type [Customer.type]
-        , ISNULL([Loan_Customer.v].description, '') [Loan_Customer.value], d.[Loan_Customer] [Loan_Customer.id], [Loan_Customer.v].type [Loan_Customer.type]
-        , ISNULL([SKU.v].description, '') [SKU.value], d.[SKU] [SKU.id], [SKU.v].type [SKU.type]
-        , ISNULL([Loan_Customer_Company.v].description, '') [Loan_Customer_Company.value], d.[Loan_Customer_Company] [Loan_Customer_Company.id], [Loan_Customer_Company.v].type [Loan_Customer_Company.type]
-        , d.[Amount_Loan_Customer_Company] [Amount_Loan_Customer_Company]
-      FROM [Operation.IncomeBank_CRAUD_LoanInternational.v] d WITH (NOEXPAND)
-        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
-        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
-        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
-        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-        LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
-        LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
-        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
-        LEFT JOIN dbo.[Catalog.BankAccount.v] [BankAccountIN.v] WITH (NOEXPAND) ON [BankAccountIN.v].id = d.[BankAccountIN]
-        LEFT JOIN dbo.[Catalog.CashFlow.v] [CashFlow.v] WITH (NOEXPAND) ON [CashFlow.v].id = d.[CashFlow]
-        LEFT JOIN dbo.[Catalog.Company.v] [IntercompanyIN.v] WITH (NOEXPAND) ON [IntercompanyIN.v].id = d.[IntercompanyIN]
-        LEFT JOIN dbo.[Catalog.Company.v] [IntercompanyOUT.v] WITH (NOEXPAND) ON [IntercompanyOUT.v].id = d.[IntercompanyOUT]
-        LEFT JOIN dbo.[Catalog.Currency.v] [CurrencyVia.v] WITH (NOEXPAND) ON [CurrencyVia.v].id = d.[CurrencyVia]
-        LEFT JOIN dbo.[Catalog.Loan.v] [LoanViaIntercompanyIN.v] WITH (NOEXPAND) ON [LoanViaIntercompanyIN.v].id = d.[LoanViaIntercompanyIN]
-        LEFT JOIN dbo.[Catalog.Loan.v] [LoanViaIntercompanyOUT.v] WITH (NOEXPAND) ON [LoanViaIntercompanyOUT.v].id = d.[LoanViaIntercompanyOUT]
-        LEFT JOIN dbo.[Catalog.Company.v] [Intercompany_CRAUD.v] WITH (NOEXPAND) ON [Intercompany_CRAUD.v].id = d.[Intercompany_CRAUD]
-        LEFT JOIN dbo.[Catalog.Person.v] [Customer.v] WITH (NOEXPAND) ON [Customer.v].id = d.[Customer]
-        LEFT JOIN dbo.[Catalog.Loan.v] [Loan_Customer.v] WITH (NOEXPAND) ON [Loan_Customer.v].id = d.[Loan_Customer]
-        LEFT JOIN dbo.[Catalog.Product.v] [SKU.v] WITH (NOEXPAND) ON [SKU.v].id = d.[SKU]
-        LEFT JOIN dbo.[Catalog.Loan.v] [Loan_Customer_Company.v] WITH (NOEXPAND) ON [Loan_Customer_Company.v].id = d.[Loan_Customer_Company]
-    ; 
-GO
-GRANT SELECT ON dbo.[Operation.IncomeBank_CRAUD_LoanInternational] TO jetti;
-GO
-
-      
------------------------------- END Operation.IncomeBank_CRAUD_LoanInternational ------------------------------
 
 ------------------------------ BEGIN Operation.LOT_Sales ------------------------------
 
@@ -378,9 +252,6 @@ GO
         , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
         , d.[Amount] [Amount]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
         , ISNULL([Customer.v].description, '') [Customer.value], d.[Customer] [Customer.id], [Customer.v].type [Customer.type]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , ISNULL([CompanySeller.v].description, '') [CompanySeller.value], d.[CompanySeller] [CompanySeller.id], [CompanySeller.v].type [CompanySeller.type]
@@ -401,9 +272,6 @@ GO
         LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
         LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
         LEFT JOIN dbo.[Catalog.Person.v] [Customer.v] WITH (NOEXPAND) ON [Customer.v].id = d.[Customer]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.Company.v] [CompanySeller.v] WITH (NOEXPAND) ON [CompanySeller.v].id = d.[CompanySeller]
@@ -434,9 +302,6 @@ GO
         , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
         , d.[Amount] [Amount]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
         , d.[Lot] [Lot]
         , d.[isProfitability] [isProfitability]
         , d.[Lot_BonusManager] [Lot_BonusManager]
@@ -451,9 +316,6 @@ GO
         LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
         LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
     ; 
 GO
 GRANT SELECT ON dbo.[Operation.LotModelsVsDepartment] TO jetti;
@@ -476,13 +338,13 @@ GO
         , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
         , d.[Amount] [Amount]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
-        , ISNULL([f1.v].description, '') [f1.value], d.[f1] [f1.id], [f1.v].type [f1.type]
-        , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
-        , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
         , ISNULL([BusinessRegion.v].description, '') [BusinessRegion.value], d.[BusinessRegion] [BusinessRegion.id], [BusinessRegion.v].type [BusinessRegion.type]
         , ISNULL([RetailNetwork.v].description, '') [RetailNetwork.value], d.[RetailNetwork] [RetailNetwork.id], [RetailNetwork.v].type [RetailNetwork.type]
+        , d.[TypeShowcase] [TypeShowcase]
+        , d.[Status] [Status]
         , d.[DateBegin] [DateBegin]
         , d.[DateEnd] [DateEnd]
+        , ISNULL([SourceAggr.v].description, '') [SourceAggr.value], d.[SourceAggr] [SourceAggr.id], [SourceAggr.v].type [SourceAggr.type]
       FROM [Operation.OnlineSalesManagementSettings.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -491,11 +353,9 @@ GO
         LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
         LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Documents] [f1.v] ON [f1.v].id = d.[f1]
-        LEFT JOIN dbo.[Documents] [f2.v] ON [f2.v].id = d.[f2]
-        LEFT JOIN dbo.[Documents] [f3.v] ON [f3.v].id = d.[f3]
         LEFT JOIN dbo.[Catalog.BusinessRegion.v] [BusinessRegion.v] WITH (NOEXPAND) ON [BusinessRegion.v].id = d.[BusinessRegion]
         LEFT JOIN dbo.[Catalog.RetailNetwork.v] [RetailNetwork.v] WITH (NOEXPAND) ON [RetailNetwork.v].id = d.[RetailNetwork]
+        LEFT JOIN dbo.[Catalog.OrderSource.v] [SourceAggr.v] WITH (NOEXPAND) ON [SourceAggr.v].id = d.[SourceAggr]
     ; 
 GO
 GRANT SELECT ON dbo.[Operation.OnlineSalesManagementSettings] TO jetti;
@@ -503,3 +363,159 @@ GO
 
       
 ------------------------------ END Operation.OnlineSalesManagementSettings ------------------------------
+
+------------------------------ BEGIN Operation.Status_Opening_Registry ------------------------------
+
+      CREATE OR ALTER VIEW dbo.[Operation.Status_Opening_Registry] AS
+      
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "Status_Opening_Registry",  d.posted, d.deleted, d.isfolder, d.timestamp, d.version
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
+        , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
+        , d.[Amount] [Amount]
+        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
+        , ISNULL([ResponsibilityCenter.v].description, '') [ResponsibilityCenter.value], d.[ResponsibilityCenter] [ResponsibilityCenter.id], [ResponsibilityCenter.v].type [ResponsibilityCenter.type]
+        , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
+        , d.[ValueString] [ValueString]
+        , ISNULL([BusinessRegion.v].description, '') [BusinessRegion.value], d.[BusinessRegion] [BusinessRegion.id], [BusinessRegion.v].type [BusinessRegion.type]
+        , ISNULL([Brand.v].description, '') [Brand.value], d.[Brand] [Brand.id], [Brand.v].type [Brand.type]
+        , d.[OpeningDatePlanned] [OpeningDatePlanned]
+      FROM [Operation.Status_Opening_Registry.v] d WITH (NOEXPAND)
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
+        LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
+        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
+        LEFT JOIN dbo.[Catalog.ResponsibilityCenter.v] [ResponsibilityCenter.v] WITH (NOEXPAND) ON [ResponsibilityCenter.v].id = d.[ResponsibilityCenter]
+        LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
+        LEFT JOIN dbo.[Catalog.BusinessRegion.v] [BusinessRegion.v] WITH (NOEXPAND) ON [BusinessRegion.v].id = d.[BusinessRegion]
+        LEFT JOIN dbo.[Catalog.Brand.v] [Brand.v] WITH (NOEXPAND) ON [Brand.v].id = d.[Brand]
+    ; 
+GO
+GRANT SELECT ON dbo.[Operation.Status_Opening_Registry] TO jetti;
+GO
+
+      
+------------------------------ END Operation.Status_Opening_Registry ------------------------------
+
+------------------------------ BEGIN Operation.SyncManual ------------------------------
+
+      CREATE OR ALTER VIEW dbo.[Operation.SyncManual] AS
+      
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "SyncManual",  d.posted, d.deleted, d.isfolder, d.timestamp, d.version
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
+        , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
+        , d.[Amount] [Amount]
+        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
+        , d.[About] [About]
+        , d.[logLevel] [logLevel]
+        , d.[Source] [Source]
+        , d.[forsedUpdate] [forsedUpdate]
+        , d.[periodBegin] [periodBegin]
+        , d.[periodEnd] [periodEnd]
+        , d.[flow] [flow]
+        , d.[exchangeID] [exchangeID]
+      FROM [Operation.SyncManual.v] d WITH (NOEXPAND)
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
+        LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
+        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
+    ; 
+GO
+GRANT SELECT ON dbo.[Operation.SyncManual] TO jetti;
+GO
+
+      
+------------------------------ END Operation.SyncManual ------------------------------
+
+------------------------------ BEGIN Operation.Перенос операций LIQPAY (Приватбанк) ------------------------------
+
+      CREATE OR ALTER VIEW dbo.[Operation.Перенос операций LIQPAY (Приватбанк)] AS
+      
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "Перенос операций LIQPAY (Приватбанк)",  d.posted, d.deleted, d.isfolder, d.timestamp, d.version
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
+        , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
+        , d.[Amount] [Amount]
+        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
+        , d.[DataStart] [DataStart]
+        , d.[DataEnd] [DataEnd]
+        , ISNULL([OperationForSearch.v].description, '') [OperationForSearch.value], d.[OperationForSearch] [OperationForSearch.id], [OperationForSearch.v].type [OperationForSearch.type]
+        , ISNULL([OperationForSet.v].description, '') [OperationForSet.value], d.[OperationForSet] [OperationForSet.id], [OperationForSet.v].type [OperationForSet.type]
+        , ISNULL([AgregatorForSearch.v].description, '') [AgregatorForSearch.value], d.[AgregatorForSearch] [AgregatorForSearch.id], [AgregatorForSearch.v].type [AgregatorForSearch.type]
+        , d.[DocsCount] [DocsCount]
+      FROM [Operation.Перенос операций LIQPAY (Приватбанк).v] d WITH (NOEXPAND)
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
+        LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
+        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
+        LEFT JOIN dbo.[Catalog.Operation.v] [OperationForSearch.v] WITH (NOEXPAND) ON [OperationForSearch.v].id = d.[OperationForSearch]
+        LEFT JOIN dbo.[Catalog.Operation.v] [OperationForSet.v] WITH (NOEXPAND) ON [OperationForSet.v].id = d.[OperationForSet]
+        LEFT JOIN dbo.[Catalog.Counterpartie.v] [AgregatorForSearch.v] WITH (NOEXPAND) ON [AgregatorForSearch.v].id = d.[AgregatorForSearch]
+    ; 
+GO
+GRANT SELECT ON dbo.[Operation.Перенос операций LIQPAY (Приватбанк)] TO jetti;
+GO
+
+      
+------------------------------ END Operation.Перенос операций LIQPAY (Приватбанк) ------------------------------
+
+------------------------------ BEGIN Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода ------------------------------
+
+      CREATE OR ALTER VIEW dbo.[Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода] AS
+      
+      SELECT
+        d.id, d.type, d.date, d.code, d.description "Перенос операций LIQPAY (Приватбанк) из прочего прихода",  d.posted, d.deleted, d.isfolder, d.timestamp, d.version
+        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
+        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
+        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
+        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
+        , ISNULL([Operation.v].description, '') [Operation.value], d.[Operation] [Operation.id], [Operation.v].type [Operation.type]
+        , d.[Amount] [Amount]
+        , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
+        , d.[DataStart] [DataStart]
+        , d.[DataEnd] [DataEnd]
+        , ISNULL([OperationForSearch.v].description, '') [OperationForSearch.value], d.[OperationForSearch] [OperationForSearch.id], [OperationForSearch.v].type [OperationForSearch.type]
+        , ISNULL([OperationForSet.v].description, '') [OperationForSet.value], d.[OperationForSet] [OperationForSet.id], [OperationForSet.v].type [OperationForSet.type]
+        , ISNULL([BankAccountForSearch.v].description, '') [BankAccountForSearch.value], d.[BankAccountForSearch] [BankAccountForSearch.id], [BankAccountForSearch.v].type [BankAccountForSearch.type]
+        , d.[DocsCount] [DocsCount]
+      FROM [Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода.v] d WITH (NOEXPAND)
+        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
+        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
+        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
+        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
+        LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
+        LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
+        LEFT JOIN dbo.[Catalog.Operation.v] [OperationForSearch.v] WITH (NOEXPAND) ON [OperationForSearch.v].id = d.[OperationForSearch]
+        LEFT JOIN dbo.[Catalog.Operation.v] [OperationForSet.v] WITH (NOEXPAND) ON [OperationForSet.v].id = d.[OperationForSet]
+        LEFT JOIN dbo.[Catalog.BankAccount.v] [BankAccountForSearch.v] WITH (NOEXPAND) ON [BankAccountForSearch.v].id = d.[BankAccountForSearch]
+    ; 
+GO
+GRANT SELECT ON dbo.[Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода] TO jetti;
+GO
+
+      
+------------------------------ END Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода ------------------------------

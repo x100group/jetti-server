@@ -16,13 +16,11 @@ export class CatalogProductKindServer extends CatalogProductKind implements ISer
   }
 
   async ParametersFill(tx: MSSQL) {
-
     const product = await lib.doc.createDocServer('Catalog.Product', undefined, tx);
     const props = product.Props();
-    this.Parameters = Object.keys(props)
-      .filter(e => props[e].order === 666)
-      .map(key => ({ PropName: key } as Parameter));
-
+    Object.keys(props)
+      .filter(e => props[e].order === 666 && !this.Parameters.find(param => param.PropName === e))
+      .forEach(key => this.Parameters.push({ PropName: key } as Parameter));
   }
 
 }

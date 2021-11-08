@@ -22,26 +22,29 @@ export class CatalogPerson extends DocumentBase {
   @Props({ type: 'Catalog.Person', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'Catalog.Counterpartie', label: 'Parent person' })
+  ParentPerson: Ref = null;
+
   @Props({ type: 'enum', value: ['MALE', 'FEMALE', 'SELF'] })
   Gender = null;
 
   @Props({ type: 'string' })
-  FirstName: Ref = null;
+  FirstName = '';
 
   @Props({ type: 'string' })
-  LastName: Ref = null;
+  LastName = '';
 
   @Props({ type: 'string' })
-  MiddleName: Ref = null;
+  MiddleName = '';
 
   @Props({ type: 'string', isIndexed: true })
-  Code1: Ref = null;
+  Code1 = '';
 
   @Props({ type: 'string' })
-  Code2: Ref = null;
+  Code2 = '';
 
   @Props({ type: 'string' })
-  Address: Ref = null;
+  Address = '';
 
   @Props({ type: 'string' })
   AddressResidence = '';
@@ -50,10 +53,19 @@ export class CatalogPerson extends DocumentBase {
   City = '';
 
   @Props({ type: 'string' })
-  Phone: Ref = null;
+  Phone = '';
 
   @Props({ type: 'string' })
-  Email: Ref = null;
+  PersonalPhone = '';
+
+  @Props({ type: 'string' })
+  Email = '';
+
+  @Props({ type: 'string' })
+  PersonalEmail = '';
+
+  @Props({ type: 'date' })
+  Birthday = null;
 
   @Props({ type: 'date' })
   EmploymentDate = null;
@@ -68,7 +80,7 @@ export class CatalogPerson extends DocumentBase {
   Country: Ref = null;
 
   @Props({ type: 'string', isIndexed: true })
-  Profile: Ref = null;
+  Profile = '';
 
   @Props({ type: 'Catalog.PersonIdentity' })
   DocumentType: Ref = null;
@@ -85,8 +97,11 @@ export class CatalogPerson extends DocumentBase {
   @Props({ type: 'string' })
   DocumentAuthority = '';
 
-  @Props({ type: 'string', isAdditional: true, isIndexed: true })
+  @Props({ type: 'string', isAdditional: true, isIndexed: true, isUnique: true })
   AccountAD = '';
+
+  @Props({ type: 'string', label: 'SM/Account', isAdditional: true, isUnique: true })
+  SMAccount = '';
 
   @Props({ type: 'string', label: 'Pincode', validators: [{ key: 'maxLength', value: 4 }] })
   Pincode = '';

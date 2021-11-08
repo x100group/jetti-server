@@ -19,7 +19,7 @@ export class CatalogCashRegister extends DocumentBase {
   @Props({ type: 'Catalog.Currency', required: true, style: { width: '100px' }, isProtected: true })
   currency: Ref = null;
 
-  @Props({ type: 'Catalog.Department' })
+  @Props({ type: 'Catalog.Department', required: true })
   Department: Ref = null;
 
   @Props({ type: 'Catalog.Company', required: true, hiddenInForm: false, isProtected: true })

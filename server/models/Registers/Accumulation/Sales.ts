@@ -11,7 +11,10 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
   @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   currency: Ref = null;
 
-  @Props({ type: 'Catalog.Department', dimension: true  })
+  @Props({ type: 'Catalog.RetailNetwork', dimension: true })
+  RetailNetwork: Ref = null;
+
+  @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
 
   @Props({ type: 'Catalog.Counterpartie', required: true, dimension: true })
@@ -23,7 +26,7 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
   @Props({ type: 'Types.Catalog', dimension: true })
   Analytic: Ref = null;
 
-  @Props({ type: 'Catalog.Manager', dimension: true  })
+  @Props({ type: 'Catalog.Manager', dimension: true })
   Manager: Ref = null;
 
   @Props({ type: 'enum', value: ['COURIER', 'CLIENT', 'EXTERNAL'] })
@@ -80,7 +83,7 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
   @Props({ type: 'number', resource: true })
   AmountInAR = 0;
 
-  constructor (init: Partial<RegisterAccumulationSales>) {
+  constructor(init: Partial<RegisterAccumulationSales>) {
     super(init);
     Object.assign(this, init);
   }

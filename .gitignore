@@ -12,6 +12,7 @@
 **/*.js
 
 # dependencies
+node_modules/
 /node_modules
 
 # IDEs and editors
@@ -53,3 +54,48 @@ sql-metadata-sripts/CatalogsViewIndexDynamic.sql
 sql-metadata-sripts/OperationsView.sql
 sql-metadata-sripts/OperationsViewIndex.sql
 sql-metadata-sripts/RegisterInfoViewIndex.sql
+node_modules/@types/component-emitter/package.json
+node_modules/@types/cookie/package.json
+node_modules/base64-arraybuffer/package.json
+node_modules/base64id/package.json
+node_modules/component-emitter/package.json
+node_modules/cookie/package.json
+node_modules/engine.io/CHANGELOG.md
+node_modules/engine.io/package.json
+node_modules/engine.io/README.md
+node_modules/engine.io/lib/server.js
+node_modules/engine.io/lib/socket.js
+node_modules/engine.io/lib/transport.js
+node_modules/engine.io/lib/transports/polling.js
+node_modules/engine.io/lib/transports/websocket.js
+node_modules/engine.io/node_modules/debug/package.json
+node_modules/engine.io/node_modules/ms/package.json
+node_modules/engine.io-parser/package.json
+node_modules/socket.io/CHANGELOG.md
+node_modules/socket.io/package.json
+node_modules/socket.io/Readme.md
+node_modules/socket.io/wrapper.mjs
+node_modules/socket.io/client-dist/socket.io.js
+node_modules/socket.io/client-dist/socket.io.js.map
+node_modules/socket.io/client-dist/socket.io.min.js
+node_modules/socket.io/client-dist/socket.io.min.js.map
+node_modules/socket.io/client-dist/socket.io.msgpack.min.js
+node_modules/socket.io/client-dist/socket.io.msgpack.min.js.map
+node_modules/socket.io/dist/client.js
+node_modules/socket.io/dist/index.d.ts
+node_modules/socket.io/dist/index.js
+node_modules/socket.io/dist/namespace.js
+node_modules/socket.io/dist/socket.js
+node_modules/socket.io/node_modules/debug/package.json
+node_modules/socket.io/node_modules/ms/package.json
+node_modules/socket.io/node_modules/socket.io-adapter/CHANGELOG.md
+node_modules/socket.io/node_modules/socket.io-adapter/package.json
+node_modules/socket.io/node_modules/socket.io-adapter/dist/index.d.ts
+node_modules/socket.io/node_modules/socket.io-adapter/dist/index.js
+node_modules/socket.io-parser/CHANGELOG.md
+node_modules/socket.io-parser/package.json
+node_modules/socket.io-parser/dist/index.js
+node_modules/socket.io-parser/node_modules/debug/package.json
+node_modules/socket.io-parser/node_modules/ms/package.json
+node_modules/ws/package.json
+package-lock.json

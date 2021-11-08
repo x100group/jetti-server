@@ -1,15 +1,52 @@
-import { DocTypes } from './../models/documents.types';
+import { ComplexTypes, DocTypes } from './../models/documents.types';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import { SDB } from './middleware/db-sessions';
-import { filterBuilder } from '../fuctions/filterBuilder';
+import { filterBuilder, userContextFilter } from '../fuctions/filterBuilder';
 import { createTypes, allTypes } from '../models/Types/Types.factory';
 import { createDocument } from '../models/documents.factory';
 import { FormListFilter, ISuggest, Type, DocumentOptions } from 'jetti-middle';
+import { configSchema } from '../models/config';
 
 export const router = express.Router();
 
-router.post('/suggestOld/:type', async (req: Request, res: Response, next: NextFunction) => {
+
+router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sdb = SDB(req);
+    const type = req.params.type as string;
+    const filterLike = req.query.filter as string;
+    const filter = req.body.filters as FormListFilter[];
+    const filterQuery = await filterBuilder(filter, sdb);
+    let query = '';
+    const queryOrder = 'type, description, deleted, code'.split(', ');
+
+    if (Type.isType(type)) {
+      const select = createTypes(type as any).getTypes()
+        .map(el => (
+          {
+            type: el,
+            description: (createDocument(el as DocTypes).Prop() as DocumentOptions).description
+          }));
+      query = suggestQuery(select);
+    } else if (type === 'Catalog.Subcount') query = suggestQuery(allTypes(), 'Catalog.Subcount');
+    else {
+      filterQuery.where += userContextFilter(sdb.userContext, type === 'Catalog.Company' ? 'id' : 'company');
+      query = `${filterQuery.tempTable}
+    SELECT top 10 id as id, description as value, code as code, description + ' (' + code + ')' as description, type as type, isfolder, deleted
+    FROM [${type}.v] WITH (NOEXPAND)
+    WHERE ${filterQuery.where}`;
+      queryOrder.unshift('LEN([description])');
+    }
+    query = query.concat(
+      `AND (description LIKE @p1 OR code LIKE @p1)
+    ORDER BY ${queryOrder.join(', ')}`);
+    const data = await sdb.manyOrNone<ISuggest>(query, ['%' + filterLike + '%']);
+    res.json(data);
+  } catch (err) { next(err); }
+});
+
+router.post('/suggest_deprecated_01/:type', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
     const type = req.params.type as string;
@@ -36,16 +73,16 @@ router.post('/suggestOld/:type', async (req: Request, res: Response, next: NextF
 
 });
 
-
-router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/suggest_deprecated_02/:type', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
     const type = req.params.type as string;
     const filterLike = req.query.filter as string;
     const filter = req.body.filters as FormListFilter[];
-    const filterQuery = filterBuilder(filter);
+    const filterQuery = await filterBuilder(filter, sdb);
     let query = '';
     const queryOrder = 'type, description, deleted, code'.split(', ');
+
     if (Type.isType(type)) {
       const select = createTypes(type as any).getTypes()
         .map(el => (
@@ -54,8 +91,10 @@ router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunc
             description: (createDocument(el as DocTypes).Prop() as DocumentOptions).description
           }));
       query = suggestQuery(select);
-    } else if (type === 'Catalog.Subcount') query = suggestQuery(allTypes(), 'Catalog.Subcount');
-    else {
+    } else if (type === 'Catalog.Subcount') {
+      query = suggestQuery(allTypes(), 'Catalog.Subcount');
+    } else {
+      filterQuery.where += userContextFilter(sdb.userContext, type === 'Catalog.Company' ? 'id' : 'company');
       query = `${filterQuery.tempTable}
     SELECT top 10 id as id, description as value, code as code, description + ' (' + code + ')' as description, type as type, isfolder, deleted
     FROM [${type}.v] WITH (NOEXPAND)
@@ -70,7 +109,7 @@ router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunc
   } catch (err) { next(err); }
 });
 
-function suggestQuery(select: { type: string; description: string; }[], type = '') {
+export function suggestQuery(select: { type: string; description: string; }[], type = '') {
   let query = '';
   for (const row of select) {
     query += `SELECT

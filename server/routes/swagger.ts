@@ -30,6 +30,7 @@ router.get('/document/:id', async (req: Request, res: Response, next: NextFuncti
     if (flatDoc) {
       noSqlDoc = await lib.doc.noSqlDocument(flatDoc);
       delete noSqlDoc!.doc['serverModule'];
+      if (noSqlDoc!['operation'] && noSqlDoc!['Operation']) delete noSqlDoc!['operation'];
       noSqlDoc!.docByKeys = Object.keys(noSqlDoc!.doc)
         .map(key => ({ key: key, value: noSqlDoc!.doc[key] }));
       if (req.query.asArray === 'true') res.json(Object.entries(flatDoc));
@@ -50,34 +51,6 @@ router.get('/document/meta/:type/:operationId', async (req: Request, res: Respon
   } catch (err) { next(err); }
 });
 
-// router.post('/document_simple', async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const sdb = SDB(req);
-//     await sdb.tx(async tx => {
-//       await lib.util.adminMode(true, tx);
-//       try {
-//         const { document, options } = JSON.parse(JSON.stringify(req.body), dateReviverUTC) as IUpdateDocumentRequest;
-//         if (options.skipExisting && document.id && (await lib.doc.byId(document.id, tx))) {
-//           res.json(document); return;
-//         }
-//         if (!document.code) document.code = await lib.doc.docPrefix(document.type, tx);
-//         const serverDoc = await createDocumentServer(document.type as DocTypes, document, tx);
-//         if (serverDoc.timestamp) {
-//           await updateDocument(serverDoc, tx);
-//           if (serverDoc.posted && serverDoc.isDoc && options.saveMode === 'Post') {
-//             await unpostDocument(serverDoc, tx);
-//             await postDocument(serverDoc, tx);
-//           }
-//         } else {
-//           await insertDocument(serverDoc, tx);
-//         }
-//         res.json(serverDoc);
-//       } catch (ex) { throw new Error(ex); }
-//       finally { await lib.util.adminMode(false, tx); }
-//     });
-//   } catch (err) { next(err); }
-// });
-
 router.post('/document', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
@@ -94,7 +67,7 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
         let flatDocument: any = null;
         const existDoc = await lib.doc.findDocumentByKey(options.searchKey, tx);
 
-        if (!existDoc && options.updateType === 'Update')
+        if ((!existDoc || existDoc.length === 0) && options.updateType === 'Update')
           res.json(`Document not found by: ${JSON.stringify(options.searchKey)}`);
         else if (existDoc && existDoc.length > 1)
           res.json(`Found ${existDoc.length} documents by ${JSON.stringify(options.searchKey)}`);
@@ -105,7 +78,7 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
             flatDocument = existDoc[0];
             res.statusCode = 200;
           }
-        } else if (!existDoc && options.updateType.includes('Insert')) res.statusCode = 200;
+        } else if ((!existDoc || existDoc.length === 0) && options.updateType.includes('Insert')) res.statusCode = 200;
         else res.json(`Bad arguments`);
 
         if (res.statusCode !== 200) return;
@@ -126,10 +99,11 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
         const propsKeys = Object.keys(props);
 
         const excludedProps = ['doc', 'docByKey', 'serverModule'];
+        const commonProps = ['ExchangeCode', 'ExchangeBase', 'version', 'operation'];
 
         if (document.docByKeys) {
           const unknowKeys = document.docByKeys
-            .filter(keyVal => !propsKeys.includes(keyVal.key))
+            .filter(keyVal => !propsKeys.includes(keyVal.key) && !commonProps.includes(keyVal.key))
             .map(keyVal => `${keyVal.key}`)
             .join(',');
 
@@ -143,7 +117,7 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
 
         } else if (document.doc) {
           const unknowKeys = Object.keys(document.doc)
-            .filter(key => !propsKeys.includes(key))
+            .filter(key => !propsKeys.includes(key) && !commonProps.includes(key))
             .map(key => `${key}`)
             .join(',');
 
@@ -171,17 +145,11 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
 
         if (options.commands) {
           for (const command of options.commands) {
-            if (docServer[command]) {
-              try {
-                await docServer[command]();
-              } catch (ex) {
-                res.json(`Error on executing "${command}"`);
-                return;
-              }
-            } else {
-              res.json(`Unknow command "${command}"`);
-              return;
-            }
+            // command execution
+            const docModule: () => Promise<void> = docServer['serverModule'][command];
+            if (typeof docModule !== 'function') throw new Error(`Bad arguments: command "${command}" is not exist`);
+            await docModule();
+            if (docServer.onCommand) await docServer.onCommand(command, undefined, tx);
           }
         }
 
@@ -192,8 +160,17 @@ router.post('/document', async (req: Request, res: Response, next: NextFunction)
           { withExchangeInfo: !!(docServer['ExchangeBase'] || docServer['ExchangeCode']) }
         );
 
-        const docByKeys = Object.keys(docServer['doc']).map(key => ({ key: key, value: docServer!['doc'][key] }));
-        delete docServer['doc'];
+        let docByKeys: any[] = [];
+
+        if (docServer['doc']) {
+          delete docServer['doc']['workflow'];
+          delete docServer['doc']['serverModule'];
+          docByKeys = Object.keys(docServer['doc']).map(key => ({ key: key, value: docServer!['doc'][key] }));
+          delete docServer['doc'];
+        }
+
+        if (docServer['operation'] && docServer['Operation']) delete docServer['operation'];
+
         res.statusCode = 200;
         const noSqlDoc = await lib.doc.noSqlDocument(docServer);
         noSqlDoc!.docByKeys = docByKeys;

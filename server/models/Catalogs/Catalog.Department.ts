@@ -18,7 +18,8 @@ import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
   ],
   dimensions: [
     { company: 'Catalog.Company' }
-  ]
+  ],
+  module: `{const onOpen = async () => {this.readonly = this.readonly || !this.auth.isRoleAvailableDepartmentEditor()}; return {onOpen};}`,
 })
 export class CatalogDepartment extends DocumentBase {
 
@@ -27,9 +28,26 @@ export class CatalogDepartment extends DocumentBase {
 
   @Props({
     type: 'string', required: false, hiddenInList: false
-    , label: 'Short name (max 15 symbols)', order: 16, validators: [{ key: 'maxLength', value: 15 }]
+    , label: 'Short name (max 35 symbols)', order: 16, validators: [{ key: 'maxLength', value: 35 }]
   })
   ShortName = '';
+
+  @Props({
+    type: 'enum', value:
+      [
+        'PLANED',
+        'INVESTMENT SEARCH',
+        'LOCATION SEARCH',
+        'LAUNCH IN PROGRESS',
+        'READY TO START',
+        'TRIAL LAUNCH',
+        'LAUNCH POSTPONED',
+        'OPEN',
+        'TEMPORARY STOP',
+        'STOP'
+      ]
+  })
+  Status: Ref = null;
 
   @Props({ type: 'Catalog.BusinessRegion' })
   BusinessRegion: Ref = null;
@@ -41,10 +59,16 @@ export class CatalogDepartment extends DocumentBase {
   ResponsibilityCenter: Ref = null;
 
   @Props({ type: 'date', label: 'Opening date' })
-  OpeningDate = new Date();
+  OpeningDate = null;
+
+  @Props({ type: 'date', label: 'Planned opening date' })
+  OpeningDatePlanned = null;
+
+  @Props({ type: 'date', label: 'Before purchase opening date' })
+  OpeningDateBeforePurchase = null;
 
   @Props({ type: 'date', label: 'Closing date' })
-  ClosingDate = new Date();
+  ClosingDate = null;
 
   @Props({ type: 'Catalog.TaxOffice', hiddenInList: true })
   TaxOffice: Ref = null;
@@ -55,34 +79,34 @@ export class CatalogDepartment extends DocumentBase {
   @Props({ type: 'Catalog.Brand' })
   Brand: Ref = null;
 
-  @Props({ type: 'Catalog.RetailNetwork' })
+  @Props({ type: 'Catalog.RetailNetwork', required: true })
   RetailNetwork: Ref = null;
 
   @Props({ type: 'Catalog.Department.Kind', required: true, isProtected: true })
   kind: Ref = null;
 
-  @Props({ type: 'string', required: false })
+  @Props({ type: 'string', required: false, isNotCopy: true })
   Mail = '';
 
-  @Props({ type: 'string', required: false })
+  @Props({ type: 'string', required: false, isNotCopy: true })
   Phone = '';
 
-  @Props({ type: 'string', required: false })
+  @Props({ type: 'string', required: false, isNotCopy: true })
   Address = '';
 
-  @Props({ type: 'string', required: false })
+  @Props({ type: 'string', required: false, isNotCopy: true })
   AddressLegal = '';
 
-  @Props({ type: 'string', required: false, isAdditional: true, label: 'Долгота' })
+  @Props({ type: 'string', required: false, isAdditional: true, label: 'Долгота', isNotCopy: true })
   Longitude = '';
 
-  @Props({ type: 'string', required: false, isAdditional: true, label: 'Широта' })
+  @Props({ type: 'string', required: false, isAdditional: true, label: 'Широта', isNotCopy: true })
   Latitude = '';
 
-  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (общая) кв.м.' })
+  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (общая) кв.м.', isNotCopy: true })
   AreaTotal = '';
 
-  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (торговая) кв.м.' })
+  @Props({ type: 'number', required: false, isAdditional: true, label: 'Площадь (торговая) кв.м.', isNotCopy: true })
   AreaTrade = '';
 
   @Props({ type: 'enum', value: ['ANALYTICS', 'SYNTHETICS', 'NONE'] })

@@ -3,7 +3,6 @@ import { PrimitiveTypes } from 'jetti-middle';
 export type CatalogTypes =
   'Catalog.Attachment' |
   'Catalog.Attachment.Type' |
-  'Catalog.AllUnic.Lot' |
   'Catalog.Catalog' |
   'Catalog.Account' |
   'Catalog.Balance' |
@@ -96,7 +95,6 @@ export type DocumentTypes =
   'Document.Invoice' |
   'Document.Operation' |
   'Document.PriceList' |
-  'Document.Settings' |
   'Document.UserSettings' |
   'Document.CashRequest' |
   'Document.WorkFlow' |

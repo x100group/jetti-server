@@ -52,7 +52,6 @@ import { DocumentExchangeRates } from './Documents/Document.ExchangeRates';
 import { DocumentInvoice } from './Documents/Document.Invoice';
 import { DocumentOperation } from './Documents/Document.Operation';
 import { DocumentPriceList } from './Documents/Document.PriceList';
-import { DocumentSettings } from './Documents/Document.Settings';
 import { DocumentUserSettings } from './Documents/Document.UserSettings';
 import { CatalogOperationType } from './Catalogs/Catalog.Operation.Type';
 import { CatalogBudgetItem } from './Catalogs/Catalog.BudgetItem';
@@ -87,7 +86,6 @@ import { CatalogOrderSource } from './Catalogs/Catalog.OrderSource';
 import { CatalogInvestorGroup } from './Catalogs/Catalog.InvestorGroup';
 import { CatalogAttachment } from './Catalogs/Catalog.Attachment';
 import { CatalogStaffingTable } from './Catalogs/Catalog.StaffingTable';
-import { CatalogAllUnicLot } from './Catalogs/Catalog.AllUnic.Lot';
 import { CatalogManufactureLocation } from './Catalogs/Catalog.ManufactureLocation';
 import { CatalogProductAnalytic } from './Catalogs/Catalog.Product.Analytic';
 import { CatalogDepartmentCompany } from './Catalogs/Catalog.Department.Company';
@@ -111,18 +109,22 @@ export function createDocument<T extends DocumentBase>(type: string, document?: 
     const Props = docMeta!.Props();
     Object.keys(Props)
       .forEach(propName => {
-        const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'value');
-        result[propName] = defVal || defaultTypeValue(Props[propName].type);
+        const defVal = Object.keys(Props[propName]).find(propOpts => propOpts === 'default');
+        result[propName] = defVal ? Props[propName].default : defaultTypeValue(Props[propName].type);
       });
     result.Props = () => ({ ...Props });
     result.Prop = () => ({ ...docMeta!.Prop() });
     result.type = type;
+
     if (!document && !result.date) result.date = new Date;
+    if (docMeta?.modules?.server) result['serverModuleProto'] = docMeta?.modules?.server;
+
   } else {
     const ArrayProps = Object.keys(result).filter(k => Array.isArray(result[k]));
     ArrayProps.forEach(prop => result[prop].length = 0);
   }
   if (document) result.map(document);
+  if (!result.company) result.company = '00000000-0000-0000-0000-000000000000';
   return result as T;
 }
 
@@ -143,7 +145,6 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Catalog.Dynamic', Class: CatalogDynamic },
   { type: 'Catalog.Attachment', Class: CatalogAttachment },
   { type: 'Catalog.Attachment.Type', Class: CatalogAttachmentType },
-  { type: 'Catalog.AllUnic.Lot', Class: CatalogAllUnicLot },
   { type: 'Catalog.Account', Class: CatalogAccount },
   { type: 'Catalog.Balance', Class: CatalogBalance },
   { type: 'Catalog.BusinessCalendar', Class: CatalogBusinessCalendar },
@@ -233,7 +234,6 @@ export const RegisteredDocumentStatic: RegisteredDocumentType[] = [
   { type: 'Document.Invoice', Class: DocumentInvoice },
   { type: 'Document.Operation', Class: DocumentOperation },
   { type: 'Document.PriceList', Class: DocumentPriceList },
-  { type: 'Document.Settings', Class: DocumentSettings },
   { type: 'Document.UserSettings', Class: DocumentUserSettings },
   { type: 'Document.WorkFlow', Class: DocumentWorkFlow },
   { type: 'Document.CashRequest', Class: DocumentCashRequest },

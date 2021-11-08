@@ -10,8 +10,14 @@ export class RegisterInfoCompanyResponsiblePersons extends RegisterInfo {
   @Props({ type: 'Catalog.Role', dimension: true })
   Role: Ref = null;
 
+  @Props({ type: 'Catalog.Operation.Type', dimension: true })
+  OperationType: Ref = null;
+
   @Props({ type: 'Types.CompanyOrCompanyGroup', dimension: true })
   companyOrGroup: Ref = null;
+
+  @Props({ type: 'Catalog.InvestorGroup', dimension: true })
+  InvestorGroup: Ref = null;
 
   @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
@@ -21,6 +27,12 @@ export class RegisterInfoCompanyResponsiblePersons extends RegisterInfo {
 
   @Props({ type: 'Catalog.User', resource: true, required: true })
   User: Ref = null;
+
+  @Props({ type: 'Catalog.Person', dimension: true })
+  Person: Ref = null;
+
+  @Props({ type: 'Catalog.Employee', dimension: true })
+  Employee: Ref = null;
 
   @Props({ type: 'boolean', resource: true })
   isActive = false;

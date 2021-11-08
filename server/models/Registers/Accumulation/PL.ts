@@ -6,6 +6,10 @@ import { JRegisterAccumulation, RegisterAccumulation } from 'jetti-middle';
   description: 'Доходы/Расходы'
 })
 export class RegisterAccumulationPL extends RegisterAccumulation {
+
+  @Props({ type: 'Catalog.RetailNetwork', required: true, dimension: true })
+  RetailNetwork: Ref = null;
+
   @Props({ type: 'Catalog.Department', required: true, dimension: true })
   Department: Ref = null;
 

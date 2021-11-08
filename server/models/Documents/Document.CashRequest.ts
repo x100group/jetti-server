@@ -1,4 +1,4 @@
-import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
+import { JDocument, DocumentBase, Props, Ref } from 'jetti-middle';
 
 @JDocument({
   type: 'Document.CashRequest',
@@ -90,6 +90,8 @@ export class DocumentCashRequest extends DocumentBase {
       'Возврат оплаты клиенту',
       'Выплата заработной платы',
       'Выплата заработной платы без ведомости',
+      'Оплата на карту',
+      'Выплата ЗП для самозанятых'
     ]
   })
   Operation = 'Оплата поставщику';
@@ -164,7 +166,7 @@ export class DocumentCashRequest extends DocumentBase {
 
   @Props({
     type: 'Catalog.Person.Contract',
-    label: 'Договор',
+    label: 'Договор физ. лица',
     owner: [
       { dependsOn: 'CashRecipient', filterBy: 'owner' }]
   })
@@ -237,6 +239,8 @@ export class DocumentCashRequest extends DocumentBase {
     type: 'date',
     hiddenInList: false,
     order: 9,
+    isIndexed: true,
+    required: true,
     label: 'Дата платежа',
     style: { width: '100px' }
   })
@@ -252,7 +256,7 @@ export class DocumentCashRequest extends DocumentBase {
   @Props({ type: 'Catalog.Currency', label: 'Валюта', required: true, order: 5, style: { width: '70px' } })
   сurrency: Ref = 'A4867005-66B8-4A8A-9105-3F25BB081936'; // RUB
 
-  @Props({ type: 'Types.ExpenseOrBalanceOrIncome', label: 'Аналитики расходов', hiddenInList: true })
+  @Props({ type: 'Types.ExpenseOrBalanceOrIncome', label: 'Аналитика расходов', hiddenInList: true })
   ExpenseOrBalance: Ref = null;
 
   @Props({ type: 'Catalog.Expense.Analytics', label: 'Аналитики расходов', hiddenInList: true })

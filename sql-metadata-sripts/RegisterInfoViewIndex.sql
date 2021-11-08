@@ -221,22 +221,32 @@
     GO
 ------------------------------ END Register.Info.ProductSpecificationByDepartment ------------------------------
 
------------------------------- BEGIN Register.Info.Settings ------------------------------
+------------------------------ BEGIN Register.Info.AdditionalProps ------------------------------
 
-    CREATE OR ALTER VIEW [Register.Info.Settings]
+    CREATE OR ALTER VIEW [Register.Info.AdditionalProps]
     WITH SCHEMABINDING
     AS
     SELECT
       id, date, document, company
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."balanceCurrency"')) [balanceCurrency]
-        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."accountingCurrency"')) [accountingCurrency]
-      FROM dbo.[Register.Info] WHERE type = N'Register.Info.Settings';
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AddProp"')) [AddProp]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Object"')) [Object]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytic1"')) [Analytic1]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytic2"')) [Analytic2]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ValueRef"')) [ValueRef]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."ValueNumber"')) [ValueNumber]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."ValueString"')) [ValueString]
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."ValueDate"'),127) [ValueDate]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."ValueBoolean"')) [ValueBoolean]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.AdditionalProps';
     GO
-    GRANT SELECT,DELETE ON [Register.Info.Settings] TO JETTI;
-    CREATE UNIQUE CLUSTERED INDEX [Register.Info.Settings] ON [dbo].[Register.Info.Settings]([company], [date], [id])
-    
+    GRANT SELECT,DELETE ON [Register.Info.AdditionalProps] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.AdditionalProps] ON [dbo].[Register.Info.AdditionalProps]([company], [date], [id])
+    CREATE NONCLUSTERED INDEX[Register.Info.AdditionalProps.AddProp] ON [Register.Info.AdditionalProps]([AddProp]);
+    CREATE NONCLUSTERED INDEX[Register.Info.AdditionalProps.Object] ON [Register.Info.AdditionalProps]([Object]);
+    CREATE NONCLUSTERED INDEX[Register.Info.AdditionalProps.Analytic1] ON [Register.Info.AdditionalProps]([Analytic1]);
+    CREATE NONCLUSTERED INDEX[Register.Info.AdditionalProps.Analytic2] ON [Register.Info.AdditionalProps]([Analytic2]);
     GO
------------------------------- END Register.Info.Settings ------------------------------
+------------------------------ END Register.Info.AdditionalProps ------------------------------
 
 ------------------------------ BEGIN Register.Info.Depreciation ------------------------------
 
@@ -334,6 +344,7 @@
     SELECT
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department2"')) [Department2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."company2"')) [company2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."TypeFranchise"')) [TypeFranchise]
@@ -352,6 +363,7 @@
     AS
     SELECT
       id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."BeginDate"'),127) [BeginDate]
         , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."EndDate"'),127) [EndDate]
@@ -400,10 +412,14 @@
     SELECT
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Role"')) [Role]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) [OperationType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."companyOrGroup"')) [companyOrGroup]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) [Loan]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) [User]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) [Employee]
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.CompanyResponsiblePersons';
     GO
@@ -462,9 +478,18 @@
     AS
     SELECT
       id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) [OperationType]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CompanyGroup"')) [CompanyGroup]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) [Loan]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."SharePrice"')) [SharePrice]
-        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."ShareQty"')) [ShareQty]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) [Qty]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Price"')) [Price]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) [Amount]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Share"')) [Share]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."ShareAmount"')) [ShareAmount]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.ShareEmission';
     GO
     GRANT SELECT,DELETE ON [Register.Info.ShareEmission] TO JETTI;
@@ -480,6 +505,7 @@
     AS
     SELECT
       id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) [User]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."LoanOwner"')) [LoanOwner]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.LoanOwner';
@@ -501,11 +527,15 @@
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Property"')) [Property]
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Language"')) [Language]
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."Value"')) [Value]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."DativeCase"')) [DativeCase]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."NominativeCase"')) [NominativeCase]
+        , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."PrepositionalCase"')) [PrepositionalCase]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.Intl';
     GO
     GRANT SELECT,DELETE ON [Register.Info.Intl] TO JETTI;
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.Intl] ON [dbo].[Register.Info.Intl]([company], [date], [id])
-    
+    CREATE NONCLUSTERED INDEX[Register.Info.Intl.Catalog] ON [Register.Info.Intl]([Catalog]);
+    CREATE NONCLUSTERED INDEX[Register.Info.Intl.Property] ON [Register.Info.Intl]([Property]);
     GO
 ------------------------------ END Register.Info.Intl ------------------------------
 

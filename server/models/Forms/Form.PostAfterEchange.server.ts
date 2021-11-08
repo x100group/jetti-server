@@ -34,8 +34,8 @@ export default class PostAfterEchangeServer extends PostAfterEchange implements 
       SELECT company, COUNT(*) count
       FROM [dbo].[Documents]
       WHERE (1 = 1) ${this.StartDate ? ' AND date between @p2 AND @p3 ' : ``}
-        ${this.Operation ? ` AND JSON_VALUE(doc, '$.Operation') = @p4 ` : ``}
-        ${this.rePost ? `` : ` AND posted = 0 `} AND deleted = 0 and type LIKE 'Document.%' AND
+        ${this.Operation ? ` AND [operation] = @p4 ` : ``}
+        ${this.rePost ? `` : ` AND posted = 0 `} AND deleted = 0 and type = 'Document.Operation' AND
         -- [ExchangeBase] IS NOT NULL AND
         company IS NOT NULL AND
         company IN (SELECT id FROM dbo.[Descendants](@p1, ''))

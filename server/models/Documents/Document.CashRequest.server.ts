@@ -6,7 +6,6 @@ import { lib } from '../../std.lib';
 import { IServerDocument, DocumentBaseServer, createDocumentServer } from '../documents.factory.server';
 import { MSSQL } from '../../mssql';
 import { PostResult } from '../post.interfaces';
-import { Ref } from 'jetti-middle';
 import { DocumentCashRequest } from './Document.CashRequest';
 import { RegisterAccumulationAP } from '../Registers/Accumulation/AP';
 import { RegisterAccumulationCashToPay } from '../Registers/Accumulation/CashToPay';
@@ -14,7 +13,7 @@ import { CatalogCompany } from '../Catalogs/Catalog.Company';
 import { CatalogBankAccount } from '../Catalogs/Catalog.BankAccount';
 import { CatalogContract } from '../Catalogs/Catalog.Contract';
 import { DeleteProcess } from '../../routes/bp';
-import { updateDocument, insertDocument } from '../../routes/utils/post';
+import { upsertDocument, insertDocument } from '../../routes/utils/post';
 import { CatalogTaxOffice } from '../Catalogs/Catalog.TaxOffice';
 import { TypesCashRecipient } from '../Types/Types.CashRecipient';
 import { CatalogPerson } from '../Catalogs/Catalog.Person';
@@ -22,12 +21,36 @@ import { createDocument } from '../documents.factory';
 import { DocumentOperation } from './Document.Operation';
 import { x100 } from '../../x100.lib';
 import { getPersonContract } from '../Catalogs/Catalog.Person.Contract.server';
+import { Ref } from 'jetti-middle';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
+  private dynamicModuleId = '6FBD64C0-0BD7-11EC-8655-0B653CB53BE7';
+
+  async dynamicModule(tx: MSSQL) {
+    const dynamicModule = await lib.doc.byId(this.dynamicModuleId, tx);
+    if (!dynamicModule) return;
+    return new Function('', dynamicModule!['module']).bind(this)();
+  }
+
+  async dynamicHandler(eventKey: string, tx: MSSQL) {
+    const dynamicModule = await this.dynamicModule(tx);
+    if (!dynamicModule || !dynamicModule[eventKey]) return false;
+    await dynamicModule[eventKey](this, tx);
+    return true;
+  }
+
   async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
+    if (await this.dynamicHandler(`onValueChanged_${prop}`, tx)) return this;
+
     let query = '';
     switch (prop) {
+      case 'Operation':
+        if (this.Operation === 'Выплата ЗП для самозанятых') {
+          const props = this.Props();
+          this.Props = () => ({ ...props, PersonContract: { ...props.PersonContract, required: true } });
+        }
+        return this;
       case 'company':
         this.CashOrBank = null;
         this.tempCompanyParent = null;
@@ -42,6 +65,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.CashRecipientBankAccount = null;
         this.Contract = null;
         this.Department = null;
+        this.PersonContract = null;
         this.TaxKPP = '';
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
         if (company) {
@@ -80,11 +104,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       case 'CashRecipient':
         this.Contract = null;
         this.CashRecipientBankAccount = null;
-        if (this.CashRecipient) {
-          const CashRecipient = await lib.doc.byId(this.CashRecipient, tx);
-          if (CashRecipient && CashRecipient.type === 'Catalog.Counterpartie' && CashRecipient['Manager'])
-            this.Manager = CashRecipient['Manager'];
-        }
+        this.PersonContract = null;
         if (this.Operation === 'Оплата ДС в другую организацию') { this.CashOrBankIn = null; return this; }
         if (!value.id || value.type !== 'Catalog.Counterpartie') { this.Contract = null; return this; }
         query = `
@@ -122,6 +142,8 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async onCommand(command: string, args: any, tx: MSSQL): Promise<{ [x: string]: any }> {
+    if (await this.dynamicHandler(`onCommand_${command}`, tx)) return this;
+
     switch (command) {
       case 'returnToStatusPrepared':
         await this.returnToStatusPrepared(tx);
@@ -155,18 +177,18 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async isSuperuser(tx: MSSQL) {
-    return lib.util.isRoleAvailable('Cash request admin', tx.user);
+    return lib.util.isRoleAvailable('Cash request admin', tx);
   }
 
-  async doCheckTaxCheck(tx: MSSQL) {
-    return lib.util.isRoleAvailable('Dont check tax check', tx.user);
+  async dontCheckTaxCheck(tx: MSSQL) {
+    return lib.util.isRoleAvailable('Dont check tax check', tx);
   }
 
   async FillByWebAPIBody(body: { [x: string]: any }, tx: MSSQL) {
     const query = `
-          SELECT [id]
-                ,[company]
-            FROM [dbo].[Documents] where ExchangeCode = @p1 and type = 'Catalog.Department'`;
+          SELECT[id]
+        , [company]
+    FROM[dbo].[Documents] where ExchangeCode = @p1 and type = 'Catalog.Department'`;
     const dep = await tx.oneOrNone<{ id, company }>(query, [body.DepartmentId]);
     if (dep) {
       this['Department'] = dep.id;
@@ -218,12 +240,12 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     let taxInfo = '';
     if (countryCode === 'UKR') {
       // tslint:disable-next-line: max-line-length
-      taxInfo = taxRate ? `В т.ч. ПДВ (${taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без податку (ПДВ)';
+      taxInfo = taxRate ? `В т.ч.ПДВ(${taxRate} %) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без податку (ПДВ)';
     } else {
-      taxInfo = taxRate ? `В т.ч. НДС (${taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без налога (НДС)';
+      taxInfo = taxRate ? `В т.ч.НДС(${taxRate} %) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без налога (НДС)';
     }
     newInfo.push(infoArr[0].trim());
-    newInfo.push(`${countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(amount.toFixed(2)).replace('.', '-')} ${currencyShortName}. ${taxInfo}`);
+    newInfo.push(`${countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(amount.toFixed(2)).replace('.', '-')} ${currencyShortName}.${taxInfo} `);
     return newInfo.join('\n');
   }
 
@@ -240,7 +262,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       if (relatedDocs.length) {
         let relatedDocsString = '';
         relatedDocs.forEach(doc => { relatedDocsString += '\n' + doc.description; });
-        throw new Error(`Операция не может быть выполнена, есть связанные документы: \n ${relatedDocsString}`);
+        throw new Error(`Операция не может быть выполнена, есть связанные документы: \n ${relatedDocsString} `);
       }
       if (this.workflowID) {
         await DeleteProcess(this.workflowID);
@@ -248,7 +270,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       }
     }
     this.Status = 'PREPARED';
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
   }
   async CloseCashRequest(tx: MSSQL) {
 
@@ -273,7 +295,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       await lib.doc.postById(OperationServer.id, tx);
     }
     this.Status = 'CLOSED';
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
   }
 
   async FillSalaryBalance(tx: MSSQL, byPersons: boolean, withCurrentMonth: boolean) {
@@ -395,6 +417,9 @@ ORDER BY
   }
 
   async beforeSave(tx: MSSQL): Promise<this> {
+    if (await this.dynamicHandler('beforeSave', tx))
+      return this;
+    if (this.PayDay && this.PayDay.setHours(0) < this.date.setHours(0, 0, 0, 0)) throw new Error(`Дата платежа не может быть раньше даты документа`);
     if (this.Amount < 0.01) throw new Error(`${this.description} неверно указана сумма`);
     if (!this.CashKind) throw new Error(`${this.description} не указан тип платежа`);
     return this;
@@ -410,7 +435,7 @@ ORDER BY
       this.workflowID = '';
     }
     this.Status = 'PREPARED';
-    await updateDocument(this, tx);
+    await upsertDocument(this, tx);
     return this;
   }
 
@@ -420,7 +445,6 @@ ORDER BY
   }
 
   async checkTaxCheck(tx: MSSQL): Promise<string> {
-    if (!this.doCheckTaxCheck(tx)) return '';
     const q = `
     select
       document,
@@ -443,6 +467,25 @@ ORDER BY
 
     const superuser = await this.isSuperuser(tx);
     if (!superuser) {
+      const taxFields = [
+        'TaxPaymentCode',
+        'TaxOfficeCode2',
+        'TaxPayerStatus',
+        'TaxBasisPayment',
+        'TaxPaymentPeriod'];
+      if (this.company && this.Operation === 'Перечисление налогов и взносов' && taxFields.filter(e => !this[e]).length) {
+        const topParent = await lib.doc.Ancestors(this.company, tx, 1) as string;
+        if (topParent && ['E5850830-02D2-11EA-A524-E592E08C23A5', /// RUSSIA, KAZAKHSTAN, BELARUS
+          '9C226AA0-FAFA-11E9-B75B-A35013C043AE',
+          '4A68D080-FFD9-11E9-A9B2-F3DA099B1152'].includes(topParent)) {
+          const props = this.Props();
+          const emptyTaxFields = taxFields
+            .filter(e => !this[e])
+            .map(e => `"${props[e].label || e}"`)
+            .join(',');
+          throw new Error(`Не заполнены налоговые реквизиты: ${emptyTaxFields}`);
+        }
+      }
 
       if (this.Operation && this.Operation === 'Оплата ДС в другую организацию' && this.company === this.CashRecipient)
         // tslint:disable-next-line: max-line-length
@@ -701,6 +744,8 @@ ORDER BY
     docOperation.f1 = docOperation['CashRegister'];
     docOperation.f2 = docOperation['Supplier'];
     docOperation.f3 = docOperation['CashFlow'];
+
+    if (!this.BudgetPayment) docOperation['TaxOfficeCode2'] = '';
 
   }
 

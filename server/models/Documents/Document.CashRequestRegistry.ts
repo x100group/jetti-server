@@ -52,7 +52,7 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Catalog.Company', order: 4, required: true, style: { width: '250px' } })
   company: Ref = null;
 
-  @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'REJECTED'] })
+  @Props({ type: 'enum', required: true, value: ['PREPARED', 'AWAITING', 'APPROVED', 'PAID', 'REJECTED'] })
   Status = 'PREPARED';
 
   @Props({
@@ -63,6 +63,7 @@ export class DocumentCashRequestRegistry extends DocumentBase {
       'Выдача ДС подотчетнику',
       'Оплата по кредитам и займам полученным',
       'Прочий расход ДС',
+      'Перемещение ДС',
       'Выдача займа контрагенту',
       'Возврат оплаты клиенту',
       'Выплата заработной платы',
@@ -96,6 +97,9 @@ export class DocumentCashRequestRegistry extends DocumentBase {
 
   @Props({ type: 'Catalog.User', hiddenInList: false, readOnly: true })
   user: Ref = null;
+
+  @Props({ type: 'Catalog.Department', hiddenInList: false, storageType: 'all' })
+  Department: Ref = null;
 
   @Props({ type: 'date', isAdditional: true })
   BankUploadDate = null;

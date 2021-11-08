@@ -7,7 +7,10 @@ import { JRegisterInfo, RegisterInfo } from 'jetti-middle';
 })
 export class RegisterInfoDepartmentStatus extends RegisterInfo {
 
-  @Props({ type: 'Catalog.Department' })
+  @Props({ type: 'Catalog.RetailNetwork', dimension: true })
+  RetailNetwork: Ref = null;
+
+  @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
 
   @Props({ type: 'date' })

@@ -27,6 +27,9 @@ export class FormObjectsGroupModify extends FormBase {
   @Props({ type: 'Catalog.Operation', panel: 'Тип объектов', label: 'Тип: операция' })
   OperationType = null;
 
+  @Props({ type: 'string', controlType: 'textarea', panel: 'Произвольный запрос' })
+  QueryText = '';
+
   @Props({ type: 'Types.Object', panel: 'Тип объектов', label: 'Тип: справочник' })
   CatalogType = '';
 

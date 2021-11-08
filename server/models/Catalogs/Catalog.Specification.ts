@@ -41,9 +41,11 @@ export class CatalogSpecification extends DocumentBase {
   @Props({ type: 'table', required: false, label: 'Выходные изделия' })
   OutputProducts: OutputProduct[] = [new OutputProduct()];
 
-  @Props({ type: 'table', required: false, label: 'Ингридиенты' })
+  @Props({ type: 'table', required: false, label: 'Ингредиенты' })
   Ingridients: Ingridient[] = [new Ingridient()];
 
+  @Props({ type: 'table', required: false, label: 'Этапы производства' })
+  ProductionStages: ProductionStage[] = [new ProductionStage()];
 }
 
 export class OutputProduct {
@@ -61,7 +63,7 @@ export class OutputProduct {
 
 export class Ingridient {
 
-  @Props({ type: 'Catalog.Product', label: 'Ингридиент', style: { width: '300px' } })
+  @Props({ type: 'Catalog.Product', label: 'Ингредиент', style: { width: '300px' } })
   Ingridient: Ref = null;
 
   @Props({ type: 'number', label: 'Количество (вход)' })
@@ -73,6 +75,32 @@ export class Ingridient {
   @Props({ type: 'number', label: 'Процент потерь' })
   PercentOut = 0;
 
+  @Props({
+    type: 'Catalog.Operation.Type', label: 'Этап производства',
+    owner: [{ dependsOn: '67676F80-F5E5-11EB-B33A-81E873583715', filterBy: 'parent', isOwnerFixed: true }]
+  })
+  Stage: Ref = null;
+
 }
 
+export class ProductionStage {
 
+  @Props({
+    type: 'Catalog.Operation.Type', label: 'Этап',
+    owner: [{ dependsOn: '67676F80-F5E5-11EB-B33A-81E873583715', filterBy: 'parent', isOwnerFixed: true }]
+  })
+  Stage: Ref = null;
+
+  @Props({ type: 'number', label: 'Длительность, сек' })
+  Duration = 0;
+
+  @Props({ type: 'number', label: 'Порядок' })
+  Order = 0;
+
+  @Props({ type: 'boolean', label: 'HR' })
+  HumanResource = false;
+
+  @Props({ type: 'enum', label: 'Этап по подразделению', value: ['DEFAULT', 'YES', 'NO'] })
+  ProductionStage = 'DEFAULT';
+
+}

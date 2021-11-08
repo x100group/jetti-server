@@ -5,6 +5,7 @@ import { authHTTP } from './middleware/check-auth';
 import { MSSQL } from '../mssql';
 import { TASKS_POOL } from '../sql.pool.tasks';
 import { IJWTPayload } from 'jetti-middle';
+import { getUser } from './auth';
 
 export const router = Router();
 
@@ -22,12 +23,14 @@ router.post('/login', async (req, res, next) => {
     }
     if (password !== process.env.EXCHANGE_ACCESS_KEY) { return res.status(401).json({ message: 'Auth failed: wrong password' }); }
 
+    const user = await getUser(email);
+
     const payload: IJWTPayload = {
       email,
-      description: 'setka service account',
+      description: user ? user.description : 'exchange',
       isAdmin: true,
       roles: [],
-      env: {},
+      env: { view: { id: user ? user.id : null } },
     };
     const token = jwt.sign(payload, JTW_KEY, { expiresIn: '24h' });
     return res.json({ account: payload, token });
@@ -115,3 +118,29 @@ router.post('/v1.0/queue', authHTTP, async (req: Request, res: Response, next: N
   } catch (err) { next(err); }
 });
 
+router.post('/v1.1/queue', authHTTP, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+
+    const insertRow = async (row) => {
+      await sdba.none(`
+      INSERT INTO [exc].[Queue]([type],[doc],[ExchangeCode],[ExchangeBase])
+      VALUES (@p4, JSON_QUERY(@p1), @p2, @p3)`,
+        [JSON.stringify(row),
+        row.ExchangeCode || null,
+        row.ExchangeBase || null,
+        row.DataType || 'Queue_v1.1']
+      );
+    };
+
+    const sdba = new MSSQL(TASKS_POOL,
+      { email: 'service@service.com', isAdmin: true, description: 'service account', env: {}, roles: [] });
+
+    if (Array.isArray(req.body))
+      while (req.body.length)
+        await Promise.all(req.body.splice(0, 10).map(row => insertRow(row)));
+    else
+      await insertRow(req.body);
+
+    return res.json(200);
+  } catch (err) { next(err); }
+});

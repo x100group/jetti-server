@@ -145,6 +145,47 @@
     RAISERROR('Register.Accumulation.OrderPayment finish', 0 ,1) WITH NOWAIT;
     GO
     
+    RAISERROR('Register.Accumulation.OrderProduct start', 0 ,1) WITH NOWAIT;
+    GO
+    CREATE OR ALTER VIEW [Register.Accumulation.OrderProduct.v] WITH SCHEMABINDING AS
+    SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OrderType"')) [OrderType]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."MovementType"')) [MovementType]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Supplier"')) [Supplier]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"')) [Customer]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SenderDepartment"')) [SenderDepartment]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."SenderStorehouse"')) [SenderStorehouse]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RecipientDepartment"')) [RecipientDepartment]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RecipientStorehouse"')) [RecipientStorehouse]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) [Product]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OrderBatch"')) [OrderBatch]
+        , TRY_CONVERT(NVARCHAR(36), JSON_VALUE(data, '$."OrderRow"')) [OrderRow]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, 1, -1) [Qty]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, 1,  null) [Qty.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, null,  1) [Qty.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1) [Amount]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1,  null) [Amount.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null,  1) [Amount.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, 1, -1) [AmountInBalance]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, 1,  null) [AmountInBalance.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, null,  1) [AmountInBalance.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, -1) [AmountInAccounting]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1,  null) [AmountInAccounting.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null,  1) [AmountInAccounting.Out]
+      FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.OrderProduct';
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.OrderProduct.id] ON [Register.Accumulation.OrderProduct.v]([id]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.OrderProduct] ON [Register.Accumulation.OrderProduct.v]([date], [document], [company], [calculated], [parent], [OrderType], [MovementType], [RetailNetwork], [Supplier], [Customer], [SenderDepartment], [SenderStorehouse], [RecipientDepartment], [RecipientStorehouse], [currency], [Product], [OrderBatch], [OrderRow], [Qty], [Qty.In], [Qty.Out], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out]);
+    GO
+    CREATE OR ALTER VIEW [Register.Accumulation.OrderProduct] AS SELECT * FROM [Register.Accumulation.OrderProduct.v] WITH (NOEXPAND);
+    GO
+    GRANT SELECT, DELETE ON [Register.Accumulation.OrderProduct] TO JETTI;
+    GO
+    RAISERROR('Register.Accumulation.OrderProduct finish', 0 ,1) WITH NOWAIT;
+    GO
+    
     RAISERROR('Register.Accumulation.AP start', 0 ,1) WITH NOWAIT;
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.AP.v] WITH SCHEMABINDING AS
@@ -306,6 +347,10 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Balance"')) [Balance]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) [Analytics]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"')) [Analytics2]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics3"')) [Analytics3]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics4"')) [Analytics4]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics5"')) [Analytics5]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1) [Amount]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1,  null) [Amount.In]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null,  1) [Amount.Out]
@@ -319,7 +364,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Balance.Report';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Balance.Report.id] ON [Register.Accumulation.Balance.Report.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report.v]([date], [document], [company], [calculated], [parent], [currency], [Department], [Balance], [Analytics], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [Info]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Balance.Report] ON [Register.Accumulation.Balance.Report.v]([date], [document], [company], [calculated], [parent], [currency], [Department], [Balance], [Analytics], [Analytics2], [Analytics3], [Analytics4], [Analytics5], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [Info]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Balance.Report] AS SELECT * FROM [Register.Accumulation.Balance.Report.v] WITH (NOEXPAND);
     GO
@@ -422,8 +467,10 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) [OperationType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Expense"')) [Expense]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ExpenseAnalytics"')) [ExpenseAnalytics]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ExpenseAnalytics2"')) [ExpenseAnalytics2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Income"')) [Income]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."IncomeAnalytics"')) [IncomeAnalytics]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."IncomeAnalytics2"')) [IncomeAnalytics2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BalanceIn"')) [BalanceIn]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BalanceInAnalytics"')) [BalanceInAnalytics]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BalanceOut"')) [BalanceOut]
@@ -441,7 +488,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Inventory';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Inventory.id] ON [Register.Accumulation.Inventory.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory.v]([date], [document], [company], [calculated], [parent], [OperationType], [Expense], [ExpenseAnalytics], [Income], [IncomeAnalytics], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Cost.In], [Cost.Out], [Qty], [Qty.In], [Qty.Out]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Inventory] ON [Register.Accumulation.Inventory.v]([date], [document], [company], [calculated], [parent], [OperationType], [Expense], [ExpenseAnalytics], [ExpenseAnalytics2], [Income], [IncomeAnalytics], [IncomeAnalytics2], [BalanceIn], [BalanceInAnalytics], [BalanceOut], [BalanceOutAnalytics], [Storehouse], [SKU], [batch], [Department], [Cost], [Cost.In], [Cost.Out], [Qty], [Qty.In], [Qty.Out]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Inventory] AS SELECT * FROM [Register.Accumulation.Inventory.v] WITH (NOEXPAND);
     GO
@@ -490,6 +537,7 @@
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.PL.v] WITH SCHEMABINDING AS
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PL"')) [PL]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) [Analytics]
@@ -501,7 +549,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.PL';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PL.id] ON [Register.Accumulation.PL.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL.v]([date], [document], [company], [calculated], [parent], [Department], [PL], [Analytics], [Analytics2], [Amount], [Amount.In], [Amount.Out], [Info]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PL] ON [Register.Accumulation.PL.v]([date], [document], [company], [calculated], [parent], [RetailNetwork], [Department], [PL], [Analytics], [Analytics2], [Amount], [Amount.In], [Amount.Out], [Info]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.PL] AS SELECT * FROM [Register.Accumulation.PL.v] WITH (NOEXPAND);
     GO
@@ -544,6 +592,7 @@
     CREATE OR ALTER VIEW [Register.Accumulation.Sales.v] WITH SCHEMABINDING AS
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Customer"')) [Customer]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) [Product]
@@ -586,7 +635,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Sales';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Sales.id] ON [Register.Accumulation.Sales.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales.v]([date], [document], [company], [calculated], [parent], [currency], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [CashShift.In], [CashShift.Out], [Cost], [Cost.In], [Cost.Out], [Qty], [Qty.In], [Qty.Out], [Amount], [Amount.In], [Amount.Out], [Discount], [Discount.In], [Discount.Out], [Tax], [Tax.In], [Tax.Out], [AmountInDoc], [AmountInDoc.In], [AmountInDoc.Out], [AmountInAR], [AmountInAR.In], [AmountInAR.Out]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Sales] ON [Register.Accumulation.Sales.v]([date], [document], [company], [calculated], [parent], [currency], [RetailNetwork], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime], [CashShift], [CashShift.In], [CashShift.Out], [Cost], [Cost.In], [Cost.Out], [Qty], [Qty.In], [Qty.Out], [Amount], [Amount.In], [Amount.Out], [Discount], [Discount.In], [Discount.Out], [Tax], [Tax.In], [Tax.Out], [AmountInDoc], [AmountInDoc.In], [AmountInDoc.Out], [AmountInAR], [AmountInAR.In], [AmountInAR.Out]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Sales] AS SELECT * FROM [Register.Accumulation.Sales.v] WITH (NOEXPAND);
     GO
@@ -692,6 +741,41 @@
     GRANT SELECT, DELETE ON [Register.Accumulation.CashToPay] TO JETTI;
     GO
     RAISERROR('Register.Accumulation.CashToPay finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+    RAISERROR('Register.Accumulation.CharityAnalytic start', 0 ,1) WITH NOWAIT;
+    GO
+    CREATE OR ALTER VIEW [Register.Accumulation.CharityAnalytic.v] WITH SCHEMABINDING AS
+    SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) [Analytics]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."MovementType"')) [MovementType]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Creator"')) [Creator]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CreatorContract"')) [CreatorContract]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Recipient"')) [Recipient]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RecipientContract"')) [RecipientContract]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Batch"')) [Batch]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Source"')) [Source]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1) [Amount]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1,  null) [Amount.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null,  1) [Amount.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, 1, -1) [AmountInBalance]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, 1,  null) [AmountInBalance.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, null,  1) [AmountInBalance.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, -1) [AmountInAccounting]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1,  null) [AmountInAccounting.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null,  1) [AmountInAccounting.Out]
+        , TRY_CONVERT(NVARCHAR(36), JSON_VALUE(data, '$."Info"')) [Info]
+      FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.CharityAnalytic';
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CharityAnalytic.id] ON [Register.Accumulation.CharityAnalytic.v]([id]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CharityAnalytic] ON [Register.Accumulation.CharityAnalytic.v]([date], [document], [company], [calculated], [parent], [Analytics], [MovementType], [Creator], [CreatorContract], [Recipient], [RecipientContract], [Batch], [Source], [currency], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [Info]);
+    GO
+    CREATE OR ALTER VIEW [Register.Accumulation.CharityAnalytic] AS SELECT * FROM [Register.Accumulation.CharityAnalytic.v] WITH (NOEXPAND);
+    GO
+    GRANT SELECT, DELETE ON [Register.Accumulation.CharityAnalytic] TO JETTI;
+    GO
+    RAISERROR('Register.Accumulation.CharityAnalytic finish', 0 ,1) WITH NOWAIT;
     GO
     
     RAISERROR('Register.Accumulation.BudgetItemTurnover start', 0 ,1) WITH NOWAIT;
@@ -805,12 +889,50 @@
     RAISERROR('Register.Accumulation.Acquiring finish', 0 ,1) WITH NOWAIT;
     GO
     
+    RAISERROR('Register.Accumulation.PromotionPoints start', 0 ,1) WITH NOWAIT;
+    GO
+    CREATE OR ALTER VIEW [Register.Accumulation.PromotionPoints.v] WITH SCHEMABINDING AS
+    SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(NVARCHAR(36), JSON_VALUE(data, '$."OrderId"')) [OrderId]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OwnerInner"')) [OwnerInner]
+        , TRY_CONVERT(NVARCHAR(36), JSON_VALUE(data, '$."OwnerExternal"')) [OwnerExternal]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."PromotionChannel"')) [PromotionChannel]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."batch"')) [batch]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."ExpiredAt"'),127) [ExpiredAt]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, 1, -1) [Qty]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, 1,  null) [Qty.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Qty"')) * IIF(kind = 1, null,  1) [Qty.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1) [Amount]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1,  null) [Amount.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null,  1) [Amount.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, 1, -1) [AmountInBalance]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, 1,  null) [AmountInBalance.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInBalance"')) * IIF(kind = 1, null,  1) [AmountInBalance.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1, -1) [AmountInAccounting]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, 1,  null) [AmountInAccounting.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountInAccounting"')) * IIF(kind = 1, null,  1) [AmountInAccounting.Out]
+      FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.PromotionPoints';
+    GO
+    CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.PromotionPoints.id] ON [Register.Accumulation.PromotionPoints.v]([id]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.PromotionPoints] ON [Register.Accumulation.PromotionPoints.v]([date], [document], [company], [calculated], [parent], [RetailNetwork], [Department], [OrderId], [OwnerInner], [OwnerExternal], [PromotionChannel], [currency], [batch], [ExpiredAt], [Qty], [Qty.In], [Qty.Out], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out]);
+    GO
+    CREATE OR ALTER VIEW [Register.Accumulation.PromotionPoints] AS SELECT * FROM [Register.Accumulation.PromotionPoints.v] WITH (NOEXPAND);
+    GO
+    GRANT SELECT, DELETE ON [Register.Accumulation.PromotionPoints] TO JETTI;
+    GO
+    RAISERROR('Register.Accumulation.PromotionPoints finish', 0 ,1) WITH NOWAIT;
+    GO
+    
     RAISERROR('Register.Accumulation.StaffingTable start', 0 ,1) WITH NOWAIT;
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.StaffingTable.v] WITH SCHEMABINDING AS
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."DepartmentCompany"')) [DepartmentCompany]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, '$."StaffingType"')) [StaffingType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."StaffingTablePosition"')) [StaffingTablePosition]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) [Employee]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
@@ -822,10 +944,13 @@
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1) [Amount]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1,  null) [Amount.In]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, null,  1) [Amount.Out]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPrepay"')) * IIF(kind = 1, 1, -1) [AmountPrepay]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPrepay"')) * IIF(kind = 1, 1,  null) [AmountPrepay.In]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."AmountPrepay"')) * IIF(kind = 1, null,  1) [AmountPrepay.Out]
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.StaffingTable';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.StaffingTable.id] ON [Register.Accumulation.StaffingTable.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable.v]([date], [document], [company], [calculated], [parent], [Department], [DepartmentCompany], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryRate.In], [SalaryRate.Out], [SalaryAnalytic], [currency], [Amount], [Amount.In], [Amount.Out]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.StaffingTable] ON [Register.Accumulation.StaffingTable.v]([date], [document], [company], [calculated], [parent], [Department], [DepartmentCompany], [StaffingType], [StaffingTablePosition], [Employee], [Person], [SalaryRate], [SalaryRate.In], [SalaryRate.Out], [SalaryAnalytic], [currency], [Amount], [Amount.In], [Amount.Out], [AmountPrepay], [AmountPrepay.In], [AmountPrepay.Out]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.StaffingTable] AS SELECT * FROM [Register.Accumulation.StaffingTable.v] WITH (NOEXPAND);
     GO

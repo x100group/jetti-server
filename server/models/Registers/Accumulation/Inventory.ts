@@ -16,11 +16,17 @@ export class RegisterAccumulationInventory extends RegisterAccumulation {
   @Props({ type: 'Catalog.Expense.Analytics' })
   ExpenseAnalytics: Ref = null;
 
+  @Props({ type: 'Catalog.Expense.Analytics' })
+  ExpenseAnalytics2: Ref = null;
+
   @Props({ type: 'Catalog.Income' })
   Income: Ref = null;
 
   @Props({ type: 'Catalog.Income' })
   IncomeAnalytics: Ref = null;
+
+  @Props({ type: 'Catalog.Expense.Analytics' })
+  IncomeAnalytics2: Ref = null;
 
   @Props({ type: 'Catalog.Balance' })
   BalanceIn: Ref = null;

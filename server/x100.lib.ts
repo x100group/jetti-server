@@ -10,8 +10,10 @@ import {
   IUpdateOperationTaxCheckResponse,
   findTaxCheckAttachmentsByOperationId
 } from './x100/functions/taxCheck';
-import { TRANSFORMED_REGISTER_MOVEMENTS_TABLE } from './env/environment';
+import { bpApiHost, TRANSFORMED_REGISTER_MOVEMENTS_TABLE } from './env/environment';
 import { Ref } from 'jetti-middle';
+import { DocumentCashRequestServer } from './models/Documents/Document.CashRequest.server';
+import axios from 'axios';
 
 export interface Ix100Lib {
   account: {
@@ -23,11 +25,19 @@ export interface Ix100Lib {
     counterpartieByINNAndKPP: (INN: string, KPP: string, tx: MSSQL) => Promise<Ref | null>
   };
   doc: {
+    startCashReqestAgreement: (cashRequestId: string, tx: MSSQL) => Promise<{ error: boolean, message: string, data: any }>
+    ancestorsParent2: (id: Ref, tx: MSSQL, level?: number) => Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null>;
   };
   info: {
     companyByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
     company2ByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
+    department2ByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
     IntercompanyByCompany: (company: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
+    getCompanyParentByDepartment: (department: string, date: Date, typeFranchise: string, tx: MSSQL) => Promise<{
+      company: Ref,
+      companyParent: Ref,
+      currencyParent: Ref
+    } | null>
   };
   salary: {
     personFIFO: (date: Date, person: Ref, currency: Ref, amount: number, tx: MSSQL) => Promise<any>
@@ -54,11 +64,15 @@ export const x100: Ix100Lib = {
     counterpartieByINNAndKPP
   },
   doc: {
+    startCashReqestAgreement,
+    ancestorsParent2
   },
   info: {
     companyByDepartment,
     company2ByDepartment,
+    department2ByDepartment,
     IntercompanyByCompany,
+    getCompanyParentByDepartment
   },
   salary: {
     personFIFO
@@ -74,6 +88,75 @@ export const x100: Ix100Lib = {
     x100DataDB
   }
 };
+
+async function ancestorsParent2(id: string, tx: MSSQL, level?: number): Promise<{ id: Ref, parent: Ref, level: number }[] | Ref | null> {
+  if (!id) return null;
+  const query = `SELECT id, [parent.id] parent, levelUp as N'level' FROM dbo.[Ancestors2](@p1) WHERE levelUp = @p2 or @p2 is NULL`;
+  let result;
+  if (level || level === 0) {
+    result = await tx.oneOrNone<{ id: Ref, parent: Ref, level: number } | null>(query, [id, level]);
+    if (result) result = result.id;
+  } else {
+    result = await tx.manyOrNone<{ id: Ref, parent: Ref, level: number } | null>(query, [id, null]);
+  }
+  return result;
+}
+
+async function startCashReqestAgreement(cashRequestId: string, tx: MSSQL) {
+
+  const servDoc = await lib.doc.createDocServerById<DocumentCashRequestServer>(cashRequestId, tx);
+  const res = { error: true, message: ``, data: null };
+
+  if (!servDoc) {
+    res.message = `StartCashReqestAgreement: Document ${cashRequestId} not exist`;
+    return res;
+  }
+
+  if (servDoc.Operation === 'Выплата заработной платы без ведомости') {
+    res.message = await servDoc!['checkTaxCheck'](tx);
+    if (res.message) return res;
+  }
+
+  const userMail = servDoc.user ? (await lib.doc.byId(servDoc.user, tx))?.code : '';
+
+  const body = {
+    'CompanyDescription': (await lib.doc.byId(servDoc.company, tx))?.description,
+    'CompanyID': servDoc.company,
+    'CashRecipientDescription': servDoc.CashRecipient ? (await lib.doc.byId(servDoc.CashRecipient, tx))?.description : '',
+    'SubdivisionID': servDoc.Department,
+    'Sum': servDoc.Amount,
+    'ItemID': servDoc.CashFlow,
+    'OperationTypeID': servDoc.Operation,
+    'AuthorID': userMail,
+    'DocumentID': servDoc.id,
+    'Comment': servDoc.info,
+    'BaseType': 'Document.CashRequest',
+    'userMail': userMail
+  };
+
+  try {
+    const instance = axios.create({ baseURL: bpApiHost });
+    const query = `/Processes/pwd/StartProcess/CashApplication`;
+    res.data = (await instance.post(query, body)).data;
+    if (!res.data) throw new Error(`StartCashReqestAgreement: Document ${cashRequestId} empty response`);
+  } catch (error) {
+    res.message = error.toString();
+    return res;
+  }
+
+  if (res.data === 'APPROVED') {
+    if (servDoc.Status !== 'APPROVED') servDoc.Status = 'APPROVED';
+    else return res;
+  } else {
+    servDoc.Status = 'AWAITING';
+    servDoc.workflowID = res.data! as string;
+  }
+
+  res.error = false;
+
+  await lib.doc.saveDoc(servDoc, tx);
+  return res;
+}
 
 async function getTransformedRegisterMovementsByDocId(docID: string): Promise<any> {
   return await x100DataDB().manyOrNone(`
@@ -160,30 +243,27 @@ async function personFIFO(date: Date, person: Ref, currency: Ref, amount: number
 }
 
 
-async function companyByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
-  let result: Ref | null = null;
+async function departmentCompanyHistory<T>(department: Ref, date = new Date(), column: string, tx: MSSQL): Promise<T | null> {
   const queryText = `
-    SELECT TOP 1 company FROM [Register.Info.DepartmentCompanyHistory] WITH (NOEXPAND)
-    WHERE (1=1)
-      AND date <= @p1
-      AND Department = @p2
-    ORDER BY date DESC`;
-  const res = await tx.oneOrNone<{ company: string }>(queryText, [date, department]);
-  if (res) result = res.company;
-  return result;
+  SELECT TOP 1 ${column} FROM [Register.Info.DepartmentCompanyHistory] WITH (NOEXPAND)
+  WHERE (1=1)
+    AND date <= @p1
+    AND Department = @p2
+  ORDER BY date DESC`;
+  const res = await tx.oneOrNone<T>(queryText, [date, department]);
+  return res ? res[column] : null;
+}
+
+async function companyByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
+  return await departmentCompanyHistory(department, date, 'company', tx);
 }
 
 async function company2ByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
-  let result: Ref | null = null;
-  const queryText = `
-    SELECT TOP 1 company2 FROM [Register.Info.DepartmentCompanyHistory] WITH (NOEXPAND)
-    WHERE (1=1)
-      AND date <= @p1
-      AND Department = @p2
-    ORDER BY date DESC`;
-  const res = await tx.oneOrNone<{ company2: string }>(queryText, [date, department]);
-  if (res) result = res.company2;
-  return result;
+  return await departmentCompanyHistory(department, date, 'company2', tx);
+}
+
+async function department2ByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
+  return await departmentCompanyHistory(department, date, 'Department2', tx);
 }
 
 async function IntercompanyByCompany(company: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
@@ -208,6 +288,35 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
       GROUP BY Storehouse, SKU
       HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
     LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
+  return result;
+}
+
+async function getCompanyParentByDepartment(department: string, date: Date, typeFranchise: string, tx: MSSQL) {
+  const result = await tx.oneOrNone<{
+    company: Ref,
+    companyParent: Ref,
+    currencyParent: Ref
+  }>(`
+  SELECT TOP 1
+    Res.[company] as [company]
+    ,CatCom.[parent] as [companyParent]
+    ,CatCom_Parent.[currency] as [currencyParent]
+  FROM (
+    SELECT TOP 1 RegDepCompHistory.[company]
+      ,RegDepCompHistory.[Department]
+      ,RegDepCompHistory.[InvestorGroup]
+      ,RegDepCompHistory.[TypeFranchise]
+    FROM [dbo].[Register.Info.DepartmentCompanyHistory] as RegDepCompHistory WITH (NOEXPAND)
+    WHERE 1=1
+      AND RegDepCompHistory.[date] <= @p1
+      AND RegDepCompHistory.[Department] = @p2
+      ORDER BY RegDepCompHistory.[date] DESC
+      ) as Res
+      LEFT JOIN [dbo].[Catalog.Company.v] as CatCom with (noexpand) on CatCom.[id] = Res.[company]
+      LEFT JOIN [dbo].[Catalog.Company.v] as CatCom_Parent with (noexpand) on CatCom_Parent.[id] = CatCom.[parent]
+      LEFT JOIN [dbo].[Catalog.Currency.v] as CatCur_Parent with (noexpand) on CatCur_Parent.[id] = CatCom_Parent.[currency]
+      WHERE Res.[TypeFranchise] = @p3
+  `, [date, department, typeFranchise]);
   return result;
 }
 

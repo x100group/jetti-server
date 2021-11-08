@@ -24,12 +24,17 @@ import { RegisterAccumulationBalanceRC } from './Balance.RC';
 import { RegisterAccumulationPLRC } from './PL.RC';
 import { RegisterAccumulationInvestmentAnalytics } from './Investment.Analytics';
 import { RegisterAccumulationEmployeeTimekeeping } from './EmployeeTimekeeping';
+import { RegisterAccumulationCharityAnalytic } from './CharityAnalytic';
+import { RegisterAccumulationPromotionPoints } from './PromotionPoints';
+import { RegisterAccumulationOrderProduct } from './OrderProduct';
 
 export type RegisterAccumulationTypes =
   'Register.Accumulation.AccountablePersons' |
   'Register.Accumulation.Investment.Analytics' |
+  'Register.Accumulation.PromotionPoints' |
   'Register.Accumulation.PaymentBatch' |
   'Register.Accumulation.OrderPayment' |
+  'Register.Accumulation.OrderProduct' |
   'Register.Accumulation.Acquiring' |
   'Register.Accumulation.AP' |
   'Register.Accumulation.AR' |
@@ -49,6 +54,7 @@ export type RegisterAccumulationTypes =
   'Register.Accumulation.Salary' |
   'Register.Accumulation.Depreciation' |
   'Register.Accumulation.CashToPay' |
+  'Register.Accumulation.CharityAnalytic' |
   'Register.Accumulation.StaffingTable' |
   'Register.Accumulation.BudgetItemTurnover';
 
@@ -58,6 +64,7 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.PaymentBatch', Class: RegisterAccumulationPaymentBatch },
   { type: 'Register.Accumulation.Investment.Analytics', Class: RegisterAccumulationInvestmentAnalytics },
   { type: 'Register.Accumulation.OrderPayment', Class: RegisterAccumulationOrderPayment },
+  { type: 'Register.Accumulation.OrderProduct', Class: RegisterAccumulationOrderProduct },
   { type: 'Register.Accumulation.AP', Class: RegisterAccumulationAP },
   { type: 'Register.Accumulation.AR', Class: RegisterAccumulationAR },
   { type: 'Register.Accumulation.Bank', Class: RegisterAccumulationBank },
@@ -75,9 +82,11 @@ export const RegisteredRegisterAccumulation: IRegisteredRegisterAccumulation[] =
   { type: 'Register.Accumulation.Salary', Class: RegisterAccumulationSalary },
   { type: 'Register.Accumulation.Depreciation', Class: RegisterAccumulationDepreciation },
   { type: 'Register.Accumulation.CashToPay', Class: RegisterAccumulationCashToPay },
+  { type: 'Register.Accumulation.CharityAnalytic', Class: RegisterAccumulationCharityAnalytic },
   { type: 'Register.Accumulation.BudgetItemTurnover', Class: RegisterAccumulationBudgetItemTurnover },
   { type: 'Register.Accumulation.Intercompany', Class: RegisterAccumulationIntercompany },
   { type: 'Register.Accumulation.Acquiring', Class: RegisterAccumulationAcquiring },
+  { type: 'Register.Accumulation.PromotionPoints', Class: RegisterAccumulationPromotionPoints },
   { type: 'Register.Accumulation.StaffingTable', Class: RegisterAccumulationStaffingTable },
 ];
 

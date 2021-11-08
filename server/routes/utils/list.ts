@@ -1,17 +1,18 @@
 import { configSchema } from './../../models/config';
 import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
-import { filterBuilder } from '../../fuctions/filterBuilder';
-import { DocListRequestBody, DocListResponse, FormListFilter, DocumentBase } from 'jetti-middle';
+import { filterBuilder, userContextFilter } from '../../fuctions/filterBuilder';
+import { DocListRequestBody, DocListResponse, FormListFilter, DocumentBase, Type } from 'jetti-middle';
 
 export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
-  params.filter = (params.filter || []).filter(el => !(el.right === null || el.right === undefined));
+  params.filter = (params.filter || [])
+    .filter(el => !(el.right === null || el.right === undefined) || el.center === 'is null' || el.center === 'is not null');
 
   if (params.listOptions && params.listOptions!.withHierarchy) {
     let parent: any = null;
     if (params.id) {
       const ob = await lib.doc.byId(params.id, tx);
-      parent = ob!.isfolder && params.listOptions.hierarchyDirectionUp ? params.id : ob!.parent;
+      parent = ob!.isfolder && !params.listOptions.hierarchyDirectionUp ? params.id : ob!.parent;
     }
     // folders
     const queryList = configSchema().get(params.type)!.QueryList;
@@ -22,7 +23,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
       const ancestorsId = ancestors.filter(el => el.parent !== parent).map(e => '\'' + e.id + '\'').join();
       queryText = `${queryText} UNION SELECT * FROM (${queryList}) d WHERE id IN (${ancestorsId})`;
     }
-    queryText = queryText + 'ORDER BY description';
+    queryText += `${userContextFilter(tx.userContext, `"company.id"`)} ORDER BY description`;
     const folders = await tx.manyOrNone(queryText, [parent]);
     // elements
     const deletedFilter = params.filter.find(e => e.left === 'deleted');
@@ -68,6 +69,9 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   orderbyAfter = orderbyAfter.slice(0, -2);
 
   valueOrder = valueOrder.filter(el => !(el.value === null || el.value === undefined));
+  const queryFilter = await filterBuilder(params.filter, tx);
+  if (!Type.isType(params.type))
+    queryFilter.where += userContextFilter(tx.userContext, params.type === 'Catalog.Company' ? 'd.id' : `"company.id"`);
 
   const queryBuilder = (isAfter: boolean) => {
     if (valueOrder.length === 0) return '';
@@ -75,7 +79,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     const dir = lastORDER ? isAfter ? '>' : '<' : isAfter ? '<' : '>';
     let queryBuilderResult = `
       SELECT TOP ${params.count + 1} id FROM (${QueryList}) d
-      WHERE ${(filterBuilder(params.filter).where)} AND (`;
+      WHERE ${queryFilter.where} AND (`;
 
     valueOrder.forEach(_or => {
       let where = '(';
@@ -95,7 +99,6 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     return queryBuilderResult;
   };
 
-  const queryFilter = filterBuilder(params.filter);
   const queryBefore = queryBuilder(false);
   const queryAfter = queryBuilder(true);
   if (queryBefore && queryAfter && row) {
@@ -113,6 +116,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     else
       query = `${queryFilter.tempTable}SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(queryFilter.where)} ${orderbyAfter}`;
   }
+
   if (process.env.NODE_ENV !== 'production') console.log(query);
   const data = await tx.manyOrNone<any>(query);
 

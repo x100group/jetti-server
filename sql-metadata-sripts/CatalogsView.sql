@@ -27,6 +27,11 @@ CREATE OR ALTER VIEW[dbo].[Catalog.Documents] AS
         , d.[isDefault] [isDefault]
         , d.[Code1] [Code1]
       
+        , ISNULL(l5.id, d.id) [AcquiringTerminal.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [AcquiringTerminal.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [AcquiringTerminal.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [AcquiringTerminal.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [AcquiringTerminal.Level1.id]
         , ISNULL(l5.description, d.description) [AcquiringTerminal.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [AcquiringTerminal.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [AcquiringTerminal.Level3]
@@ -56,50 +61,6 @@ GO
 
       
       
------------------------------- BEGIN Catalog.AllUnic.Lot ------------------------------
-
-      
-      CREATE OR ALTER VIEW dbo.[Catalog.AllUnic.Lot] AS
-        
-      SELECT
-        d.id, d.type, d.date, d.code, d.description "AllUnicLot", d.posted, d.deleted, d.isfolder, d.timestamp, d.version
-        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
-        , d.[SalesStartDate] [SalesStartDate]
-        , d.[Cost] [Cost]
-        , ISNULL([Currency.v].description, '') [Currency.value], d.[Currency] [Currency.id], [Currency.v].type [Currency.type]
-        , ISNULL([Product.v].description, '') [Product.value], d.[Product] [Product.id], [Product.v].type [Product.type]
-      
-        , ISNULL(l5.description, d.description) [AllUnicLot.Level5]
-        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [AllUnicLot.Level4]
-        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [AllUnicLot.Level3]
-        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [AllUnicLot.Level2]
-        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [AllUnicLot.Level1]
-      FROM [Catalog.AllUnic.Lot.v] d WITH (NOEXPAND)
-        LEFT JOIN [Catalog.AllUnic.Lot.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
-        LEFT JOIN [Catalog.AllUnic.Lot.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
-        LEFT JOIN [Catalog.AllUnic.Lot.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
-        LEFT JOIN [Catalog.AllUnic.Lot.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
-        LEFT JOIN [Catalog.AllUnic.Lot.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
-      
-        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
-        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
-        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
-        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-        LEFT JOIN dbo.[Catalog.Currency.v] [Currency.v] WITH (NOEXPAND) ON [Currency.v].id = d.[Currency]
-        LEFT JOIN dbo.[Catalog.Product.v] [Product.v] WITH (NOEXPAND) ON [Product.v].id = d.[Product]
-    ;
-GO
-GRANT SELECT ON dbo.[Catalog.AllUnic.Lot] TO jetti;
-GO
-
-      
------------------------------- END Catalog.AllUnic.Lot ------------------------------
-
-      
-      
 ------------------------------ BEGIN Catalog.Attachment ------------------------------
 
       
@@ -119,6 +80,11 @@ GO
         , d.[FileName] [FileName]
         , d.[MIMEType] [MIMEType]
       
+        , ISNULL(l5.id, d.id) [Attachment.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Attachment.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Attachment.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Attachment.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Attachment.Level1.id]
         , ISNULL(l5.description, d.description) [Attachment.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Attachment.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Attachment.Level3]
@@ -167,6 +133,11 @@ GO
         , d.[Tags] [Tags]
         , d.[LoadDataOnInit] [LoadDataOnInit]
       
+        , ISNULL(l5.id, d.id) [AttachmentType.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [AttachmentType.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [AttachmentType.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [AttachmentType.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [AttachmentType.Level1.id]
         , ISNULL(l5.description, d.description) [AttachmentType.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [AttachmentType.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [AttachmentType.Level3]
@@ -208,6 +179,11 @@ GO
         , d.[isPassive] [isPassive]
         , d.[DescriptionENG] [DescriptionENG]
       
+        , ISNULL(l5.id, d.id) [Balance.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Balance.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Balance.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Balance.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Balance.Level1.id]
         , ISNULL(l5.description, d.description) [Balance.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Balance.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Balance.Level3]
@@ -247,6 +223,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[DescriptionENG] [DescriptionENG]
       
+        , ISNULL(l5.id, d.id) [BalanceAnalytics.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [BalanceAnalytics.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [BalanceAnalytics.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [BalanceAnalytics.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [BalanceAnalytics.Level1.id]
         , ISNULL(l5.description, d.description) [BalanceAnalytics.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BalanceAnalytics.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [BalanceAnalytics.Level3]
@@ -291,6 +272,11 @@ GO
         , ISNULL([ExportRule.v].description, '') [ExportRule.value], d.[ExportRule] [ExportRule.id], [ExportRule.v].type [ExportRule.type]
         , d.[isActive] [isActive]
       
+        , ISNULL(l5.id, d.id) [Bank.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Bank.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Bank.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Bank.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Bank.Level1.id]
         , ISNULL(l5.description, d.description) [Bank.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Bank.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Bank.Level3]
@@ -334,6 +320,11 @@ GO
         , ISNULL([Bank.v].description, '') [Bank.value], d.[Bank] [Bank.id], [Bank.v].type [Bank.type]
         , d.[isDefault] [isDefault]
       
+        , ISNULL(l5.id, d.id) [BankAccount.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [BankAccount.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [BankAccount.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [BankAccount.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [BankAccount.Level1.id]
         , ISNULL(l5.description, d.description) [BankAccount.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BankAccount.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [BankAccount.Level3]
@@ -375,6 +366,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [Brand.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Brand.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Brand.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Brand.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Brand.Level1.id]
         , ISNULL(l5.description, d.description) [Brand.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Brand.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Brand.Level3]
@@ -413,9 +409,15 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([parent2.v].description, '') [parent2.value], d.[parent2] [parent2.id], [parent2.v].type [parent2.type]
+        , d.[kind] [kind]
         , d.[UnaryOperator] [UnaryOperator]
         , d.[DescriptionENG] [DescriptionENG]
       
+        , ISNULL(l5.id, d.id) [BudgetItem.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [BudgetItem.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [BudgetItem.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [BudgetItem.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [BudgetItem.Level1.id]
         , ISNULL(l5.description, d.description) [BudgetItem.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BudgetItem.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [BudgetItem.Level3]
@@ -456,6 +458,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([Country.v].description, '') [Country.value], d.[Country] [Country.id], [Country.v].type [Country.type]
       
+        , ISNULL(l5.id, d.id) [BusinessCalendar.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [BusinessCalendar.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [BusinessCalendar.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [BusinessCalendar.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [BusinessCalendar.Level1.id]
         , ISNULL(l5.description, d.description) [BusinessCalendar.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BusinessCalendar.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [BusinessCalendar.Level3]
@@ -495,6 +502,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [BusinessDirection.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [BusinessDirection.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [BusinessDirection.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [BusinessDirection.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [BusinessDirection.Level1.id]
         , ISNULL(l5.description, d.description) [BusinessDirection.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [BusinessDirection.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [BusinessDirection.Level3]
@@ -534,6 +546,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[DescriptionENG] [DescriptionENG]
       
+        , ISNULL(l5.id, d.id) [CashFlow.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [CashFlow.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [CashFlow.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [CashFlow.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [CashFlow.Level1.id]
         , ISNULL(l5.description, d.description) [CashFlow.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashFlow.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [CashFlow.Level3]
@@ -575,6 +592,11 @@ GO
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , d.[isAccounting] [isAccounting]
       
+        , ISNULL(l5.id, d.id) [CashRegister.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [CashRegister.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [CashRegister.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [CashRegister.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [CashRegister.Level1.id]
         , ISNULL(l5.description, d.description) [CashRegister.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashRegister.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [CashRegister.Level3]
@@ -620,8 +642,14 @@ GO
         , d.[menu] [menu]
         , d.[presentation] [presentation]
         , d.[hierarchy] [hierarchy]
-        , d.[module] [module]
+        , d.[moduleClient] [moduleClient]
+        , d.[moduleServer] [moduleServer]
       
+        , ISNULL(l5.id, d.id) [Catalog.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Catalog.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Catalog.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Catalog.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Catalog.Level1.id]
         , ISNULL(l5.description, d.description) [Catalog.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Catalog.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Catalog.Level3]
@@ -687,6 +715,11 @@ GO
         , ISNULL([TaxOffice.v].description, '') [TaxOffice.value], d.[TaxOffice] [TaxOffice.id], [TaxOffice.v].type [TaxOffice.type]
         , d.[GLN] [GLN]
       
+        , ISNULL(l5.id, d.id) [Company.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Company.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Company.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Company.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Company.Level1.id]
         , ISNULL(l5.description, d.description) [Company.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Company.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Company.Level3]
@@ -733,6 +766,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[FullName] [FullName]
       
+        , ISNULL(l5.id, d.id) [CompanyGroup.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [CompanyGroup.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [CompanyGroup.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [CompanyGroup.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [CompanyGroup.Level1.id]
         , ISNULL(l5.description, d.description) [CompanyGroup.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CompanyGroup.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [CompanyGroup.Level3]
@@ -771,6 +809,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [Configuration.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Configuration.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Configuration.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Configuration.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Configuration.Level1.id]
         , ISNULL(l5.description, d.description) [Configuration.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Configuration.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Configuration.Level3]
@@ -832,6 +875,11 @@ GO
         , d.[PaymentKRO] [PaymentKRO]
         , d.[OtherServices] [OtherServices]
       
+        , ISNULL(l5.id, d.id) [Contract.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Contract.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Contract.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Contract.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Contract.Level1.id]
         , ISNULL(l5.description, d.description) [Contract.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Contract.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Contract.Level3]
@@ -886,6 +934,11 @@ GO
         , d.[isDefault] [isDefault]
         , d.[notAccounting] [notAccounting]
       
+        , ISNULL(l5.id, d.id) [ContractIntercompany.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ContractIntercompany.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ContractIntercompany.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ContractIntercompany.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ContractIntercompany.Level1.id]
         , ISNULL(l5.description, d.description) [ContractIntercompany.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ContractIntercompany.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ContractIntercompany.Level3]
@@ -932,6 +985,11 @@ GO
         , d.[isDefault] [isDefault]
         , ISNULL([owner.v].description, '') [owner.value], d.[owner] [owner.id], [owner.v].type [owner.type]
       
+        , ISNULL(l5.id, d.id) [CounterpartieBankAccount.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [CounterpartieBankAccount.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [CounterpartieBankAccount.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [CounterpartieBankAccount.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [CounterpartieBankAccount.Level1.id]
         , ISNULL(l5.description, d.description) [CounterpartieBankAccount.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CounterpartieBankAccount.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [CounterpartieBankAccount.Level3]
@@ -976,7 +1034,14 @@ GO
         , ISNULL([Currency.v].description, '') [Currency.value], d.[Currency] [Currency.id], [Currency.v].type [Currency.type]
         , d.[Alpha2Code] [Alpha2Code]
         , d.[PhoneCode] [PhoneCode]
+        , d.[MobilePhoneMask] [MobilePhoneMask]
+        , d.[Language] [Language]
       
+        , ISNULL(l5.id, d.id) [Country.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Country.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Country.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Country.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Country.Level1.id]
         , ISNULL(l5.description, d.description) [Country.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Country.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Country.Level3]
@@ -1018,6 +1083,11 @@ GO
         , d.[ShortName] [ShortName]
         , d.[symbol] [symbol]
       
+        , ISNULL(l5.id, d.id) [Currency.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Currency.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Currency.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Currency.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Currency.Level1.id]
         , ISNULL(l5.description, d.description) [Currency.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Currency.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Currency.Level3]
@@ -1056,10 +1126,13 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[ShortName] [ShortName]
+        , d.[Status] [Status]
         , ISNULL([BusinessRegion.v].description, '') [BusinessRegion.value], d.[BusinessRegion] [BusinessRegion.id], [BusinessRegion.v].type [BusinessRegion.type]
         , ISNULL([BusinessCalendar.v].description, '') [BusinessCalendar.value], d.[BusinessCalendar] [BusinessCalendar.id], [BusinessCalendar.v].type [BusinessCalendar.type]
         , ISNULL([ResponsibilityCenter.v].description, '') [ResponsibilityCenter.value], d.[ResponsibilityCenter] [ResponsibilityCenter.id], [ResponsibilityCenter.v].type [ResponsibilityCenter.type]
         , d.[OpeningDate] [OpeningDate]
+        , d.[OpeningDatePlanned] [OpeningDatePlanned]
+        , d.[OpeningDateBeforePurchase] [OpeningDateBeforePurchase]
         , d.[ClosingDate] [ClosingDate]
         , ISNULL([TaxOffice.v].description, '') [TaxOffice.value], d.[TaxOffice] [TaxOffice.id], [TaxOffice.v].type [TaxOffice.type]
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
@@ -1077,6 +1150,11 @@ GO
         , d.[IntegrationType] [IntegrationType]
         , d.[timeZone] [timeZone]
       
+        , ISNULL(l5.id, d.id) [Department.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Department.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Department.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Department.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Department.Level1.id]
         , ISNULL(l5.description, d.description) [Department.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Department.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Department.Level3]
@@ -1125,9 +1203,15 @@ GO
         , d.[kind] [kind]
         , d.[ShortName] [ShortName]
         , d.[SecurityGroup] [SecurityGroup]
+        , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , ISNULL([StaffingPositionManager.v].description, '') [StaffingPositionManager.value], d.[StaffingPositionManager] [StaffingPositionManager.id], [StaffingPositionManager.v].type [StaffingPositionManager.type]
         , ISNULL([StaffingPositionAssistant.v].description, '') [StaffingPositionAssistant.value], d.[StaffingPositionAssistant] [StaffingPositionAssistant.id], [StaffingPositionAssistant.v].type [StaffingPositionAssistant.type]
       
+        , ISNULL(l5.id, d.id) [DepartmentCompany.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [DepartmentCompany.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [DepartmentCompany.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [DepartmentCompany.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [DepartmentCompany.Level1.id]
         , ISNULL(l5.description, d.description) [DepartmentCompany.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [DepartmentCompany.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [DepartmentCompany.Level3]
@@ -1144,6 +1228,7 @@ GO
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.StaffingTable.v] [StaffingPositionManager.v] WITH (NOEXPAND) ON [StaffingPositionManager.v].id = d.[StaffingPositionManager]
         LEFT JOIN dbo.[Catalog.StaffingTable.v] [StaffingPositionAssistant.v] WITH (NOEXPAND) ON [StaffingPositionAssistant.v].id = d.[StaffingPositionAssistant]
     ;
@@ -1168,6 +1253,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [DepartmentKind.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [DepartmentKind.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [DepartmentKind.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [DepartmentKind.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [DepartmentKind.Level1.id]
         , ISNULL(l5.description, d.description) [DepartmentKind.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [DepartmentKind.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [DepartmentKind.Level3]
@@ -1206,6 +1296,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [DepartmentStatusReason.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [DepartmentStatusReason.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [DepartmentStatusReason.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [DepartmentStatusReason.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [DepartmentStatusReason.Level1.id]
         , ISNULL(l5.description, d.description) [DepartmentStatusReason.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [DepartmentStatusReason.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [DepartmentStatusReason.Level3]
@@ -1252,6 +1347,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [Dynamic.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Dynamic.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Dynamic.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Dynamic.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Dynamic.Level1.id]
         , ISNULL(l5.description, d.description) [Dynamic.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Dynamic.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Dynamic.Level3]
@@ -1292,6 +1392,11 @@ GO
         , ISNULL([Person.v].description, '') [Person.value], d.[Person] [Person.id], [Person.v].type [Person.type]
         , d.[InnerPhone] [InnerPhone]
       
+        , ISNULL(l5.id, d.id) [Employee.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Employee.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Employee.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Employee.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Employee.Level1.id]
         , ISNULL(l5.description, d.description) [Employee.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Employee.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Employee.Level3]
@@ -1335,6 +1440,11 @@ GO
         , d.[Assign] [Assign]
         , d.[DescriptionENG] [DescriptionENG]
       
+        , ISNULL(l5.id, d.id) [Expense.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Expense.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Expense.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Expense.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Expense.Level1.id]
         , ISNULL(l5.description, d.description) [Expense.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Expense.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Expense.Level3]
@@ -1377,6 +1487,11 @@ GO
         , ISNULL([BudgetItem.v].description, '') [BudgetItem.value], d.[BudgetItem] [BudgetItem.id], [BudgetItem.v].type [BudgetItem.type]
         , d.[DescriptionENG] [DescriptionENG]
       
+        , ISNULL(l5.id, d.id) [ExpenseAnalytics.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ExpenseAnalytics.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ExpenseAnalytics.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ExpenseAnalytics.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ExpenseAnalytics.Level1.id]
         , ISNULL(l5.description, d.description) [ExpenseAnalytics.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ExpenseAnalytics.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ExpenseAnalytics.Level3]
@@ -1425,6 +1540,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[Method] [Method]
       
+        , ISNULL(l5.id, d.id) [GroupObjectsExploitation.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [GroupObjectsExploitation.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [GroupObjectsExploitation.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [GroupObjectsExploitation.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [GroupObjectsExploitation.Level1.id]
         , ISNULL(l5.description, d.description) [GroupObjectsExploitation.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [GroupObjectsExploitation.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [GroupObjectsExploitation.Level3]
@@ -1467,6 +1587,11 @@ GO
         , d.[Assign] [Assign]
         , d.[DescriptionENG] [DescriptionENG]
       
+        , ISNULL(l5.id, d.id) [Income.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Income.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Income.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Income.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Income.Level1.id]
         , ISNULL(l5.description, d.description) [Income.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Income.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Income.Level3]
@@ -1507,6 +1632,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [InvestorGroup.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [InvestorGroup.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [InvestorGroup.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [InvestorGroup.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [InvestorGroup.Level1.id]
         , ISNULL(l5.description, d.description) [InvestorGroup.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [InvestorGroup.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [InvestorGroup.Level3]
@@ -1545,6 +1675,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [JobTitleCategory.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [JobTitleCategory.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [JobTitleCategory.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [JobTitleCategory.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [JobTitleCategory.Level1.id]
         , ISNULL(l5.description, d.description) [JobTitleCategory.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [JobTitleCategory.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [JobTitleCategory.Level3]
@@ -1602,6 +1737,11 @@ GO
         , ISNULL([LoanRepaymentProcedure.v].description, '') [LoanRepaymentProcedure.value], d.[LoanRepaymentProcedure] [LoanRepaymentProcedure.id], [LoanRepaymentProcedure.v].type [LoanRepaymentProcedure.type]
         , d.[PayDeadline] [PayDeadline]
       
+        , ISNULL(l5.id, d.id) [Loan.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Loan.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Loan.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Loan.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Loan.Level1.id]
         , ISNULL(l5.description, d.description) [Loan.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Loan.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Loan.Level3]
@@ -1649,6 +1789,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [LoanRepaymentProcedure.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [LoanRepaymentProcedure.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [LoanRepaymentProcedure.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [LoanRepaymentProcedure.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [LoanRepaymentProcedure.Level1.id]
         , ISNULL(l5.description, d.description) [LoanRepaymentProcedure.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [LoanRepaymentProcedure.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [LoanRepaymentProcedure.Level3]
@@ -1688,6 +1833,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([Balance.v].description, '') [Balance.value], d.[Balance] [Balance.id], [Balance.v].type [Balance.type]
       
+        , ISNULL(l5.id, d.id) [LoanTypes.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [LoanTypes.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [LoanTypes.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [LoanTypes.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [LoanTypes.Level1.id]
         , ISNULL(l5.description, d.description) [LoanTypes.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [LoanTypes.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [LoanTypes.Level3]
@@ -1730,6 +1880,11 @@ GO
         , d.[Gender] [Gender]
         , d.[Birthday] [Birthday]
       
+        , ISNULL(l5.id, d.id) [Manager.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Manager.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Manager.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Manager.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Manager.Level1.id]
         , ISNULL(l5.description, d.description) [Manager.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Manager.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Manager.Level3]
@@ -1768,6 +1923,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [ManufactureLocation.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ManufactureLocation.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ManufactureLocation.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ManufactureLocation.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ManufactureLocation.Level1.id]
         , ISNULL(l5.description, d.description) [ManufactureLocation.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ManufactureLocation.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ManufactureLocation.Level3]
@@ -1816,6 +1976,11 @@ GO
         , ISNULL([Group.v].description, '') [Group.value], d.[Group] [Group.id], [Group.v].type [Group.type]
         , d.[InventoryNumber] [InventoryNumber]
       
+        , ISNULL(l5.id, d.id) [ObjectsExploitation.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ObjectsExploitation.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ObjectsExploitation.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ObjectsExploitation.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ObjectsExploitation.Level1.id]
         , ISNULL(l5.description, d.description) [ObjectsExploitation.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ObjectsExploitation.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ObjectsExploitation.Level3]
@@ -1858,8 +2023,16 @@ GO
         , d.[shortName] [shortName]
         , ISNULL([Configuration.v].description, '') [Configuration.value], d.[Configuration] [Configuration.id], [Configuration.v].type [Configuration.type]
         , d.[script] [script]
+        , d.[scriptAccounting] [scriptAccounting]
         , d.[module] [module]
+        , d.[isManagment] [isManagment]
+        , d.[isAccounting] [isAccounting]
       
+        , ISNULL(l5.id, d.id) [Operation.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Operation.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Operation.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Operation.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Operation.Level1.id]
         , ISNULL(l5.description, d.description) [Operation.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Operation.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Operation.Level3]
@@ -1903,6 +2076,11 @@ GO
         , d.[menu] [menu]
         , d.[icon] [icon]
       
+        , ISNULL(l5.id, d.id) [OperationGroup.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [OperationGroup.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [OperationGroup.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [OperationGroup.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [OperationGroup.Level1.id]
         , ISNULL(l5.description, d.description) [OperationGroup.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [OperationGroup.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [OperationGroup.Level3]
@@ -1940,7 +2118,15 @@ GO
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[PropType] [PropType]
+        , ISNULL([Model.v].description, '') [Model.value], d.[Model] [Model.id], [Model.v].type [Model.type]
+        , d.[StoredIn] [StoredIn]
       
+        , ISNULL(l5.id, d.id) [OperationType.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [OperationType.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [OperationType.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [OperationType.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [OperationType.Level1.id]
         , ISNULL(l5.description, d.description) [OperationType.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [OperationType.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [OperationType.Level3]
@@ -1957,6 +2143,7 @@ GO
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Operation.v] [Model.v] WITH (NOEXPAND) ON [Model.v].id = d.[Model]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.Operation.Type] TO jetti;
@@ -1964,45 +2151,6 @@ GO
 
       
 ------------------------------ END Catalog.Operation.Type ------------------------------
-
-      
-      
------------------------------- BEGIN Catalog.OrderSource ------------------------------
-
-      
-      CREATE OR ALTER VIEW dbo.[Catalog.OrderSource] AS
-        
-      SELECT
-        d.id, d.type, d.date, d.code, d.description "OrderSource", d.posted, d.deleted, d.isfolder, d.timestamp, d.version
-        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
-        , d.[Kind] [Kind]
-      
-        , ISNULL(l5.description, d.description) [OrderSource.Level5]
-        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [OrderSource.Level4]
-        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [OrderSource.Level3]
-        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [OrderSource.Level2]
-        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [OrderSource.Level1]
-      FROM [Catalog.OrderSource.v] d WITH (NOEXPAND)
-        LEFT JOIN [Catalog.OrderSource.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
-        LEFT JOIN [Catalog.OrderSource.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
-        LEFT JOIN [Catalog.OrderSource.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
-        LEFT JOIN [Catalog.OrderSource.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
-        LEFT JOIN [Catalog.OrderSource.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
-      
-        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
-        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
-        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
-        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-    ;
-GO
-GRANT SELECT ON dbo.[Catalog.OrderSource] TO jetti;
-GO
-
-      
------------------------------- END Catalog.OrderSource ------------------------------
 
       
       
@@ -2017,6 +2165,7 @@ GO
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , ISNULL([ParentPerson.v].description, '') [ParentPerson.value], d.[ParentPerson] [ParentPerson.id], [ParentPerson.v].type [ParentPerson.type]
         , d.[Gender] [Gender]
         , d.[FirstName] [FirstName]
         , d.[LastName] [LastName]
@@ -2027,7 +2176,10 @@ GO
         , d.[AddressResidence] [AddressResidence]
         , d.[City] [City]
         , d.[Phone] [Phone]
+        , d.[PersonalPhone] [PersonalPhone]
         , d.[Email] [Email]
+        , d.[PersonalEmail] [PersonalEmail]
+        , d.[Birthday] [Birthday]
         , d.[EmploymentDate] [EmploymentDate]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , ISNULL([JobTitle.v].description, '') [JobTitle.value], d.[JobTitle] [JobTitle.id], [JobTitle.v].type [JobTitle.type]
@@ -2039,9 +2191,15 @@ GO
         , d.[DocumentDate] [DocumentDate]
         , d.[DocumentAuthority] [DocumentAuthority]
         , d.[AccountAD] [AccountAD]
+        , d.[SMAccount] [SMAccount]
         , d.[Pincode] [Pincode]
         , d.[Fired] [Fired]
       
+        , ISNULL(l5.id, d.id) [Person.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Person.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Person.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Person.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Person.Level1.id]
         , ISNULL(l5.description, d.description) [Person.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Person.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Person.Level3]
@@ -2058,6 +2216,7 @@ GO
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Catalog.Counterpartie.v] [ParentPerson.v] WITH (NOEXPAND) ON [ParentPerson.v].id = d.[ParentPerson]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.JobTitle.v] [JobTitle.v] WITH (NOEXPAND) ON [JobTitle.v].id = d.[JobTitle]
         LEFT JOIN dbo.[Catalog.Country.v] [Country.v] WITH (NOEXPAND) ON [Country.v].id = d.[Country]
@@ -2088,6 +2247,11 @@ GO
         , ISNULL([SalaryProject.v].description, '') [SalaryProject.value], d.[SalaryProject] [SalaryProject.id], [SalaryProject.v].type [SalaryProject.type]
         , d.[OpenDate] [OpenDate]
       
+        , ISNULL(l5.id, d.id) [PersonBankAccount.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [PersonBankAccount.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [PersonBankAccount.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [PersonBankAccount.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [PersonBankAccount.Level1.id]
         , ISNULL(l5.description, d.description) [PersonBankAccount.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PersonBankAccount.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [PersonBankAccount.Level3]
@@ -2135,6 +2299,11 @@ GO
         , d.[EndDate] [EndDate]
         , ISNULL([BankAccount.v].description, '') [BankAccount.value], d.[BankAccount] [BankAccount.id], [BankAccount.v].type [BankAccount.type]
       
+        , ISNULL(l5.id, d.id) [PersonContract.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [PersonContract.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [PersonContract.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [PersonContract.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [PersonContract.Level1.id]
         , ISNULL(l5.description, d.description) [PersonContract.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PersonContract.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [PersonContract.Level3]
@@ -2176,6 +2345,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [PersonIdentity.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [PersonIdentity.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [PersonIdentity.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [PersonIdentity.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [PersonIdentity.Level1.id]
         , ISNULL(l5.description, d.description) [PersonIdentity.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PersonIdentity.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [PersonIdentity.Level3]
@@ -2214,6 +2388,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [PlanningScenario.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [PlanningScenario.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [PlanningScenario.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [PlanningScenario.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [PlanningScenario.Level1.id]
         , ISNULL(l5.description, d.description) [PlanningScenario.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PlanningScenario.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [PlanningScenario.Level3]
@@ -2256,6 +2435,11 @@ GO
         , ISNULL([Brand.v].description, '') [Brand.value], d.[Brand] [Brand.id], [Brand.v].type [Brand.type]
         , ISNULL([RetailNetwork.v].description, '') [RetailNetwork.value], d.[RetailNetwork] [RetailNetwork.id], [RetailNetwork.v].type [RetailNetwork.type]
       
+        , ISNULL(l5.id, d.id) [PriceType.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [PriceType.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [PriceType.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [PriceType.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [PriceType.Level1.id]
         , ISNULL(l5.description, d.description) [PriceType.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PriceType.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [PriceType.Level3]
@@ -2325,7 +2509,15 @@ GO
         , d.[isVegan] [isVegan]
         , d.[isHot] [isHot]
         , d.[isPromo] [isPromo]
+        , d.[isAggregator] [isAggregator]
+        , d.[isThermallabelPrinting] [isThermallabelPrinting]
+        , d.[Slug] [Slug]
       
+        , ISNULL(l5.id, d.id) [Product.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Product.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Product.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Product.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Product.Level1.id]
         , ISNULL(l5.description, d.description) [Product.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Product.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Product.Level3]
@@ -2377,6 +2569,11 @@ GO
         , d.[isActive] [isActive]
         , d.[SortOrder] [SortOrder]
       
+        , ISNULL(l5.id, d.id) [ProductAnalytic.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ProductAnalytic.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ProductAnalytic.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ProductAnalytic.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ProductAnalytic.Level1.id]
         , ISNULL(l5.description, d.description) [ProductAnalytic.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ProductAnalytic.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ProductAnalytic.Level3]
@@ -2419,6 +2616,11 @@ GO
         , d.[isActive] [isActive]
         , d.[Label] [Label]
       
+        , ISNULL(l5.id, d.id) [ProductPackage.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ProductPackage.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ProductPackage.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ProductPackage.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ProductPackage.Level1.id]
         , ISNULL(l5.description, d.description) [ProductPackage.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ProductPackage.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ProductPackage.Level3]
@@ -2460,6 +2662,11 @@ GO
         , ISNULL([Brand.v].description, '') [Brand.value], d.[Brand] [Brand.id], [Brand.v].type [Brand.type]
         , ISNULL([Unit.v].description, '') [Unit.value], d.[Unit] [Unit.id], [Unit.v].type [Unit.type]
       
+        , ISNULL(l5.id, d.id) [ProductReport.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ProductReport.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ProductReport.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ProductReport.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ProductReport.Level1.id]
         , ISNULL(l5.description, d.description) [ProductReport.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ProductReport.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ProductReport.Level3]
@@ -2500,13 +2707,19 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[Order] [Order]
+        , d.[Presentation] [Presentation]
         , ISNULL([RetailNetwork.v].description, '') [RetailNetwork.value], d.[RetailNetwork] [RetailNetwork.id], [RetailNetwork.v].type [RetailNetwork.type]
+        , d.[isDefault] [isDefault]
         , d.[isDesktop] [isDesktop]
         , d.[isWeb] [isWeb]
         , d.[isMobile] [isMobile]
-        , d.[Presentation] [Presentation]
-        , d.[LocalURL] [LocalURL]
+        , d.[Slug] [Slug]
       
+        , ISNULL(l5.id, d.id) [ProductCategory.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ProductCategory.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ProductCategory.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ProductCategory.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ProductCategory.Level1.id]
         , ISNULL(l5.description, d.description) [ProductCategory.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ProductCategory.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ProductCategory.Level3]
@@ -2547,6 +2760,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[ProductType] [ProductType]
       
+        , ISNULL(l5.id, d.id) [ProductKind.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ProductKind.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ProductKind.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ProductKind.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ProductKind.Level1.id]
         , ISNULL(l5.description, d.description) [ProductKind.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ProductKind.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ProductKind.Level3]
@@ -2585,6 +2803,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [PromotionChannel.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [PromotionChannel.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [PromotionChannel.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [PromotionChannel.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [PromotionChannel.Level1.id]
         , ISNULL(l5.description, d.description) [PromotionChannel.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PromotionChannel.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [PromotionChannel.Level3]
@@ -2622,7 +2845,15 @@ GO
         , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
+        , d.[WriteOff] [WriteOff]
+        , ISNULL([Expense.v].description, '') [Expense.value], d.[Expense] [Expense.id], [Expense.v].type [Expense.type]
+        , ISNULL([ExpenseAnalynic.v].description, '') [ExpenseAnalynic.value], d.[ExpenseAnalynic] [ExpenseAnalynic.id], [ExpenseAnalynic.v].type [ExpenseAnalynic.type]
       
+        , ISNULL(l5.id, d.id) [ReasonTypes.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ReasonTypes.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ReasonTypes.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ReasonTypes.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ReasonTypes.Level1.id]
         , ISNULL(l5.description, d.description) [ReasonTypes.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ReasonTypes.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ReasonTypes.Level3]
@@ -2639,6 +2870,8 @@ GO
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
+        LEFT JOIN dbo.[Documents] [Expense.v] ON [Expense.v].id = d.[Expense]
+        LEFT JOIN dbo.[Catalog.Expense.Analytics.v] [ExpenseAnalynic.v] WITH (NOEXPAND) ON [ExpenseAnalynic.v].id = d.[ExpenseAnalynic]
     ;
 GO
 GRANT SELECT ON dbo.[Catalog.ReasonTypes] TO jetti;
@@ -2662,8 +2895,14 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[kind] [kind]
         , ISNULL([ResponsiblePerson.v].description, '') [ResponsiblePerson.value], d.[ResponsiblePerson] [ResponsiblePerson.id], [ResponsiblePerson.v].type [ResponsiblePerson.type]
+        , ISNULL([ResponsiblePersonFinance.v].description, '') [ResponsiblePersonFinance.value], d.[ResponsiblePersonFinance] [ResponsiblePersonFinance.id], [ResponsiblePersonFinance.v].type [ResponsiblePersonFinance.type]
         , ISNULL([Currency.v].description, '') [Currency.value], d.[Currency] [Currency.id], [Currency.v].type [Currency.type]
       
+        , ISNULL(l5.id, d.id) [ResponsibilityCenter.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ResponsibilityCenter.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ResponsibilityCenter.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ResponsibilityCenter.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ResponsibilityCenter.Level1.id]
         , ISNULL(l5.description, d.description) [ResponsibilityCenter.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ResponsibilityCenter.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ResponsibilityCenter.Level3]
@@ -2681,6 +2920,7 @@ GO
         LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
         LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
         LEFT JOIN dbo.[Catalog.Person.v] [ResponsiblePerson.v] WITH (NOEXPAND) ON [ResponsiblePerson.v].id = d.[ResponsiblePerson]
+        LEFT JOIN dbo.[Catalog.Person.v] [ResponsiblePersonFinance.v] WITH (NOEXPAND) ON [ResponsiblePersonFinance.v].id = d.[ResponsiblePersonFinance]
         LEFT JOIN dbo.[Catalog.Currency.v] [Currency.v] WITH (NOEXPAND) ON [Currency.v].id = d.[Currency]
     ;
 GO
@@ -2714,6 +2954,11 @@ GO
         , d.[Address] [Address]
         , d.[Email] [Email]
       
+        , ISNULL(l5.id, d.id) [RetailClient.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [RetailClient.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [RetailClient.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [RetailClient.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [RetailClient.Level1.id]
         , ISNULL(l5.description, d.description) [RetailClient.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [RetailClient.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [RetailClient.Level3]
@@ -2752,6 +2997,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [Role.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Role.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Role.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Role.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Role.Level1.id]
         , ISNULL(l5.description, d.description) [Role.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Role.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Role.Level3]
@@ -2792,6 +3042,11 @@ GO
         , d.[SalaryKind] [SalaryKind]
         , ISNULL([Unit.v].description, '') [Unit.value], d.[Unit] [Unit.id], [Unit.v].type [Unit.type]
       
+        , ISNULL(l5.id, d.id) [SalaryAnalytics.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [SalaryAnalytics.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [SalaryAnalytics.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [SalaryAnalytics.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [SalaryAnalytics.Level1.id]
         , ISNULL(l5.description, d.description) [SalaryAnalytics.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [SalaryAnalytics.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [SalaryAnalytics.Level3]
@@ -2837,6 +3092,11 @@ GO
         , d.[BankBranchOffice] [BankBranchOffice]
         , d.[BankAccount] [BankAccount]
       
+        , ISNULL(l5.id, d.id) [SalaryProject.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [SalaryProject.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [SalaryProject.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [SalaryProject.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [SalaryProject.Level1.id]
         , ISNULL(l5.description, d.description) [SalaryProject.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [SalaryProject.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [SalaryProject.Level3]
@@ -2878,6 +3138,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
       
+        , ISNULL(l5.id, d.id) [Scenario.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Scenario.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Scenario.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Scenario.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Scenario.Level1.id]
         , ISNULL(l5.description, d.description) [Scenario.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Scenario.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Scenario.Level3]
@@ -2925,6 +3190,11 @@ GO
         , ISNULL([ResponsiblePerson.v].description, '') [ResponsiblePerson.value], d.[ResponsiblePerson] [ResponsiblePerson.id], [ResponsiblePerson.v].type [ResponsiblePerson.type]
         , ISNULL([RetailNetwork.v].description, '') [RetailNetwork.value], d.[RetailNetwork] [RetailNetwork.id], [RetailNetwork.v].type [RetailNetwork.type]
       
+        , ISNULL(l5.id, d.id) [Specification.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Specification.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Specification.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Specification.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Specification.Level1.id]
         , ISNULL(l5.description, d.description) [Specification.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Specification.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Specification.Level3]
@@ -2975,6 +3245,11 @@ GO
         , d.[Qty] [Qty]
         , d.[Cost] [Cost]
       
+        , ISNULL(l5.id, d.id) [StaffingTable.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [StaffingTable.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [StaffingTable.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [StaffingTable.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [StaffingTable.Level1.id]
         , ISNULL(l5.description, d.description) [StaffingTable.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [StaffingTable.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [StaffingTable.Level3]
@@ -3018,6 +3293,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
       
+        , ISNULL(l5.id, d.id) [Storehouse.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Storehouse.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Storehouse.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Storehouse.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Storehouse.Level1.id]
         , ISNULL(l5.description, d.description) [Storehouse.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Storehouse.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Storehouse.Level3]
@@ -3058,6 +3338,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[icon] [icon]
       
+        , ISNULL(l5.id, d.id) [SubSystem.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [SubSystem.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [SubSystem.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [SubSystem.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [SubSystem.Level1.id]
         , ISNULL(l5.description, d.description) [SubSystem.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [SubSystem.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [SubSystem.Level3]
@@ -3105,6 +3390,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[FullDescription] [FullDescription]
       
+        , ISNULL(l5.id, d.id) [TaxAssignmentCode.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [TaxAssignmentCode.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [TaxAssignmentCode.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [TaxAssignmentCode.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [TaxAssignmentCode.Level1.id]
         , ISNULL(l5.description, d.description) [TaxAssignmentCode.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [TaxAssignmentCode.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [TaxAssignmentCode.Level3]
@@ -3143,6 +3433,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [TaxBasisPayment.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [TaxBasisPayment.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [TaxBasisPayment.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [TaxBasisPayment.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [TaxBasisPayment.Level1.id]
         , ISNULL(l5.description, d.description) [TaxBasisPayment.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [TaxBasisPayment.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [TaxBasisPayment.Level3]
@@ -3185,6 +3480,11 @@ GO
         , d.[Code2] [Code2]
         , d.[Code3] [Code3]
       
+        , ISNULL(l5.id, d.id) [TaxOffice.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [TaxOffice.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [TaxOffice.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [TaxOffice.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [TaxOffice.Level1.id]
         , ISNULL(l5.description, d.description) [TaxOffice.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [TaxOffice.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [TaxOffice.Level3]
@@ -3224,6 +3524,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[FullDescription] [FullDescription]
       
+        , ISNULL(l5.id, d.id) [TaxPayerStatus.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [TaxPayerStatus.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [TaxPayerStatus.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [TaxPayerStatus.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [TaxPayerStatus.Level1.id]
         , ISNULL(l5.description, d.description) [TaxPayerStatus.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [TaxPayerStatus.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [TaxPayerStatus.Level3]
@@ -3264,6 +3569,11 @@ GO
         , d.[FullDescription] [FullDescription]
         , ISNULL([BalanceAnalytics.v].description, '') [BalanceAnalytics.value], d.[BalanceAnalytics] [BalanceAnalytics.id], [BalanceAnalytics.v].type [BalanceAnalytics.type]
       
+        , ISNULL(l5.id, d.id) [TaxPaymentCode.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [TaxPaymentCode.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [TaxPaymentCode.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [TaxPaymentCode.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [TaxPaymentCode.Level1.id]
         , ISNULL(l5.description, d.description) [TaxPaymentCode.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [TaxPaymentCode.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [TaxPaymentCode.Level3]
@@ -3303,6 +3613,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [TaxPaymentPeriod.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [TaxPaymentPeriod.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [TaxPaymentPeriod.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [TaxPaymentPeriod.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [TaxPaymentPeriod.Level1.id]
         , ISNULL(l5.description, d.description) [TaxPaymentPeriod.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [TaxPaymentPeriod.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [TaxPaymentPeriod.Level3]
@@ -3342,6 +3657,11 @@ GO
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
         , d.[Rate] [Rate]
       
+        , ISNULL(l5.id, d.id) [TaxRate.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [TaxRate.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [TaxRate.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [TaxRate.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [TaxRate.Level1.id]
         , ISNULL(l5.description, d.description) [TaxRate.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [TaxRate.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [TaxRate.Level3]
@@ -3383,6 +3703,11 @@ GO
         , d.[Rate] [Rate]
         , d.[kind] [kind]
       
+        , ISNULL(l5.id, d.id) [Unit.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Unit.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Unit.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Unit.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Unit.Level1.id]
         , ISNULL(l5.description, d.description) [Unit.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Unit.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Unit.Level3]
@@ -3426,6 +3751,11 @@ GO
         , ISNULL([Person.v].description, '') [Person.value], d.[Person] [Person.id], [Person.v].type [Person.type]
         , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
       
+        , ISNULL(l5.id, d.id) [User.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [User.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [User.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [User.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [User.Level1.id]
         , ISNULL(l5.description, d.description) [User.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [User.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [User.Level3]
@@ -3466,6 +3796,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [UsersGroup.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [UsersGroup.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [UsersGroup.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [UsersGroup.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [UsersGroup.Level1.id]
         , ISNULL(l5.description, d.description) [UsersGroup.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [UsersGroup.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [UsersGroup.Level3]
@@ -3548,6 +3883,11 @@ GO
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
         , ISNULL([ResponsiblePerson.v].description, '') [ResponsiblePerson.value], d.[ResponsiblePerson] [ResponsiblePerson.id], [ResponsiblePerson.v].type [ResponsiblePerson.type]
       
+        , ISNULL(l5.id, d.id) [CashRequest.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [CashRequest.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [CashRequest.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [CashRequest.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [CashRequest.Level1.id]
         , ISNULL(l5.description, d.description) [CashRequest.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashRequest.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [CashRequest.Level3]
@@ -3618,9 +3958,15 @@ GO
         , ISNULL([BusinessDirection.v].description, '') [BusinessDirection.value], d.[BusinessDirection] [BusinessDirection.id], [BusinessDirection.v].type [BusinessDirection.type]
         , d.[Amount] [Amount]
         , ISNULL([сurrency.v].description, '') [сurrency.value], d.[сurrency] [сurrency.id], [сurrency.v].type [сurrency.type]
+        , ISNULL([Department.v].description, '') [Department.value], d.[Department] [Department.id], [Department.v].type [Department.type]
         , d.[BankUploadDate] [BankUploadDate]
         , d.[DocumentsCreationDate] [DocumentsCreationDate]
       
+        , ISNULL(l5.id, d.id) [CashRequestRegistry.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [CashRequestRegistry.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [CashRequestRegistry.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [CashRequestRegistry.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [CashRequestRegistry.Level1.id]
         , ISNULL(l5.description, d.description) [CashRequestRegistry.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [CashRequestRegistry.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [CashRequestRegistry.Level3]
@@ -3640,6 +3986,7 @@ GO
         LEFT JOIN dbo.[Catalog.CashFlow.v] [CashFlow.v] WITH (NOEXPAND) ON [CashFlow.v].id = d.[CashFlow]
         LEFT JOIN dbo.[Catalog.BusinessDirection.v] [BusinessDirection.v] WITH (NOEXPAND) ON [BusinessDirection.v].id = d.[BusinessDirection]
         LEFT JOIN dbo.[Catalog.Currency.v] [сurrency.v] WITH (NOEXPAND) ON [сurrency.v].id = d.[сurrency]
+        LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
     ;
 GO
 GRANT SELECT ON dbo.[Document.CashRequestRegistry] TO jetti;
@@ -3662,6 +4009,11 @@ GO
         , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
         , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
       
+        , ISNULL(l5.id, d.id) [ExchangeRates.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [ExchangeRates.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [ExchangeRates.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [ExchangeRates.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [ExchangeRates.Level1.id]
         , ISNULL(l5.description, d.description) [ExchangeRates.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [ExchangeRates.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [ExchangeRates.Level3]
@@ -3709,6 +4061,11 @@ GO
         , d.[Tax] [Tax]
         , ISNULL([currency.v].description, '') [currency.value], d.[currency] [currency.id], [currency.v].type [currency.type]
       
+        , ISNULL(l5.id, d.id) [Invoice.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Invoice.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Invoice.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Invoice.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Invoice.Level1.id]
         , ISNULL(l5.description, d.description) [Invoice.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Invoice.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Invoice.Level3]
@@ -3759,6 +4116,11 @@ GO
         , ISNULL([f2.v].description, '') [f2.value], d.[f2] [f2.id], [f2.v].type [f2.type]
         , ISNULL([f3.v].description, '') [f3.value], d.[f3] [f3.id], [f3.v].type [f3.type]
       
+        , ISNULL(l5.id, d.id) [Operation.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [Operation.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [Operation.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [Operation.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [Operation.Level1.id]
         , ISNULL(l5.description, d.description) [Operation.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Operation.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Operation.Level3]
@@ -3805,6 +4167,11 @@ GO
         , ISNULL([PriceType.v].description, '') [PriceType.value], d.[PriceType] [PriceType.id], [PriceType.v].type [PriceType.type]
         , d.[TaxInclude] [TaxInclude]
       
+        , ISNULL(l5.id, d.id) [PriceList.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [PriceList.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [PriceList.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [PriceList.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [PriceList.Level1.id]
         , ISNULL(l5.description, d.description) [PriceList.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [PriceList.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [PriceList.Level3]
@@ -3832,48 +4199,6 @@ GO
 
       
       
------------------------------- BEGIN Document.Settings ------------------------------
-
-      
-      CREATE OR ALTER VIEW dbo.[Document.Settings] AS
-        
-      SELECT
-        d.id, d.type, d.date, d.code, d.description "Settings", d.posted, d.deleted, d.isfolder, d.timestamp, d.version
-        , ISNULL("parent".description, '') "parent.value", d."parent" "parent.id", "parent".type "parent.type"
-        , ISNULL("company".description, '') "company.value", d."company" "company.id", "company".type "company.type"
-        , ISNULL("user".description, '') "user.value", d."user" "user.id", "user".type "user.type"
-        , ISNULL([workflow.v].description, '') [workflow.value], d.[workflow] [workflow.id], [workflow.v].type [workflow.type]
-        , ISNULL([balanceCurrency.v].description, '') [balanceCurrency.value], d.[balanceCurrency] [balanceCurrency.id], [balanceCurrency.v].type [balanceCurrency.type]
-        , ISNULL([accountingCurrency.v].description, '') [accountingCurrency.value], d.[accountingCurrency] [accountingCurrency.id], [accountingCurrency.v].type [accountingCurrency.type]
-      
-        , ISNULL(l5.description, d.description) [Settings.Level5]
-        , ISNULL(l4.description, ISNULL(l5.description, d.description)) [Settings.Level4]
-        , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [Settings.Level3]
-        , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [Settings.Level2]
-        , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [Settings.Level1]
-      FROM [Document.Settings.v] d WITH (NOEXPAND)
-        LEFT JOIN [Document.Settings.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
-        LEFT JOIN [Document.Settings.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
-        LEFT JOIN [Document.Settings.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
-        LEFT JOIN [Document.Settings.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
-        LEFT JOIN [Document.Settings.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
-      
-        LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
-        LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
-        LEFT JOIN dbo.[Catalog.Company.v] [company] WITH (NOEXPAND) ON [company].id = d.company
-        LEFT JOIN dbo.[Document.WorkFlow.v] [workflow.v] WITH (NOEXPAND) ON [workflow.v].id = d.[workflow]
-        LEFT JOIN dbo.[Catalog.Currency.v] [balanceCurrency.v] WITH (NOEXPAND) ON [balanceCurrency.v].id = d.[balanceCurrency]
-        LEFT JOIN dbo.[Catalog.Currency.v] [accountingCurrency.v] WITH (NOEXPAND) ON [accountingCurrency.v].id = d.[accountingCurrency]
-    ;
-GO
-GRANT SELECT ON dbo.[Document.Settings] TO jetti;
-GO
-
-      
------------------------------- END Document.Settings ------------------------------
-
-      
-      
 ------------------------------ BEGIN Document.UserSettings ------------------------------
 
       
@@ -3893,6 +4218,11 @@ GO
         , d.[BANK] [BANK]
         , d.[GROUP] [GROUP]
       
+        , ISNULL(l5.id, d.id) [UserSettings.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [UserSettings.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [UserSettings.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [UserSettings.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [UserSettings.Level1.id]
         , ISNULL(l5.description, d.description) [UserSettings.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [UserSettings.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [UserSettings.Level3]
@@ -3934,6 +4264,11 @@ GO
         , ISNULL([Document.v].description, '') [Document.value], d.[Document] [Document.id], [Document.v].type [Document.type]
         , d.[Status] [Status]
       
+        , ISNULL(l5.id, d.id) [WorkFlow.Level5.id]
+        , ISNULL(l4.id, ISNULL(l5.id, d.id)) [WorkFlow.Level4.id]
+        , ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))) [WorkFlow.Level3.id]
+        , ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id)))) [WorkFlow.Level2.id]
+        , ISNULL(l1.id, ISNULL(l2.id, ISNULL(l3.id, ISNULL(l4.id, ISNULL(l5.id, d.id))))) [WorkFlow.Level1.id]
         , ISNULL(l5.description, d.description) [WorkFlow.Level5]
         , ISNULL(l4.description, ISNULL(l5.description, d.description)) [WorkFlow.Level4]
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [WorkFlow.Level3]

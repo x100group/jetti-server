@@ -16,9 +16,9 @@ export default async function (job: Queue.Job) {
       WHERE (1 = 1) AND
         d.company = @p1
         ${params.StartDate ? ' AND date between @p2 AND @p3 ' : ''}
-        ${params.Operation ? ` AND JSON_VALUE(doc, '$.Operation') = @p4 ` : ``}
+        ${params.Operation ? ` AND [operation] = @p4 ` : ``}
         ${params.rePost ? ' AND posted = 1' : ' AND posted = 0 '} AND
-        d.deleted = 0 and d.type LIKE 'Document.%' AND
+        d.deleted = 0 and d.type = 'Document.Operation' AND
         (d.[user] <> 'E050B6D0-FAED-11E9-B75B-A35013C043AE' OR d.[user] IS NULL)
       ORDER BY d.date;`;
     const docs = await sdbq.manyOrNone<{ date: Date, description: string, id: Ref, companyName: string }>(

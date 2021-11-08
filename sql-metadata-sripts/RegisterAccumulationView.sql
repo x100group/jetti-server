@@ -32,6 +32,15 @@
     
 ------------------------------ END Register.Accumulation.AccountablePersons ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.PaymentBatch ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.PaymentBatch]
@@ -66,6 +75,15 @@
     
 ------------------------------ END Register.Accumulation.PaymentBatch ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Investment.Analytics ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Investment.Analytics]
@@ -106,6 +124,15 @@
     
 ------------------------------ END Register.Accumulation.Investment.Analytics ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.OrderPayment ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.OrderPayment]
@@ -140,6 +167,64 @@
     
 ------------------------------ END Register.Accumulation.OrderPayment ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
+------------------------------ BEGIN Register.Accumulation.OrderProduct ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Accumulation.OrderProduct]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, OrderType, MovementType, RetailNetwork, Supplier, Customer, SenderDepartment, SenderStorehouse, RecipientDepartment, RecipientStorehouse, currency, Product, OrderBatch, OrderRow
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [OrderType] UNIQUEIDENTIFIER N'$.OrderType'
+        , [MovementType] UNIQUEIDENTIFIER N'$.MovementType'
+        , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
+        , [Supplier] UNIQUEIDENTIFIER N'$.Supplier'
+        , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [SenderDepartment] UNIQUEIDENTIFIER N'$.SenderDepartment'
+        , [SenderStorehouse] UNIQUEIDENTIFIER N'$.SenderStorehouse'
+        , [RecipientDepartment] UNIQUEIDENTIFIER N'$.RecipientDepartment'
+        , [RecipientStorehouse] UNIQUEIDENTIFIER N'$.RecipientStorehouse'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Product] UNIQUEIDENTIFIER N'$.Product'
+        , [OrderBatch] UNIQUEIDENTIFIER N'$.OrderBatch'
+        , [OrderRow] NVARCHAR(250) N'$.OrderRow'
+        , [Qty] MONEY N'$.Qty'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.OrderProduct';
+    GO
+    GRANT SELECT,DELETE ON [Register.Accumulation.OrderProduct] TO JETTI;
+    GO
+    
+------------------------------ END Register.Accumulation.OrderProduct ------------------------------
+
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.AP ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.AP]
@@ -174,6 +259,15 @@
     
 ------------------------------ END Register.Accumulation.AP ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.AR ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.AR]
@@ -208,6 +302,15 @@
     
 ------------------------------ END Register.Accumulation.AR ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Bank ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Bank]
@@ -237,6 +340,15 @@
     
 ------------------------------ END Register.Accumulation.Bank ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Balance ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Balance]
@@ -262,6 +374,15 @@
     
 ------------------------------ END Register.Accumulation.Balance ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Balance.RC ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Balance.RC]
@@ -292,13 +413,22 @@
     
 ------------------------------ END Register.Accumulation.Balance.RC ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Balance.Report ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Balance.Report]
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, Balance, Analytics
+        d.exchangeRate, currency, Department, Balance, Analytics, Analytics2, Analytics3, Analytics4, Analytics5
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out], Info
@@ -310,6 +440,10 @@
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [Balance] UNIQUEIDENTIFIER N'$.Balance'
         , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
+        , [Analytics3] UNIQUEIDENTIFIER N'$.Analytics3'
+        , [Analytics4] UNIQUEIDENTIFIER N'$.Analytics4'
+        , [Analytics5] UNIQUEIDENTIFIER N'$.Analytics5'
         , [Amount] MONEY N'$.Amount'
         , [AmountInBalance] MONEY N'$.AmountInBalance'
         , [AmountInAccounting] MONEY N'$.AmountInAccounting'
@@ -322,6 +456,15 @@
     
 ------------------------------ END Register.Accumulation.Balance.Report ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Cash ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Cash]
@@ -351,6 +494,15 @@
     
 ------------------------------ END Register.Accumulation.Cash ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Cash.Transit ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Cash.Transit]
@@ -381,6 +533,15 @@
     
 ------------------------------ END Register.Accumulation.Cash.Transit ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.EmployeeTimekeeping ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.EmployeeTimekeeping]
@@ -410,13 +571,22 @@
     
 ------------------------------ END Register.Accumulation.EmployeeTimekeeping ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Inventory ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Inventory]
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, OperationType, Expense, ExpenseAnalytics, Income, IncomeAnalytics, BalanceIn, BalanceInAnalytics, BalanceOut, BalanceOutAnalytics, Storehouse, SKU, batch, Department
+        d.exchangeRate, OperationType, Expense, ExpenseAnalytics, ExpenseAnalytics2, Income, IncomeAnalytics, IncomeAnalytics2, BalanceIn, BalanceInAnalytics, BalanceOut, BalanceOutAnalytics, Storehouse, SKU, batch, Department
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
         FROM [dbo].Accumulation r
@@ -426,8 +596,10 @@
         , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
         , [Expense] UNIQUEIDENTIFIER N'$.Expense'
         , [ExpenseAnalytics] UNIQUEIDENTIFIER N'$.ExpenseAnalytics'
+        , [ExpenseAnalytics2] UNIQUEIDENTIFIER N'$.ExpenseAnalytics2'
         , [Income] UNIQUEIDENTIFIER N'$.Income'
         , [IncomeAnalytics] UNIQUEIDENTIFIER N'$.IncomeAnalytics'
+        , [IncomeAnalytics2] UNIQUEIDENTIFIER N'$.IncomeAnalytics2'
         , [BalanceIn] UNIQUEIDENTIFIER N'$.BalanceIn'
         , [BalanceInAnalytics] UNIQUEIDENTIFIER N'$.BalanceInAnalytics'
         , [BalanceOut] UNIQUEIDENTIFIER N'$.BalanceOut'
@@ -446,6 +618,15 @@
     
 ------------------------------ END Register.Accumulation.Inventory ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Loan ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Loan]
@@ -480,18 +661,28 @@
     
 ------------------------------ END Register.Accumulation.Loan ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.PL ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.PL]
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Department, PL, Analytics, Analytics2
+        d.exchangeRate, RetailNetwork, Department, PL, Analytics, Analytics2
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out], Info
         FROM [dbo].Accumulation r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [PL] UNIQUEIDENTIFIER N'$.PL'
         , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
@@ -506,6 +697,15 @@
     
 ------------------------------ END Register.Accumulation.PL ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.PL.RC ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.PL.RC]
@@ -536,13 +736,22 @@
     
 ------------------------------ END Register.Accumulation.PL.RC ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Sales ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Sales]
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, Customer, Product, Analytic, Manager, DeliveryType, OrderSource, RetailClient, AO, Storehouse, OpenTime, PrintTime, DeliverTime, BillTime, CloseTime
+        d.exchangeRate, currency, RetailNetwork, Department, Customer, Product, Analytic, Manager, DeliveryType, OrderSource, RetailClient, AO, Storehouse, OpenTime, PrintTime, DeliverTime, BillTime, CloseTime
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -556,6 +765,7 @@
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [Customer] UNIQUEIDENTIFIER N'$.Customer'
         , [Product] UNIQUEIDENTIFIER N'$.Product'
@@ -587,6 +797,15 @@
     
 ------------------------------ END Register.Accumulation.Sales ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Salary ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Salary]
@@ -623,6 +842,15 @@
     
 ------------------------------ END Register.Accumulation.Salary ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Depreciation ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Depreciation]
@@ -653,6 +881,15 @@
     
 ------------------------------ END Register.Accumulation.Depreciation ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.CashToPay ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.CashToPay]
@@ -688,6 +925,59 @@
     
 ------------------------------ END Register.Accumulation.CashToPay ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
+------------------------------ BEGIN Register.Accumulation.CharityAnalytic ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Accumulation.CharityAnalytic]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, Analytics, MovementType, Creator, CreatorContract, Recipient, RecipientContract, Batch, Source, currency
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out], Info
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [MovementType] UNIQUEIDENTIFIER N'$.MovementType'
+        , [Creator] UNIQUEIDENTIFIER N'$.Creator'
+        , [CreatorContract] UNIQUEIDENTIFIER N'$.CreatorContract'
+        , [Recipient] UNIQUEIDENTIFIER N'$.Recipient'
+        , [RecipientContract] UNIQUEIDENTIFIER N'$.RecipientContract'
+        , [Batch] UNIQUEIDENTIFIER N'$.Batch'
+        , [Source] UNIQUEIDENTIFIER N'$.Source'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        , [Info] NVARCHAR(250) N'$.Info'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.CharityAnalytic';
+    GO
+    GRANT SELECT,DELETE ON [Register.Accumulation.CharityAnalytic] TO JETTI;
+    GO
+    
+------------------------------ END Register.Accumulation.CharityAnalytic ------------------------------
+
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.BudgetItemTurnover ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.BudgetItemTurnover]
@@ -726,6 +1016,15 @@
     
 ------------------------------ END Register.Accumulation.BudgetItemTurnover ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Intercompany ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Intercompany]
@@ -758,6 +1057,15 @@
     
 ------------------------------ END Register.Accumulation.Intercompany ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.Acquiring ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.Acquiring]
@@ -796,21 +1104,77 @@
     
 ------------------------------ END Register.Accumulation.Acquiring ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
+------------------------------ BEGIN Register.Accumulation.PromotionPoints ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Accumulation.PromotionPoints]
+    AS
+      SELECT
+        r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, RetailNetwork, Department, OrderId, OwnerInner, OwnerExternal, PromotionChannel, currency, batch, ExpiredAt
+      , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM [dbo].Accumulation r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [OrderId] NVARCHAR(250) N'$.OrderId'
+        , [OwnerInner] UNIQUEIDENTIFIER N'$.OwnerInner'
+        , [OwnerExternal] NVARCHAR(250) N'$.OwnerExternal'
+        , [PromotionChannel] UNIQUEIDENTIFIER N'$.PromotionChannel'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [batch] UNIQUEIDENTIFIER N'$.batch'
+        , [ExpiredAt] DATE N'$.ExpiredAt'
+        , [Qty] MONEY N'$.Qty'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.PromotionPoints';
+    GO
+    GRANT SELECT,DELETE ON [Register.Accumulation.PromotionPoints] TO JETTI;
+    GO
+    
+------------------------------ END Register.Accumulation.PromotionPoints ------------------------------
+
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
 ------------------------------ BEGIN Register.Accumulation.StaffingTable ------------------------------
 
     CREATE OR ALTER VIEW [Register.Accumulation.StaffingTable]
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Department, DepartmentCompany, StaffingTablePosition, Employee, Person
+        d.exchangeRate, Department, DepartmentCompany, StaffingType, StaffingTablePosition, Employee, Person
       , d.[SalaryRate] * IIF(r.kind = 1, 1, -1) [SalaryRate], d.[SalaryRate] * IIF(r.kind = 1, 1, null) [SalaryRate.In], d.[SalaryRate] * IIF(r.kind = 1, null, 1) [SalaryRate.Out], SalaryAnalytic, currency
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountPrepay] * IIF(r.kind = 1, 1, -1) [AmountPrepay], d.[AmountPrepay] * IIF(r.kind = 1, 1, null) [AmountPrepay.In], d.[AmountPrepay] * IIF(r.kind = 1, null, 1) [AmountPrepay.Out]
         FROM [dbo].Accumulation r
         CROSS APPLY OPENJSON (data, N'$')
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [DepartmentCompany] UNIQUEIDENTIFIER N'$.DepartmentCompany'
+        , [StaffingType] NVARCHAR(250) N'$.StaffingType'
         , [StaffingTablePosition] UNIQUEIDENTIFIER N'$.StaffingTablePosition'
         , [Employee] UNIQUEIDENTIFIER N'$.Employee'
         , [Person] UNIQUEIDENTIFIER N'$.Person'
@@ -818,6 +1182,7 @@
         , [SalaryAnalytic] UNIQUEIDENTIFIER N'$.SalaryAnalytic'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [Amount] MONEY N'$.Amount'
+        , [AmountPrepay] MONEY N'$.AmountPrepay'
         ) AS d
         WHERE r.type = N'Register.Accumulation.StaffingTable';
     GO
@@ -826,4 +1191,13 @@
     
 ------------------------------ END Register.Accumulation.StaffingTable ------------------------------
 
+      ------------+++++++++++SPECIAL START++++++++++++--------------------
+
+      ALTER VIEW [dbo].[Register.Accumulation.Salary]
+      AS SELECT * FROM [dbo].[Register.Accumulation.Salary.v] WITH (NOEXPAND) GO;
+      ALTER VIEW [dbo].[Register.Accumulation.CashToPay]
+      AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.v] WITH (NOEXPAND) GO;
+
+      ------------+++++++++++SPECIAL END++++++++++++------------------
+      
     
