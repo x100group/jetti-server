@@ -13,8 +13,8 @@ export class RegisterAccumulationMoneyDocuments extends RegisterAccumulation {
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
-  @Props({ type: 'Catalog.MoneyDocument', required: true, dimension: true })
-  MoneyDocument: Ref = null;
+  @Props({ type: 'string', required: true, dimension: true })
+  MoneyDocumentId: Ref = null;
 
   @Props({ type: 'TypesCounterpartieOrPerson', required: true })
   Owner: Ref = null;
