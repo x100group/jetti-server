@@ -37,6 +37,12 @@ export class RegisterInfoCompanyResponsiblePersons extends RegisterInfo {
   @Props({ type: 'boolean', resource: true })
   isActive = false;
 
+  @Props({ type: 'boolean', resource: true })
+  GrantSales = false;
+
+  @Props({ type: 'boolean', resource: true })
+  GrantPL = false;
+
   constructor(init: Partial<RegisterInfoCompanyResponsiblePersons>) {
     super(init);
     Object.assign(this, init);

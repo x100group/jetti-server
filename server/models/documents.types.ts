@@ -44,6 +44,7 @@ export type CatalogTypes =
   'Catalog.ManufactureLocation' |
   'Catalog.Salary.Analytics' |
   'Catalog.Subcount' |
+  'Catalog.MoneyDocument' |
   'Catalog.Documents' |
   'Catalog.Catalogs' |
   'Catalog.Forms' |
