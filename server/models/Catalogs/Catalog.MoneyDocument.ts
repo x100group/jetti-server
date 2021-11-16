@@ -18,7 +18,7 @@ export class CatalogMoneyDocument extends DocumentBase {
   @Props({ type: 'Catalog.Currency', required: true, label: 'Валюта' })
   currency: Ref = null;
 
-  @Props({ type: 'TypesCounterpartieOrPerson', required: true, dimension: true, label: 'Владелец/Получатель' })
+  @Props({ type: 'Types.CounterpartieOrPerson', required: true, dimension: true, label: 'Владелец/Получатель' })
   Owner: Ref = null;
 
   @Props({ type: 'number', label: 'Цена' })
