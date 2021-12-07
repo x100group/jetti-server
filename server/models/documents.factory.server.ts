@@ -26,6 +26,7 @@ import { Ref, DocumentBase, IFlatDocument, DocumentOptions, RefValue, calculateD
 import { CatalogUserServer } from './Catalogs/Catalog.User.server';
 import { CatalogOperationTypeServer } from './Catalogs/Catalog.Operation.Type.server';
 import { CatalogUsersGroupServer } from './Catalogs/Catalog.UsersGroup.server';
+import { CatalogDepartmentServer } from './Catalogs/Catalog.Department.server';
 
 export interface IServerDocument {
 
@@ -53,6 +54,7 @@ export interface IServerDocument {
 export type DocumentBaseServer = DocumentBase & IServerDocument;
 
 export const RegisteredServerDocument: RegisteredDocumentType[] = [
+  { type: 'Catalog.Department', Class: CatalogDepartmentServer },
   { type: 'Catalog.Contract', Class: CatalogContractServer },
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
   { type: 'Catalog.Operation.Type', Class: CatalogOperationTypeServer },

@@ -19,6 +19,7 @@ import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
   dimensions: [
     { company: 'Catalog.Company' }
   ],
+  commands: [{ method: 'getTimeZone', icon: 'pi pi-plus', order: 1, label: 'Get time zone' }],
   module: `{const onOpen = async () => {this.readonly = this.readonly || !this.auth.isRoleAvailableDepartmentEditor()}; return {onOpen};}`,
 })
 export class CatalogDepartment extends DocumentBase {

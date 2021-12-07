@@ -31,6 +31,7 @@ import { createFormServer, FormBaseServer } from './models/Forms/form.factory.se
 import { Event } from './fuctions/Event';
 import { JETTI_POOL_META } from './sql.pool.meta';
 import * as xml2js from 'xml2js';
+import * as crypto from 'crypto';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 export interface FillDocBasedOnParams {
@@ -165,7 +166,8 @@ export interface JTL {
     isEqualObjects: (object1: Object, object2: Object) => boolean,
     decodeBase64StringAsUTF8: (string: string, encodingIn: string) => string,
     converStringEncoding: (string: string, encodingIn: string, encodingOut: string) => string,
-    xmlStringToJSON: (xml: string) => Promise<string>
+    xmlStringToJSON: (xml: string) => Promise<string>,
+    timeZoneByCoordinates: (longitude: string, latitude: string) => Promise<{ timeZone?: string, error?: string }>
   };
   queue: {
     insertQueue: (row: IQueueRow, taskPoolTx?: MSSQL) => Promise<IQueueRow>
@@ -264,7 +266,8 @@ export const lib: JTL = {
     isEqualObjects,
     decodeBase64StringAsUTF8,
     converStringEncoding,
-    xmlStringToJSON
+    xmlStringToJSON,
+    timeZoneByCoordinates
   },
   queue: {
     insertQueue,
@@ -845,6 +848,27 @@ async function xmlStringToJSON(xml: string): Promise<string> {
   return await xml2js.parseStringPromise(xml);
 }
 
+async function timeZoneByCoordinates(longitude: string, latitude: string): Promise<{ timeZone?: string, error?: string }> {
+  const url = `https://func-jetti-finance-dev-westeurope-001.azurewebsites.net/api/http-get-timezone?`;
+  const data = {
+    location: {
+      type: 'Point',
+      coordinates: [
+        `${longitude}`.replace(',', '.'),
+        `${latitude}`.replace(',', '.')
+      ]
+    }
+  };
+
+  const opts = { url: url, data };
+  const result = await lib.util.executePOSTRequest(opts);
+
+  if (result.status !== 200)
+    return { error: result.statusText || 'Server error' };
+  return { timeZone: result.data?.WindowsId || '' };
+
+}
+
 export function getAdminTX(): MSSQL {
   return new MSSQL(TASKS_POOL);
 }
@@ -980,17 +1004,21 @@ async function addAttachments(attachments: CatalogAttachment[], tx: MSSQL): Prom
       .filter(e => keys.includes(e) && attachment[e])
       .forEach(e => ob[e] = attachment[e]);
 
-    if (!ob.user) ob.user = '63C8AE00-5985-11EA-B2B2-7DD8BECCDACF'; // EXCHANGE SERVICE
+    ob.user = ob.user || '63C8AE00-5985-11EA-B2B2-7DD8BECCDACF'; // EXCHANGE SERVICE
 
     ob = await saveDoc(ob, tx);
+
     const resOb = {
       ...attachment,
       timestamp: ob.timestamp,
       date: ob.date,
       user: ob.user,
-      id: ob.id
+      id: ob.id,
+      Hash: crypto.createHash('sha1').update(attachment.Storage).digest('base64')
     };
-    if (!resOb['userDescription'] && resOb.user) resOb['userDescription'] = (await byId(resOb.user as string, tx))!.description;
+
+    if (!resOb['userDescription'] && resOb.user)
+      resOb['userDescription'] = (await byId(resOb.user as string, tx))!.description;
 
     result.push(resOb);
   }
