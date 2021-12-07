@@ -52,5 +52,8 @@ export class CatalogAttachment extends DocumentBase {
   @Props({ type: 'string', label: 'MIME-type' })
   MIMEType = '';
 
+  @Props({ type: 'string' })
+  Hash = '';
+
 }
 
