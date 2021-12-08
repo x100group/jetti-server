@@ -854,8 +854,8 @@ async function timeZoneByCoordinates(longitude: string, latitude: string): Promi
     location: {
       type: 'Point',
       coordinates: [
-        `${longitude}`.replace(',', '.'),
-        `${latitude}`.replace(',', '.')
+        `${latitude}`.replace(',', '.'),
+        `${longitude}`.replace(',', '.')
       ]
     }
   };
