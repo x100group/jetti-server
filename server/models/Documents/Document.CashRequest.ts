@@ -141,7 +141,7 @@ export class DocumentCashRequest extends DocumentBase {
   })
   PayRollKind = 'SALARYPROJECT';
 
-  @Props({ type: 'Catalog.Department', label: 'Подразделение' })
+  @Props({ type: 'Catalog.Department', label: 'Подразделение', required: true })
   Department: Ref = null;
 
   @Props({
