@@ -1,4 +1,3 @@
-import { AllDocTypes, CatalogTypes } from './../../documents.types';
 import { Props, Ref } from 'jetti-middle';
 import { JRegisterAccumulation, RegisterAccumulation } from 'jetti-middle';
 
@@ -8,7 +7,7 @@ import { JRegisterAccumulation, RegisterAccumulation } from 'jetti-middle';
 })
 export class RegisterAccumulationSales extends RegisterAccumulation {
 
-  @Props({ type: 'Catalog.Currency', required: true, dimension: true })
+  @Props({ type: 'Catalog.Currency', dimension: true })
   currency: Ref = null;
 
   @Props({ type: 'Catalog.RetailNetwork', dimension: true })
@@ -17,10 +16,13 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
   @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie', required: true, dimension: true })
+  @Props({ type: 'Catalog.Counterpartie', dimension: true })
   Customer: Ref = null;
 
-  @Props({ type: 'Catalog.Product', required: true, dimension: true })
+  @Props({ type: 'Catalog.Counterpartie', dimension: true })
+  Aggregator: Ref = null;
+
+  @Props({ type: 'Catalog.Product', dimension: true })
   Product: Ref = null;
 
   @Props({ type: 'Types.Catalog', dimension: true })
@@ -35,14 +37,23 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
   @Props({ type: 'string' })
   OrderSource = '';
 
+  @Props({ type: 'Catalog.OrderSource' })
+  ParentOrderSource: Ref = null;
+
   @Props({ type: 'Catalog.RetailClient' })
   RetailClient: Ref = null;
 
   @Props({ type: 'Types.Document' })
   AO: Ref = null;
 
-  @Props({ type: 'Catalog.Storehouse', required: true, dimension: true })
+  @Props({ type: 'Catalog.Storehouse', dimension: true })
   Storehouse: Ref = null;
+
+  @Props({ type: 'number' })
+  DeliverArea = 0;
+
+  @Props({ type: 'Catalog.Person' })
+  Courier: Ref = null;
 
   @Props({ type: 'datetime' })
   OpenTime = null;
