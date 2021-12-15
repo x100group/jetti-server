@@ -18,13 +18,13 @@ export class CatalogExpense extends DocumentBase {
   @Props({ type: 'Catalog.Account' })
   Account: Ref = null;
 
-  @Props({ type: 'Catalog.BudgetItem' })
+  @Props({ type: 'Catalog.BudgetItem', required: true })
   BudgetItem: Ref = null;
 
-  @Props({ type: 'enum' , value: ['FINRES', 'INVEST', 'COST', 'NOTASSIGN']})
+  @Props({ type: 'enum', value: ['FINRES', 'INVEST', 'COST', 'NOTASSIGN'] })
   Assign = 'FINRES';
 
-  @Props({ type: 'string'})
+  @Props({ type: 'string' })
   DescriptionENG = '';
 
 }
