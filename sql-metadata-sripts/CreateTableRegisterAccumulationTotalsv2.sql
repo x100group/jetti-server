@@ -889,6 +889,7 @@
         , [RetailNetwork]
         , [Department]
         , [Customer]
+        , [Aggregator]
         , [Product]
         , [Analytic]
         , [Manager]
@@ -923,6 +924,7 @@
         , [RetailNetwork]
         , [Department]
         , [Customer]
+        , [Aggregator]
         , [Product]
         , [Analytic]
         , [Manager]
@@ -935,6 +937,7 @@
         , [RetailNetwork]
         , [Department]
         , [Customer]
+        , [Aggregator]
         , [Product]
         , [Analytic]
         , [Manager]
@@ -1431,4 +1434,45 @@
       GRANT SELECT ON [dbo].[Register.Accumulation.StaffingTable.TO] TO jetti;
       GO
       RAISERROR('Register.Accumulation.StaffingTable end', 0 ,1) WITH NOWAIT;
+      GO
+
+      RAISERROR('Register.Accumulation.MoneyDocuments start', 0 ,1) WITH NOWAIT;
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.MoneyDocuments.TO.v] WITH SCHEMABINDING AS
+      SELECT
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
+        , [company]
+        , [currency]
+        , [MoneyDocument]
+        , [Sourse]
+        , SUM(ISNULL([Amount], 0)) [Amount]
+        , SUM(ISNULL([Amount.In], 0)) [Amount.In]
+        , SUM(ISNULL([Amount.Out], 0)) [Amount.Out]
+        , SUM(ISNULL([AmountInBalance], 0)) [AmountInBalance]
+        , SUM(ISNULL([AmountInBalance.In], 0)) [AmountInBalance.In]
+        , SUM(ISNULL([AmountInBalance.Out], 0)) [AmountInBalance.Out]
+        , SUM(ISNULL([AmountInAccounting], 0)) [AmountInAccounting]
+        , SUM(ISNULL([AmountInAccounting.In], 0)) [AmountInAccounting.In]
+        , SUM(ISNULL([AmountInAccounting.Out], 0)) [AmountInAccounting.Out]
+        , COUNT_BIG(*) AS COUNT
+      FROM [dbo].[Register.Accumulation.MoneyDocuments]
+      GROUP BY
+          DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
+        , [company]
+        , [currency]
+        , [MoneyDocument]
+        , [Sourse]
+      GO
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.MoneyDocuments.TO] ON [dbo].[Register.Accumulation.MoneyDocuments.TO.v] (
+          [date],
+          [company]
+        , [currency]
+        , [MoneyDocument]
+        , [Sourse]);
+      GO
+      CREATE OR ALTER VIEW [dbo].[Register.Accumulation.MoneyDocuments.TO] AS SELECT * FROM [dbo].[Register.Accumulation.MoneyDocuments.TO.v] WITH (NOEXPAND);
+      GO
+      GRANT SELECT ON [dbo].[Register.Accumulation.MoneyDocuments.TO] TO jetti;
+      GO
+      RAISERROR('Register.Accumulation.MoneyDocuments end', 0 ,1) WITH NOWAIT;
       GO

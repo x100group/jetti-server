@@ -181,6 +181,10 @@ GO
         , d.[TypeOfFranchise] [TypeOfFranchise]
         , d.[DeliveryType] [DeliveryType]
         , d.[OrderSource] [OrderSource]
+        , ISNULL([ParentOrderSource.v].description, '') [ParentOrderSource.value], d.[ParentOrderSource] [ParentOrderSource.id], [ParentOrderSource.v].type [ParentOrderSource.type]
+        , ISNULL([Aggregator.v].description, '') [Aggregator.value], d.[Aggregator] [Aggregator.id], [Aggregator.v].type [Aggregator.type]
+        , d.[DeliveryArea] [DeliveryArea]
+        , ISNULL([Courier.v].description, '') [Courier.value], d.[Courier] [Courier.id], [Courier.v].type [Courier.type]
         , d.[counterpartyId] [counterpartyId]
         , d.[orderId] [orderId]
       FROM [Operation.CHECK_JETTI_FRONT.v] d WITH (NOEXPAND)
@@ -196,6 +200,9 @@ GO
         LEFT JOIN dbo.[Catalog.Person.v] [Manager.v] WITH (NOEXPAND) ON [Manager.v].id = d.[Manager]
         LEFT JOIN dbo.[Catalog.Counterpartie.v] [Customer.v] WITH (NOEXPAND) ON [Customer.v].id = d.[Customer]
         LEFT JOIN dbo.[Catalog.Storehouse.v] [Storehouse.v] WITH (NOEXPAND) ON [Storehouse.v].id = d.[Storehouse]
+        LEFT JOIN dbo.[Catalog.OrderSource.v] [ParentOrderSource.v] WITH (NOEXPAND) ON [ParentOrderSource.v].id = d.[ParentOrderSource]
+        LEFT JOIN dbo.[Catalog.Counterpartie.v] [Aggregator.v] WITH (NOEXPAND) ON [Aggregator.v].id = d.[Aggregator]
+        LEFT JOIN dbo.[Catalog.Person.v] [Courier.v] WITH (NOEXPAND) ON [Courier.v].id = d.[Courier]
     ; 
 GO
 GRANT SELECT ON dbo.[Operation.CHECK_JETTI_FRONT] TO jetti;

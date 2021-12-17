@@ -421,6 +421,8 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) [Employee]
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."GrantSales"')) [GrantSales]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."GrantPL"')) [GrantPL]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.CompanyResponsiblePersons';
     GO
     GRANT SELECT,DELETE ON [Register.Info.CompanyResponsiblePersons] TO JETTI;
