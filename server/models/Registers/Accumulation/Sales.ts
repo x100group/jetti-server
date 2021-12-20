@@ -19,7 +19,7 @@ export class RegisterAccumulationSales extends RegisterAccumulation {
   @Props({ type: 'Catalog.Counterpartie', dimension: true })
   Customer: Ref = null;
 
-  @Props({ type: 'Catalog.Counterpartie', dimension: true })
+  @Props({ type: 'Catalog.Counterpartie' })
   Aggregator: Ref = null;
 
   @Props({ type: 'Catalog.Product', dimension: true })
