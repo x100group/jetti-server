@@ -1364,7 +1364,8 @@
       INSERT INTO [Register.Accumulation.Sales]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [currency], [RetailNetwork], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
+        d.exchangeRate, [currency], [RetailNetwork], [Department], [Customer], [Aggregator], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [ParentOrderSource], [RetailClient], [AO], [Storehouse]
+      , d.[DeliverArea] * IIF(r.kind = 1, 1, -1) [DeliverArea], d.[DeliverArea] * IIF(r.kind = 1, 1, null) [DeliverArea.In], d.[DeliverArea] * IIF(r.kind = 1, null, 1) [DeliverArea.Out], [Courier], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -1381,14 +1382,18 @@
         , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [Aggregator] UNIQUEIDENTIFIER N'$.Aggregator'
         , [Product] UNIQUEIDENTIFIER N'$.Product'
         , [Analytic] UNIQUEIDENTIFIER N'$.Analytic'
         , [Manager] UNIQUEIDENTIFIER N'$.Manager'
         , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
         , [OrderSource] NVARCHAR(250) N'$.OrderSource'
+        , [ParentOrderSource] UNIQUEIDENTIFIER N'$.ParentOrderSource'
         , [RetailClient] UNIQUEIDENTIFIER N'$.RetailClient'
         , [AO] UNIQUEIDENTIFIER N'$.AO'
         , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
+        , [DeliverArea] MONEY N'$.DeliverArea'
+        , [Courier] UNIQUEIDENTIFIER N'$.Courier'
         , [OpenTime] DATETIME N'$.OpenTime'
         , [PrintTime] DATETIME N'$.PrintTime'
         , [DeliverTime] DATETIME N'$.DeliverTime'
@@ -1411,7 +1416,8 @@
     DROP VIEW IF EXISTS [Register.Accumulation.Sales.v];
     SELECT
       r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, [currency], [RetailNetwork], [Department], [Customer], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [RetailClient], [AO], [Storehouse], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
+      d.exchangeRate, [currency], [RetailNetwork], [Department], [Customer], [Aggregator], [Product], [Analytic], [Manager], [DeliveryType], [OrderSource], [ParentOrderSource], [RetailClient], [AO], [Storehouse]
+      , d.[DeliverArea] * IIF(r.kind = 1, 1, -1) [DeliverArea], d.[DeliverArea] * IIF(r.kind = 1, 1, null) [DeliverArea.In], d.[DeliverArea] * IIF(r.kind = 1, null, 1) [DeliverArea.Out], [Courier], [OpenTime], [PrintTime], [DeliverTime], [BillTime], [CloseTime]
       , d.[CashShift] * IIF(r.kind = 1, 1, -1) [CashShift], d.[CashShift] * IIF(r.kind = 1, 1, null) [CashShift.In], d.[CashShift] * IIF(r.kind = 1, null, 1) [CashShift.Out]
       , d.[Cost] * IIF(r.kind = 1, 1, -1) [Cost], d.[Cost] * IIF(r.kind = 1, 1, null) [Cost.In], d.[Cost] * IIF(r.kind = 1, null, 1) [Cost.Out]
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out]
@@ -1429,14 +1435,18 @@
         , [RetailNetwork] UNIQUEIDENTIFIER N'$.RetailNetwork'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [Customer] UNIQUEIDENTIFIER N'$.Customer'
+        , [Aggregator] UNIQUEIDENTIFIER N'$.Aggregator'
         , [Product] UNIQUEIDENTIFIER N'$.Product'
         , [Analytic] UNIQUEIDENTIFIER N'$.Analytic'
         , [Manager] UNIQUEIDENTIFIER N'$.Manager'
         , [DeliveryType] NVARCHAR(250) N'$.DeliveryType'
         , [OrderSource] NVARCHAR(250) N'$.OrderSource'
+        , [ParentOrderSource] UNIQUEIDENTIFIER N'$.ParentOrderSource'
         , [RetailClient] UNIQUEIDENTIFIER N'$.RetailClient'
         , [AO] UNIQUEIDENTIFIER N'$.AO'
         , [Storehouse] UNIQUEIDENTIFIER N'$.Storehouse'
+        , [DeliverArea] MONEY N'$.DeliverArea'
+        , [Courier] UNIQUEIDENTIFIER N'$.Courier'
         , [OpenTime] DATETIME N'$.OpenTime'
         , [PrintTime] DATETIME N'$.PrintTime'
         , [DeliverTime] DATETIME N'$.DeliverTime'
@@ -2177,5 +2187,77 @@
     GO
     
 ------------------------------ END Register.Accumulation.StaffingTable ------------------------------
+
+------------------------------ BEGIN Register.Accumulation.MoneyDocuments ------------------------------
+
+    RAISERROR('Register.Accumulation.MoneyDocuments start', 0 ,1) WITH NOWAIT;
+    GO
+    CREATE OR ALTER TRIGGER [Register.Accumulation.MoneyDocuments.t] ON [Accumulation] AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+      DECLARE @COUNT_D BIGINT = (SELECT COUNT(*) FROM deleted WHERE type = N'Register.Accumulation.MoneyDocuments');
+      IF (@COUNT_D) > 1 DELETE FROM [Register.Accumulation.MoneyDocuments] WHERE id IN (SELECT id FROM deleted WHERE type = N'Register.Accumulation.MoneyDocuments');
+      IF (@COUNT_D) = 1 DELETE FROM [Register.Accumulation.MoneyDocuments] WHERE id = (SELECT id FROM deleted WHERE type = N'Register.Accumulation.MoneyDocuments');
+      IF (SELECT COUNT(*) FROM inserted WHERE type = N'Register.Accumulation.MoneyDocuments') = 0 RETURN;
+
+      INSERT INTO [Register.Accumulation.MoneyDocuments]
+      SELECT
+        r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
+        d.exchangeRate, [currency], [Department], [MoneyDocument], [OwnedBy], [Sourse], [ExpiredAt]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+        FROM inserted r
+        CROSS APPLY OPENJSON (data, N'$')
+        WITH (
+          exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [MoneyDocument] UNIQUEIDENTIFIER N'$.MoneyDocument'
+        , [OwnedBy] UNIQUEIDENTIFIER N'$.OwnedBy'
+        , [Sourse] UNIQUEIDENTIFIER N'$.Sourse'
+        , [ExpiredAt] DATE N'$.ExpiredAt'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+        ) AS d
+        WHERE r.type = N'Register.Accumulation.MoneyDocuments';
+    END
+    GO
+    DROP TABLE IF EXISTS [Register.Accumulation.MoneyDocuments];
+    DROP VIEW IF EXISTS [Register.Accumulation.MoneyDocuments];
+    DROP VIEW IF EXISTS [Register.Accumulation.MoneyDocuments.v];
+    SELECT
+      r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
+      d.exchangeRate, [currency], [Department], [MoneyDocument], [OwnedBy], [Sourse], [ExpiredAt]
+      , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
+      , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
+      , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
+    INTO [Register.Accumulation.MoneyDocuments]
+    FROM [Accumulation] r
+    CROSS APPLY OPENJSON (data, N'$')
+    WITH (
+      exchangeRate NUMERIC(15,10) N'$.exchangeRate'
+        , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [Department] UNIQUEIDENTIFIER N'$.Department'
+        , [MoneyDocument] UNIQUEIDENTIFIER N'$.MoneyDocument'
+        , [OwnedBy] UNIQUEIDENTIFIER N'$.OwnedBy'
+        , [Sourse] UNIQUEIDENTIFIER N'$.Sourse'
+        , [ExpiredAt] DATE N'$.ExpiredAt'
+        , [Amount] MONEY N'$.Amount'
+        , [AmountInBalance] MONEY N'$.AmountInBalance'
+        , [AmountInAccounting] MONEY N'$.AmountInAccounting'
+    ) AS d
+    WHERE r.type = N'Register.Accumulation.MoneyDocuments';
+    GO
+    GRANT SELECT,INSERT,DELETE ON [Register.Accumulation.MoneyDocuments] TO JETTI;
+    GO
+    ALTER TABLE [Register.Accumulation.MoneyDocuments] ADD CONSTRAINT [PK_Register.Accumulation.MoneyDocuments] PRIMARY KEY NONCLUSTERED ([id]);
+    CREATE CLUSTERED COLUMNSTORE INDEX [Register.Accumulation.MoneyDocuments] ON [Register.Accumulation.MoneyDocuments];
+    RAISERROR('Register.Accumulation.MoneyDocuments finish', 0 ,1) WITH NOWAIT;
+    GO
+    
+------------------------------ END Register.Accumulation.MoneyDocuments ------------------------------
 
     

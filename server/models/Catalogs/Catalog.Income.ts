@@ -15,8 +15,8 @@ export class CatalogIncome extends DocumentBase {
   @Props({ type: 'Catalog.Income', hiddenInList: true, order: -1, storageType: 'folders' })
   parent: Ref = null;
 
-  @Props({ type: 'Catalog.Account' })
-  Account: Ref = null;
+  /*   @Props({ type: 'Catalog.Account' })
+    Account: Ref = null; */
 
   @Props({ type: 'Catalog.BudgetItem', required: true })
   BudgetItem: Ref = null;
