@@ -849,7 +849,7 @@ async function xmlStringToJSON(xml: string): Promise<string> {
 }
 
 async function timeZoneByCoordinates(longitude: string, latitude: string): Promise<{ timeZone?: string, error?: string }> {
-  const url = `https://func-jetti-finance-dev-westeurope-001.azurewebsites.net/api/http-get-timezone?`;
+  const url = `https://jetti-front-fn.azurewebsites.net/api/http-get-timezone?`;
   const data = {
     location: {
       type: 'Point',
