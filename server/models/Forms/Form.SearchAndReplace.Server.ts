@@ -21,8 +21,6 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
   // tslint:disable
   async Search() {
 
-
-
     if (!this.OldValue) throw new Error('Searched value is not defined');
     const sdbq = new MSSQL(TASKS_POOL, this.user);
     await this.FillExchangeData(sdbq);
@@ -241,53 +239,53 @@ export default class FormSearchAndReplaceServer extends FormSearchAndReplace imp
     const OldValue = await lib.doc.byId(this.OldValue, tx);
     if (NewValue!.type !== OldValue!.type) throw new Error(`Bad params: The new value type ${NewValue!.type} mast be same type ${OldValue!.type} as old value`);
 
-    let query = `
-        declare @isCompany int = (SELECT COUNT(*) FROM Documents WHERE id = @p2 AND type = N'Catalog.Company')
-        update documents set doc = REPLACE(doc, @p1, @p2), timestamp = getdate()
-        where id in (select id from documents where contains(doc, @p1));
-        RAISERROR('REPLACE DOC', 0 ,1) WITH NOWAIT;
-        DROP TABLE IF EXISTS #Exchange;
-        select ExchangeBase, ExchangeCode into #Exchange from Documents where id = @p1;
-        RAISERROR('#Exchange', 0 ,1) WITH NOWAIT;
-        IF (select ExchangeBase from #Exchange) <> ''
-        BEGIN
-            if ((select top 1 coalesce(d.ExchangeCode,'') from Documents d where d.id=@p2)='' or @p3=1)
-            begin
-                update documents set
-                    ExchangeBase = (select ExchangeBase from #Exchange),
-                    ExchangeCode = (select ExchangeCode from #Exchange)
-                where id = @p2;
-                RAISERROR('set ExchangeBase', 0 ,1) WITH NOWAIT;
-                update documents set
-                    ExchangeBase = null,
-                    ExchangeCode = null
-                where id = @p1;
-                RAISERROR('clear ExchangeBase', 0 ,1) WITH NOWAIT;
-            end
-        END
-        update CatalogMatching  set id = @p2 where id = @p1;
-        RAISERROR('id', 0 ,1) WITH NOWAIT;
-        if @isCompany > 0 update documents set company = @p2 where company = @p1;
-        RAISERROR('company', 0 ,1) WITH NOWAIT;
-        update documents set parent = @p2 where parent = @p1;
-        RAISERROR('parent', 0 ,1) WITH NOWAIT;
-        declare @isUser int = (SELECT COUNT(*) FROM Documents WHERE id = @p2 AND type = N'Catalog.User')
-        if @isUser > 0 update documents set [user] = @p2 where [user] = @p1;
-        RAISERROR('[user]', 0 ,1) WITH NOWAIT;
-        update documents set deleted = 1, timestamp = getdate() where id = @p1 and deleted <> 1;
-        RAISERROR('deleted', 0 ,1) WITH NOWAIT;
-        update Accumulation set data = REPLACE(data, @p1, @p2)
-        where id in (select id from Accumulation where contains(data, @p1));
-        RAISERROR('REPLACE Accumulation', 0 ,1) WITH NOWAIT;
-        if @isCompany > 0 update Accumulation set company = @p2 where company = @p1;
-        RAISERROR('company', 0 ,1) WITH NOWAIT;
-        update [Register.Info] set data = REPLACE(data, @p1, @p2)
-        where id in (select id from [Register.Info] where contains(data, @p1));
-        RAISERROR('REPLACE [Register.Info]', 0 ,1) WITH NOWAIT;
-        if @isCompany > 0 update [Register.Info] set company = @p2 where company = @p1;
-        RAISERROR('company', 0 ,1) WITH NOWAIT;`;
+    let query = `         
+            update documents set doc = REPLACE(doc, @p1, @p2), timestamp = getdate()
+            where id in (select id from documents where contains(doc, @p1));
+            RAISERROR('REPLACE DOC', 0 ,1) WITH NOWAIT;
+            DROP TABLE IF EXISTS #Exchange;
+            select ExchangeBase, ExchangeCode into #Exchange from Documents where id = @p1;
+            RAISERROR('#Exchange', 0 ,1) WITH NOWAIT;
+            IF (select ExchangeBase from #Exchange) <> ''
+            BEGIN
+                if ((select top 1 coalesce(d.ExchangeCode,'') from Documents d where d.id=@p2)='' or @p3=1)
+                begin
+                    update documents set
+                        ExchangeBase = (select ExchangeBase from #Exchange),
+                        ExchangeCode = (select ExchangeCode from #Exchange)
+                    where id = @p2;
+                    RAISERROR('set ExchangeBase', 0 ,1) WITH NOWAIT;
+                    update documents set
+                        ExchangeBase = null,
+                        ExchangeCode = null
+                    where id = @p1;
+                    RAISERROR('clear ExchangeBase', 0 ,1) WITH NOWAIT;
+                end
+            END
+            update CatalogMatching  set id = @p2 where id = @p1;
+            RAISERROR('id', 0 ,1) WITH NOWAIT;
+            declare @isCompany int = (SELECT TOP 1 COUNT(id) FROM Documents WHERE id = @p2 AND type = N'Catalog.Company')
+            if @isCompany > 0 update documents set company = @p2 where company = @p1;
+            RAISERROR('company', 0 ,1) WITH NOWAIT;
+            declare @childsCount int = (SELECT TOP 1 COUNT(id) FROM Documents WHERE parent = @p1 AND [type] = @p4)
+            if @childsCount > 0 update documents set parent = @p2 where parent = @p1 and [type] = @p4;
+            declare @isUser int = (SELECT TOP 1 COUNT(id) FROM Documents WHERE id = @p2 AND type = N'Catalog.User')
+            if @isUser > 0 update documents set [user] = @p2 where [user] = @p1;
+            RAISERROR('[user]', 0 ,1) WITH NOWAIT;
+            update documents set deleted = 1, timestamp = getdate() where id = @p1 and deleted <> 1;
+            RAISERROR('deleted', 0 ,1) WITH NOWAIT;
+            update Accumulation set data = REPLACE(data, @p1, @p2)
+            where id in (select id from Accumulation where contains(data, @p1));
+            RAISERROR('REPLACE Accumulation', 0 ,1) WITH NOWAIT;
+            if @isCompany > 0 update Accumulation set company = @p2 where company = @p1;
+            RAISERROR('company', 0 ,1) WITH NOWAIT;
+            update [Register.Info] set data = REPLACE(data, @p1, @p2)
+            where id in (select id from [Register.Info] where contains(data, @p1));
+            RAISERROR('REPLACE [Register.Info]', 0 ,1) WITH NOWAIT;
+            if @isCompany > 0 update [Register.Info] set company = @p2 where company = @p1;
+            RAISERROR('company', 0 ,1) WITH NOWAIT;`;
 
-    await tx.none(query, [this.OldValue, this.NewValue, this.ReplaceExchangeCode]);
+    await tx.none(query, [this.OldValue, this.NewValue, this.ReplaceExchangeCode, OldValue!.type]);
     return this;
   }
 }
