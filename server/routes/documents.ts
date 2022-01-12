@@ -398,6 +398,13 @@ router.get('/getIndexedOperationType/:operationId', async (req: Request, res: Re
   } catch (err) { next(err); }
 });
 
+router.get('/getIndexedOperationsTypes', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const indexedOperations = (Global.indexedOperations() || new Map);
+    res.json([...indexedOperations.entries()]);
+  } catch (err) { next(err); }
+});
+
 router.post('/getDocPropValuesByType', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { type, propNames } = req.body;

@@ -356,6 +356,31 @@
     GO
 ------------------------------ END Register.Info.DepartmentCompanyHistory ------------------------------
 
+------------------------------ BEGIN Register.Info.Department.LimitIndicators ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.Department.LimitIndicators]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."TermStarts"'),127) [TermStarts]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."TermEnds"'),127) [TermEnds]
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."TimeStart"'),127) [TimeStart]
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."TimeFinish"'),127) [TimeFinish]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."MaxOrderCount"')) [MaxOrderCount]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."MaxOrderTotalAmount"')) [MaxOrderTotalAmount]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.Department.LimitIndicators';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.Department.LimitIndicators] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.Department.LimitIndicators] ON [dbo].[Register.Info.Department.LimitIndicators]([company], [date], [id])
+    CREATE NONCLUSTERED INDEX[Register.Info.Department.LimitIndicators.RetailNetwork] ON [Register.Info.Department.LimitIndicators]([RetailNetwork]);
+    CREATE NONCLUSTERED INDEX[Register.Info.Department.LimitIndicators.Department] ON [Register.Info.Department.LimitIndicators]([Department]);
+    GO
+------------------------------ END Register.Info.Department.LimitIndicators ------------------------------
+
 ------------------------------ BEGIN Register.Info.DepartmentStatus ------------------------------
 
     CREATE OR ALTER VIEW [Register.Info.DepartmentStatus]
