@@ -1,7 +1,7 @@
 import { lib } from '../../std.lib';
 import { PostResult } from '../post.interfaces';
 import { RegisterInfoRLS } from '../Registers/Info/RLS';
-import { DocumentUserSettings } from './Document.UserSettings';
+import { CompanyItems, DocumentUserSettings } from './Document.UserSettings';
 import { MSSQL } from '../../mssql';
 import { IServerDocument } from '../documents.factory.server';
 
@@ -77,13 +77,37 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
 
   async AddDescendantsCompany(tx: MSSQL) {
     if (!this.company) throw new Error(`Empty company!`);
-    const query = `SELECT id company FROM dbo.[Descendants](@p1, '')`;
-    const companyItems = await tx.manyOrNone<{ company: string }>(query, [this.company]);
-    for (const CompanyItem of companyItems) {
-      if (this.CompanyList.filter(ci => (ci.company === CompanyItem.company)).length === 0) {
-        this.CompanyList.push(CompanyItem);
-      }
-    }
+    const query = `
+    SELECT
+      cat.id company,
+      [Group.id] [group],
+      [ResponsibilityCenter.id] responsibilityCenter
+    FROM dbo.[Descendants](@p1, '') comp
+    left join [dbo].[Catalog.Company] cat on cat.id = comp.id
+    order by
+      [Group.value],
+      [ResponsibilityCenter.value],
+      cat.[Company]`;
+    const companyItems = await tx.manyOrNone<CompanyItems>(query, [this.company]);
+    companyItems
+      .filter(c => !this.CompanyList.find(cl => cl.company === c.company))
+      .forEach(c => this.CompanyList.push(c));
+  }
+
+  async RefreshCompanyList(tx: MSSQL) {
+    const compIds = this.CompanyList.filter(e => !!e.company).map(e => `'${e.company}'`).join(',');
+    const query = `
+    SELECT
+      id company,
+      [Group.id] [group],
+      [ResponsibilityCenter.id] responsibilityCenter
+    FROM [dbo].[Catalog.Company]
+    WHERE id IN (${compIds})
+    order by
+      [Group.value],
+      [ResponsibilityCenter.value],
+      [Company]`;
+    this.CompanyList = await tx.manyOrNone<CompanyItems>(query);
   }
 
   async ClearCompanyList(tx: MSSQL) {
@@ -105,6 +129,9 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
         return {};
       case 'AddDescendantsCompany':
         await this.AddDescendantsCompany(tx);
+        return this;
+      case 'RefreshCompanyList':
+        await this.RefreshCompanyList(tx);
         return this;
       case 'ClearCompanyList':
         await this.ClearCompanyList(tx);

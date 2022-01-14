@@ -9,7 +9,8 @@ import { DocumentBase, JDocument, Props } from 'jetti-middle/dist/common/models/
   prefix: 'USET-',
   commands: [
     { method: 'AddDescendantsCompany', icon: 'pi pi-plus', label: 'Добавить починенные компании', order: 1 },
-    { method: 'ClearCompanyList', icon: 'pi pi-plus', label: 'Очистить ТЧ "Companys"', order: 2 }
+    { method: 'RefreshCompanyList', icon: 'pi pi-plus', label: 'Обновить ТЧ "Companys"', order: 2 },
+    { method: 'ClearCompanyList', icon: 'pi pi-plus', label: 'Очистить ТЧ "Companys"', order: 3 }
   ],
 })
 export class DocumentUserSettings extends DocumentBase {
@@ -19,22 +20,22 @@ export class DocumentUserSettings extends DocumentBase {
   @Props({ type: 'Types.UserOrGroup', required: true })
   UserOrGroup: Ref = null;
 
-  @Props({ type: 'boolean', label: 'Exclude Companys'})
+  @Props({ type: 'boolean', label: 'Exclude Companys' })
   COMP = false;
 
-  @Props({ type: 'boolean', label: 'Exclude Departments'})
+  @Props({ type: 'boolean', label: 'Exclude Departments' })
   DEPT = false;
 
-  @Props({ type: 'boolean', label: 'Exclude Storehouse'})
+  @Props({ type: 'boolean', label: 'Exclude Storehouse' })
   STOR = false;
 
-  @Props({ type: 'boolean', label: 'Exclude CashRegisters'})
+  @Props({ type: 'boolean', label: 'Exclude CashRegisters' })
   CASH = false;
 
-  @Props({ type: 'boolean', label: 'Exclude BankAccounts'})
+  @Props({ type: 'boolean', label: 'Exclude BankAccounts' })
   BANK = false;
 
-  @Props({ type: 'boolean', label: 'Exclude Operations '})
+  @Props({ type: 'boolean', label: 'Exclude Operations ' })
   GROUP = false;
 
   @Props({ type: 'table', order: 1, label: 'Roles' })
@@ -61,37 +62,43 @@ export class DocumentUserSettings extends DocumentBase {
 }
 
 class RoleItems {
-  @Props({ type: 'Catalog.Role', required: true, style: { width: '100%' }})
+  @Props({ type: 'Catalog.Role', required: true, style: { width: '100%' } })
   Role: Ref = null;
 }
 
 export class CompanyItems {
-  @Props({ type: 'Catalog.Company', required: true, style: { width: '100%' }})
+  @Props({ type: 'Catalog.Company', required: true, style: { width: '100%' } })
   company: Ref = null;
+
+  @Props({ type: 'Catalog.Company.Group' })
+  group: Ref = null;
+
+  @Props({ type: 'Catalog.ResponsibilityCenter' })
+  responsibilityCenter: Ref = null;
 }
 
 class OperationGroups {
-  @Props({ type: 'Catalog.Operation.Group', required: true, style: { width: '100%' }})
+  @Props({ type: 'Catalog.Operation.Group', required: true, style: { width: '100%' } })
   Group: Ref = null;
 }
 
 class Storehouses {
-  @Props({ type: 'Catalog.Storehouse', required: true, style: { width: '100%' }})
+  @Props({ type: 'Catalog.Storehouse', required: true, style: { width: '100%' } })
   Storehouse: Ref = null;
 }
 
 class CashRegisters {
-  @Props({ type: 'Catalog.CashRegister', required: true, style: { width: '100%' }})
+  @Props({ type: 'Catalog.CashRegister', required: true, style: { width: '100%' } })
   CashRegister: Ref = null;
 }
 
 class BankAccounts {
-  @Props({ type: 'Catalog.BankAccount', required: true, style: { width: '100%' }})
+  @Props({ type: 'Catalog.BankAccount', required: true, style: { width: '100%' } })
   BankAccount: Ref = null;
 }
 
 class Departments {
-  @Props({ type: 'Catalog.Department', required: true, style: { width: '100%' }})
+  @Props({ type: 'Catalog.Department', required: true, style: { width: '100%' } })
   Department: Ref = null;
 }
 
