@@ -251,11 +251,11 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
     if (!['APPROVED', 'PAID'].includes(this.Status) || (await this.isSuperuser(tx))) return this;
 
-    const emptyRows = this.CashRequests
-      .filter(row => !row.LinkedDocument)
-      .map((row, ind) => ind++)
-      .join(',');
-    if (emptyRows) throw new Error(`Не созданы операции в строках: ${emptyRows}`);
+    // const emptyRows = this.CashRequests
+    //   .filter(row => !row.LinkedDocument)
+    //   .map((row, ind) => ind++)
+    //   .join(',');
+    // if (emptyRows) throw new Error(`Не созданы операции в строках: ${emptyRows}`);
 
     const operations = this.CashRequests.map(row => `'${row.LinkedDocument}'`).join(',');
     const query = `SELECT amount, posted, id, code FROM [dbo].[Document.Operation.v] WHERE id IN (${operations})`;
