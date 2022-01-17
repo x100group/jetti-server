@@ -13,17 +13,24 @@ import { DocumentOperation } from './Document.Operation';
 import { Ref } from 'jetti-middle';
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
-  async getDynamicModule(tx: MSSQL) {
-    const dynamicModule = await lib.doc.byId('8F58AE90-963C-11EB-B245-F3054AA54AB9', tx);
+  private dynamicModuleId = '8F58AE90-963C-11EB-B245-F3054AA54AB9';
+
+  async dynamicModule(tx: MSSQL) {
+    const dynamicModule = await lib.doc.byId(this.dynamicModuleId, tx);
+    if (!dynamicModule) return;
     return new Function('', dynamicModule!['module']).bind(this)();
   }
 
+  async dynamicHandler(eventKey: string, tx: MSSQL, params?: any) {
+    const dynamicModule = await this.dynamicModule(tx);
+    if (!dynamicModule || !dynamicModule[eventKey]) return false;
+    await dynamicModule[eventKey](this, tx, params);
+    return true;
+  }
+
   async onCommand(command: string, args: any, tx: MSSQL) {
-    const dynamicModule = await this.getDynamicModule(tx);
-    if (dynamicModule[command]) {
-      await dynamicModule[command](this, tx);
+    if (await this.dynamicHandler(command, tx, args))
       return this;
-    }
 
     switch (command) {
       case 'Fill':
@@ -250,6 +257,9 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   async beforePost(tx: MSSQL) {
 
     if (!['APPROVED', 'PAID'].includes(this.Status) || (await this.isSuperuser(tx))) return this;
+
+    if (await this.dynamicHandler('beforePost', tx))
+      return this;
 
     // const emptyRows = this.CashRequests
     //   .filter(row => !row.LinkedDocument)
