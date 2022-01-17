@@ -564,7 +564,7 @@ router.get('/getDescedantsObjects/:id', async (req: Request, res: Response, next
       where id in (${DocSelectText})) res
       left join [Catalog.User] us on us.id = userID
       left join [Catalog.Company] comp on comp.id = companyID
-  order by res.date, res.type, res.description`;
+  order by res.date desc, res.type, res.description`;
 
       let queryDocSelectText = isCatalog ?
         `select distinct TOP ${firstLimit} document
