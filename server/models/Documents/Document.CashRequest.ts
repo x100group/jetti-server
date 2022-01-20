@@ -22,17 +22,46 @@ import { JDocument, DocumentBase, Props, Ref } from 'jetti-middle';
     { method: 'FillTaxInfo', icon: 'pi pi-plus', label: 'Сформировать назначение платежа', order: 1 },
     { method: 'returnToStatusPrepared', icon: 'pi pi-plus', label: 'Установить статус "PREPARED"', order: 2 },
     { method: 'CloseCashRequest', icon: 'pi pi-plus', label: 'Закрыть заявку на расход ДС', order: 3 },
-    { method: 'FillSalaryBalanceByDepartment', icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по подразделению', order: 4 },
-    { method: 'FillSalaryBalanceByPersons', icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по сотрудникам', order: 5 },
+    {
+      method: 'FillSalaryBalanceByDepartment',
+      icon: 'pi pi-plus',
+      label: '[ЗП] Заполнить остатками по подразделению',
+      order: 4
+    },
+    {
+      method: 'FillSalaryBalanceByPersons',
+      icon: 'pi pi-plus',
+      label: '[ЗП] Заполнить остатками по сотрудникам',
+      order: 5
+    },
     {
       method: 'FillSalaryBalanceByDepartmentWithCurrentMonth'
-      , icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по подразделению (с текущим месяцем)', order: 4
+      , icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по подразделению (с текущим месяцем)',
+      order: 4
     },
     {
       method: 'FillSalaryBalanceByPersonsWithCurrentMonth'
-      , icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по сотрудникам (с текущим месяцем)', order: 5
+      , icon: 'pi pi-plus', label: '[ЗП] Заполнить остатками по сотрудникам (с текущим месяцем)',
+      order: 5
     },
-    { method: 'onCommandcheckTaxCheck', icon: 'pi pi-plus', label: 'Проверить возможность согласования', order: 6 }
+    {
+      method: 'FillSalaryBalanceByDepartmentWithCurrentMonthPeriod',
+      icon: 'pi pi-plus',
+      label: '[ЗП] Заполнить остатками по подразделению (с текущим месяцем) с начислениями указанных дат',
+      order: 6
+    },
+    {
+      method: 'FillSalaryBalanceByPersonsWithCurrentMonthPeriod',
+      icon: 'pi pi-plus',
+      label: '[ЗП] Заполнить остатками по сотрудникам (с текущим месяцем) с начислениями указанных дат',
+      order: 7
+    },
+    {
+      method: 'onCommandcheckTaxCheck',
+      icon: 'pi pi-plus',
+      label: 'Проверить возможность согласования',
+      order: 8
+    }
   ],
   module: `
       {
@@ -316,7 +345,7 @@ export class DocumentCashRequest extends DocumentBase {
   TaxDocNumber = '';
 
   @Props({ type: 'date', label: 'Дата документа' })
-  TaxDocDate = '';
+  TaxDocDate = null;
 
   @Props({ type: 'string', label: 'ОКТМО', hiddenInList: true })
   TaxOfficeCode2 = '';
@@ -355,6 +384,12 @@ export class DocumentCashRequest extends DocumentBase {
     type: 'Catalog.Person', label: 'Ответственный', isAdditional: true
   })
   ResponsiblePerson: Ref = null;
+
+  @Props({ type: 'date', label: 'Начало периода' })
+  StartDate = '';
+
+  @Props({ type: 'date', label: 'Конец периода' })
+  EndDate = '';
 
   @Props({
     type: 'table', required: false, order: 1,

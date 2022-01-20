@@ -149,16 +149,18 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         await this.returnToStatusPrepared(tx);
         return this;
       case 'FillSalaryBalanceByPersons':
-        await this.FillSalaryBalance(tx, true, false);
+        await this.FillSalaryBalance(tx, true, false, false);
         return this;
       case 'FillSalaryBalanceByDepartment':
-        await this.FillSalaryBalance(tx, false, false);
+        await this.FillSalaryBalance(tx, false, false, false);
         return this;
       case 'FillSalaryBalanceByDepartmentWithCurrentMonth':
-        await this.FillSalaryBalance(tx, false, true);
+      case 'FillSalaryBalanceByDepartmentWithCurrentMonthPeriod':
+        await this.FillSalaryBalance(tx, false, true, command === 'FillSalaryBalanceByDepartmentWithCurrentMonthPeriod');
         return this;
       case 'FillSalaryBalanceByPersonsWithCurrentMonth':
-        await this.FillSalaryBalance(tx, true, true);
+      case 'FillSalaryBalanceByPersonsWithCurrentMonthPeriod':
+        await this.FillSalaryBalance(tx, true, true, command === 'FillSalaryBalanceByPersonsWithCurrentMonthPeriod');
         return this;
       case 'CloseCashRequest':
         await this.CloseCashRequest(tx);
@@ -298,114 +300,145 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     await upsertDocument(this, tx);
   }
 
-  async FillSalaryBalance(tx: MSSQL, byPersons: boolean, withCurrentMonth: boolean) {
+  async FillSalaryBalance(tx: MSSQL, byPersons: boolean, withCurrentMonth: boolean, byPeriod: boolean): Promise<void> {
     if (!(await this.isSuperuser(tx)) && this.Status !== 'PREPARED') throw new Error(`Заполнение возможно только в статусе \"PREPARED\"`);
+    if (byPeriod && (!this.StartDate || !this.EndDate)) throw new Error(`Не указан период начислений`);
+
     let query = `
-DROP TABLE IF EXISTS #Person;
-DROP TABLE IF EXISTS #Salary;
-DROP TABLE IF EXISTS #ExceptDocs;
+
+    --DECLARE @p1 VARCHAR(50) = '9BDA3100-3203-11EA-974C-23397E2DEFA2' -- 9BDA3100-3203-11EA-974C-23397E2DEFA2 DEP
+    --DECLARE @p2 VARCHAR(50) = 'B559C270-42E6-11E8-9F62-93768160FCE2' -- uaH cur
+    --DECLARE @p3 DATETIME = '20221201' --- CR date @p3
+    --DECLARE @p4 VARCHAR(50) = 'E5850830-02D2-11EA-A524-E592E08C23A5'--- ru company
+    --DECLARE @p5 VARCHAR(50) = 'E5850830-02D2-11EA-A524-E592E08C23A5'--- ru person
+    --DECLARE @p6 BIT = 0; -- dep or pers
+    --DECLARE @p7 DATETIME = '20211101'
+    --DECLARE @p8 DATETIME = '20221201'
+    --DECLARE @p9 BIT =0; -- withCurrentMonth
+
+    DROP TABLE IF EXISTS #Person;
+    DROP TABLE IF EXISTS #Salary;
+    DROP TABLE IF EXISTS #ExceptDocs;
+    DROP TABLE IF EXISTS #SalaryCashToPay;
+    DROP TABLE IF EXISTS #SalaryUnion;
+
     SELECT id personId
-    INTO #Person
-    FROM
-        [dbo].[Catalog.Person]
-    WHERE [Department.id] = @p1 AND @p6 = 0
-UNION
-    SELECT DISTINCT
-        id personId
-    FROM
-        [dbo].[Catalog.Person]
-    WHERE id IN (@p5) AND @p6 = 1;
+        INTO #Person
+        FROM
+            [dbo].[Catalog.Person]
+        WHERE [Department.id] = @p1 AND @p6 = 0
+    UNION
+        SELECT DISTINCT
+            id personId
+        FROM
+            [dbo].[Catalog.Person]
+        WHERE id IN (@p5) AND @p6 = 1;
 
     SELECT
-doc.id
-INTO #ExceptDocs
-FROM [dbo].[Register.Accumulation.Salary] s
-INNER JOIN [dbo].[Documents] doc
-ON doc.id = document
-and [ExchangeBase]='PortalNach'
-and s.date BETWEEN @p7 AND @p8
-and @p9 = 0;
+      doc.id
+    INTO #ExceptDocs
+    FROM [dbo].[Register.Accumulation.Salary] s
+    INNER JOIN [dbo].[Documents] doc
+    ON doc.id = document
+      and [ExchangeBase]='PortalNach'
+      and s.date BETWEEN @p7 AND @p8
+      and @p9 = 0;
 
-SELECT
-    Person PersonID,
-    SUM(Amount) Salary
-INTO #Salary
-FROM [dbo].[Register.Accumulation.Salary] register
-WHERE (1=1)
-    AND register.document NOT IN (SELECT id FROM #ExceptDocs)
-    AND ((@p6 = 0
-    AND (Person in (SELECT personId
-    FROM #Person) OR @p1 is NULL))
-    OR (@p6 = 1 AND Person in (SELECT personId
-    FROM #Person)))
-    AND currency = @p2
-    AND date <= @p3
-    AND company in (SELECT id FROM [dbo].Descendants(@p4, ''))
-GROUP BY Person
-HAVING SUM(Amount) > 0;
+    SELECT
+        Person PersonID,
+        SUM(Amount) Salary
+    INTO #Salary
+    FROM [dbo].[Register.Accumulation.Salary] register
+    WHERE (1=1)
+        AND register.document NOT IN (SELECT id FROM #ExceptDocs)
+        AND ((@p6 = 0
+        AND (Person in (SELECT personId FROM #Person) OR @p1 is NULL))
+        OR (@p6 = 1 AND Person in (SELECT personId FROM #Person)))
+        AND currency = @p2
+        AND ((date <= @p3 AND @p10 = 0) OR (date BETWEEN @p7 AND @p8 AND @p10 = 1))
+        AND company in (SELECT id FROM [dbo].Descendants(@p4, ''))
+    GROUP BY Person
+    HAVING SUM(Amount) > 0;
 
-SELECT
-    PersonID Employee,
-    ROUND(SUM(Salary),0) Salary
-FROM (        SELECT *
-        FROM #Salary
+    SELECT
+      ft.CashRecipient PersonID,
+      -IIF(d.[type] = 'Document.Operation'
+      AND JSON_VALUE(d.doc, '$.Group') in ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E')
+      AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT) = 0,0,SUM(ft.Amount)) Amount
+    INTO #SalaryCashToPay
+    FROM [dbo].[Register.Accumulation.CashToPay] ft
+      LEFT JOIN [dbo].[Documents] d ON d.id = ft.document
+    WHERE (1=1)
+      AND ft.document NOT IN (SELECT id FROM #ExceptDocs)
+      AND (ft.CashRecipient IN (SELECT personId from #Person) OR
+          (@p1 is NULL and ft.CashRecipient IN (SELECT personId from #Salary)))
+      AND ft.currency = @p2
+      AND ((ft.date <= @p3 AND @p10 = 0) OR (ft.date BETWEEN @p7 AND @p8 AND @p10 = 1))
+      AND ft.OperationType in (N'Выплата заработной платы без ведомости',N'Выплата заработной платы')
+    GROUP BY
+        ft.CashRecipient,JSON_VALUE(d.doc, '$.Group'),CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT),d.type
+    HAVING
+        IIF(d.[type] = 'Document.Operation'
+        AND JSON_VALUE(d.doc, '$.Group') IN ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E')
+        AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT)  = 0,0,SUM([Amount])) <> 0;
 
+    SELECT *
+    INTO #SalaryUnion
+    FROM #Salary
     UNION
+    SELECT
+        res.PersonID,
+        SUM(res.Amount)
+    FROM #SalaryCashToPay as res
+    GROUP BY PersonID;
 
-        SELECT
-            res.PersonID,
-            SUM(res.Amount)
-        FROM (
-                SELECT
-                ft.CashRecipient PersonID,
-                -IIF(d.[type] = 'Document.Operation'
-                AND JSON_VALUE(d.doc, '$.Group') in ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E')
-                AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT) = 0,0,SUM(ft.Amount)) Amount
-            FROM [dbo].[Register.Accumulation.CashToPay] ft
-                LEFT JOIN [dbo].[Documents] d ON d.id = ft.document
-            WHERE (1=1)
-                AND ft.document NOT IN (SELECT id FROM #ExceptDocs)
-                AND (ft.CashRecipient IN (SELECT personId
-                from #Person) or (@p1 is NULL and ft.CashRecipient IN (SELECT personId
-                from #Salary)))
-                AND ft.currency = @p2
-                AND ft.date <= @p3
-                AND ft.OperationType in (N'Выплата заработной платы без ведомости',N'Выплата заработной платы')
-            GROUP BY
-                    ft.CashRecipient,JSON_VALUE(d.doc, '$.Group'),CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT),d.type
-            HAVING
-                  IIF(d.[type] = 'Document.Operation'
-                  AND JSON_VALUE(d.doc, '$.Group') IN ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E')
-                  AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT)  = 0,0,SUM([Amount])) <> 0) as res
-        GROUP BY
-              PersonID) as fin
-    LEFT JOIN [dbo].[Catalog.Person] p ON fin.PersonID = p.id
-GROUP BY
-        PersonID, p.Person
-HAVING SUM(Salary) >= 20 AND not PersonID is NULL
-ORDER BY
-        p.Person`;
+    SELECT
+      p.Person,
+        PersonID Employee,
+        ROUND(SUM(Salary),0) Salary
+    FROM #SalaryUnion as fin
+        LEFT JOIN [dbo].[Catalog.Person] p ON fin.PersonID = p.id
+    GROUP BY
+      PersonID, p.Person
+    HAVING SUM(Salary) >= 20
+      AND not PersonID is NULL
+    ORDER BY
+      p.Person`;
 
-    const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
-    const CompanyParent = await lib.doc.byId(CompanyEmployee, tx);
-    const persons = '';
-    if (byPersons) query = query.replace('@p5', this.PayRolls.map(el => '\'' + el.Employee + '\'').join(','));
+    const salaryCompanyId = await lib.util.salaryCompanyByCompany(this.company, tx);
+    if (!salaryCompanyId) throw new Error(`Не удалось определить организацию отражения ЗП для текущей организации`);
+
+    const salaryCompany = await lib.doc.byId(salaryCompanyId, tx);
+
+
+    if (byPersons) {
+      const personsIds = this.PayRolls.map(el => '\'' + el.Employee + '\'').join(',');
+      if (!personsIds) throw new Error('Не указаны сотрудники');
+      query = query.replace('@p5', personsIds);
+    }
+
     const currentMounth = {
       begin: new Date(this.date.getFullYear(), this.date.getMonth(), 1),
       end: new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0, 23, 59, 59)
     };
 
-    const params = [byPersons ? null : this.Department,
-    this.сurrency,
-    this.date,
-    CompanyParent!.parent,
-      persons,
-    byPersons ? 1 : 0,
-    currentMounth.begin,
-    currentMounth.end,
-    withCurrentMonth ? 1 : 0];
+    const period = byPeriod ? { begin: this.StartDate, end: this.EndDate } : currentMounth;
+
+    const params = [
+      byPersons ? null : this.Department,
+      this.сurrency,
+      this.date,
+      salaryCompany!.parent,
+      ,
+      byPersons ? 1 : 0,
+      period.begin,
+      period.end,
+      withCurrentMonth ? 1 : 0,
+      byPeriod ? 1 : 0,
+    ];
 
     const salaryBalance = await tx.manyOrNone<{ Employee, Salary }>(query, params);
+
     this.PayRolls = [];
     this.Amount = 0;
     this.PayDay = new Date;
