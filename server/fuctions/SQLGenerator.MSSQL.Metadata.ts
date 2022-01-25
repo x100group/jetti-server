@@ -607,6 +607,7 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
     const props = Object.keys(excludeProps(doc)).filter(prop => !excludedProps.includes(prop));
     const docProps = doc.Props();
     for (const prop of props) {
+      if (!docProps[prop]) continue;
       const type = docProps[prop].type || 'string';
       if (type !== 'table') {
         query += simleProperty(prop, type);
@@ -632,6 +633,7 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
       const doc = createDocument(registeredCatalog.type);
       query += `${this.typeSpliter(registeredCatalog.type, true)}
       RAISERROR('${registeredCatalog.type} start', 0 ,1) WITH NOWAIT;
+      GO;
       ${this.CatalogTableAndTrigger(doc, registeredCatalog.type)}
       RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
       ${this.typeSpliter(registeredCatalog.type, false)}`;
@@ -640,13 +642,13 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
     return query;
   }
 
-  static CatalogTableAndTrigger(doc: { [x: string]: any }, type: string) {
+  static CatalogTableAndTrigger(doc: { [x: string]: any }, type: string, asArrayOfQueries = false) {
 
     const ql = this.QueryListRaw(doc, type);
-    const props = createDocument(type).Props();
-    const query = `
+    const props = doc.Props();
+    const queries: string[] = [];
 
-    GO
+    queries.push(`
     CREATE OR ALTER TRIGGER [${type}.t] ON [Documents] AFTER INSERT, UPDATE, DELETE
     AS
     BEGIN
@@ -660,17 +662,22 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
     ${ql}
     FROM inserted r
     WHERE [type] = N'${type}'
-    END
-    GO
+    END`);
+
+    queries.push(`
     DROP TABLE IF EXISTS [${type}.v];
-    DROP VIEW IF EXISTS [${type}.v];
+    DROP VIEW IF EXISTS [${type}.v];`);
+
+    queries.push(`
     ${ql}
     INTO [${type}.v]
     FROM [Documents] r
-    WHERE r.type = N'${type}';
-    GO
-    GRANT SELECT,INSERT,DELETE ON [${type}.v] TO JETTI;
-    GO
+    WHERE r.type = N'${type}';`);
+
+    queries.push(`
+    GRANT SELECT,INSERT,DELETE ON [${type}.v] TO JETTI;`);
+
+    queries.push(`
     ALTER TABLE [${type}.v] ADD CONSTRAINT [PK_${type}.v] PRIMARY KEY NONCLUSTERED ([id]);
     CREATE UNIQUE CLUSTERED INDEX [${type}.v] ON [${type}.v](id);${Object.keys(props)
         .filter(key => props[key].isIndexed)
@@ -687,11 +694,9 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
     CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.description] ON [${type}.v](description,id);`}
     CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code] ON [${type}.v](code,id);
     CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.user] ON [${type}.v]([user],id);
-    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.company] ON [${type}.v](company,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.company] ON [${type}.v](company,id);`);
 
-    GO
-    `;
-    return query;
+    return asArrayOfQueries ? queries : queries.join(`\t\nGO\n`);
   }
 
 

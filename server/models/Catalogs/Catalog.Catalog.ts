@@ -12,7 +12,8 @@ import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
     { method: 'updateSQLViews', icon: 'pi pi-plus', label: 'Обновить SQL представления', order: 2 },
     { method: 'riseUpdateMetadataEvent', icon: 'pi pi-plus', label: 'Обновить метаданные', order: 1 },
     { method: 'createSequence', icon: 'pi pi-plus', label: 'Создать последовательность', order: 3 },
-    { method: 'fillByType', icon: 'pi pi-plus', label: 'Заполнить по типу', order: 5 }
+    { method: 'fillByType', icon: 'pi pi-plus', label: 'Заполнить по типу', order: 5 },
+    { method: 'generateSQLMeta', icon: 'pi pi-plus', label: 'Сгенерировать SQL-метаданные', order: 2 },
   ]
 })
 export class CatalogCatalog extends DocumentBase {
@@ -40,6 +41,9 @@ export class CatalogCatalog extends DocumentBase {
 
   @Props({ type: 'enum', value: ['folders', 'elements', 'none'], required: true })
   hierarchy = 'none';
+
+  @Props({ type: 'enum', value: ['table', 'view'], required: true })
+  storedIn = 'view';
 
   @Props({ type: 'javascript', hiddenInList: true, style: { height: '50vh' }, panel: 'Client module' })
   moduleClient = '';

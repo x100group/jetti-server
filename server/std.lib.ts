@@ -131,6 +131,7 @@ export interface JTL {
   };
   meta: {
     updateSQLViewsByType: (type: string, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
+    getSQLMetaByType: (type: string, withSecurityPolicy?: boolean, asArrayOfQueries?: boolean) => Promise<string[] | string>
     updateSQLViewsByOperationId: (id: string, tx?: MSSQL, withSecurityPolicy?: boolean) => Promise<void>,
     riseUpdateMetadataEvent: () => void,
     propsByType: (type: string, operation?: string, tx?: MSSQL) => Promise<{ [x: string]: PropOptions }>,
@@ -226,6 +227,7 @@ export const lib: JTL = {
   },
   meta: {
     updateSQLViewsByType,
+    getSQLMetaByType,
     updateSQLViewsByOperationId,
     riseUpdateMetadataEvent,
     propsByType,
@@ -753,11 +755,7 @@ async function executePOSTRequest(opts: { url: string, data: any, config?: any }
 
 async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy = false): Promise<void> {
   if (!tx) tx = metaPoolTx();
-  const queries = [
-    ...SQLGenegatorMetadata.CreateViewCatalogIndex(type, withSecurityPolicy, true),
-    ...SQLGenegatorMetadata.CreateViewCatalog(type, true)
-  ];
-
+  const queries = await getSQLMetaByType(type, withSecurityPolicy, true);
   for (const querText of queries) {
     try {
       await tx.none(`execute sp_executesql @p1`, [querText]);
@@ -765,6 +763,22 @@ async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy
       if (queries.indexOf(querText)) throw new Error(error);
     }
   }
+}
+
+async function getSQLMetaByType(type: string, withSecurityPolicy = false, asArrayOfQueries = false): Promise<string[] | string> {
+
+  const isTablestored = !!Global.storedInTablesTypes()[type];
+  const doc = createDocument(type);
+  const subQueries = isTablestored ?
+    SQLGenegatorMetadata.CatalogTableAndTrigger(doc, type, true) :
+    SQLGenegatorMetadata.CreateViewCatalogIndex(type, withSecurityPolicy, true);
+  const queries = [
+    ...subQueries,
+    ...SQLGenegatorMetadata.CreateViewCatalog(type, true)
+  ];
+
+  return asArrayOfQueries ? queries : queries.join(`\nGO\n`);
+
 }
 
 async function updateSQLViewsByOperationId(id: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
