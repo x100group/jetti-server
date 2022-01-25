@@ -4,6 +4,7 @@ import { RegisterInfoRLS } from '../Registers/Info/RLS';
 import { CompanyItems, DocumentUserSettings } from './Document.UserSettings';
 import { MSSQL } from '../../mssql';
 import { IServerDocument } from '../documents.factory.server';
+import { SQLGenegatorMetadata } from '../../fuctions/SQLGenerator.MSSQL.Metadata';
 
 export const queryPost = `
 --DECLARE @p1 uniqueidentifier = 'F787EA90-D593-11EA-A56A-0B950F0DDFD1'
@@ -43,7 +44,7 @@ SELECT (SELECT TOP 1 [documents] FROM @UserOrGroup) as "document"
 FROM [dbo].[documents] as DocUserGroup
 CROSS APPLY OPENJSON(JSON_QUERY(DocUserGroup.[doc], '$.Users'))
 WITH ([User] uniqueidentifier) as Users
-LEFT JOIN [dbo].[Catalog.User.v] as CatUser with (noexpand) on CatUser.[id] = Users.[User]
+LEFT JOIN [dbo].[Catalog.User.v] as CatUser ${SQLGenegatorMetadata.noExpander('Catalog.User')} on CatUser.[id] = Users.[User]
 where DocUserGroup.[type] = (SELECT TOP 1 [type] FROM @UserOrGroup) and DocUserGroup.[id] = (SELECT TOP 1 [UserOrGroup] FROM @UserOrGroup)
 END
 
@@ -54,7 +55,7 @@ SELECT (SELECT TOP 1 [documents] FROM @UserOrGroup) as "document"
 ,DocUser.[id] as "User"
 ,CatUser.[code] as "AccountAD"
 FROM [dbo].[documents] as DocUser
-LEFT JOIN [dbo].[Catalog.User.v] as CatUser with (noexpand) on CatUser.[id] = DocUser.[id]
+LEFT JOIN [dbo].[Catalog.User.v] as CatUser ${SQLGenegatorMetadata.noExpander('Catalog.User')} on CatUser.[id] = DocUser.[id]
 where DocUser.[type] = (SELECT TOP 1 [type] FROM @UserOrGroup) and DocUser.[id] = (SELECT TOP 1 [UserOrGroup] FROM @UserOrGroup)
 END
 

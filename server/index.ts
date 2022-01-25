@@ -94,15 +94,20 @@ Global.init().then(e => {
     let script = '';
     const ef = () => { };
 
+    SQLGenegatorMetadata.storedInTablesTypes = Global.storedInTablesTypes();
+
     SQLGenegatorMetadata.CreateViewOperations().then(script => fs.writeFile('./sql-metadata-sripts/OperationsView.sql', script, ef));
 
     // tslint:disable-next-line: max-line-length
     SQLGenegatorMetadata.CreateViewOperationsIndex().then(script => fs.writeFile('./sql-metadata-sripts/OperationsViewIndex.sql', script, ef));
 
-    script = SQLGenegatorMetadata.CreateViewCatalogsIndex();
+    script = SQLGenegatorMetadata.CatalogsTablesAndTriggers();
+    fs.writeFile('./sql-metadata-sripts/CatalogsTablesAndTriggers.sql', script, ef);
+
+    script = SQLGenegatorMetadata.CreateViewCatalogsIndex(false);
     fs.writeFile('./sql-metadata-sripts/CatalogsViewIndex.sql', script, ef);
 
-    script = SQLGenegatorMetadata.CreateViewCatalogsIndex(true, true);
+    script = SQLGenegatorMetadata.CreateViewCatalogsIndex(false, true);
     fs.writeFile('./sql-metadata-sripts/CatalogsViewIndexDynamic.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateViewCatalogs();

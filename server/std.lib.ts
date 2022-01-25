@@ -32,6 +32,7 @@ import { Event } from './fuctions/Event';
 import { JETTI_POOL_META } from './sql.pool.meta';
 import * as xml2js from 'xml2js';
 import * as crypto from 'crypto';
+import { Global } from './models/global';
 
 export interface BatchRow { SKU: Ref; Storehouse: Ref; Qty: number; Cost: number; batch: Ref; rate: number; }
 export interface FillDocBasedOnParams {
@@ -135,6 +136,7 @@ export interface JTL {
     propsByType: (type: string, operation?: string, tx?: MSSQL) => Promise<{ [x: string]: PropOptions }>,
     propByType: (type: string, operation?: string, tx?: MSSQL) => Promise<PropOptions | RegisterAccumulationOptions>,
     config: () => Map<string, IConfigSchema>
+    getStoredInTablesTypes: () => { [x: string]: boolean }
   };
   util: {
     // tslint:disable-next-line: max-line-length
@@ -228,7 +230,8 @@ export const lib: JTL = {
     riseUpdateMetadataEvent,
     propsByType,
     propByType,
-    config
+    config,
+    getStoredInTablesTypes
   },
   info: {
     sliceLast,
@@ -296,12 +299,12 @@ async function GUID(): Promise<string> {
 
 async function accountByCode(code: string, tx: MSSQL): Promise<string | null> {
   const result = await tx.oneOrNone<any>(`
-    SELECT id result FROM [Catalog.Account.v]  WITH (NOEXPAND) WHERE code = @p1`, [code]);
+    SELECT id result FROM [Catalog.Account.v]  ${SQLGenegatorMetadata.noExpander('Catalog.Account')} WHERE code = @p1`, [code]);
   return result ? result.result as string : null;
 }
 
 async function byCode(type: string, code: string, tx: MSSQL): Promise<string | null> {
-  const result = await tx.oneOrNone<{ result: string }>(`SELECT id result FROM [${type}.v]  WITH (NOEXPAND) WHERE code = @p1`, [code]);
+  const result = await tx.oneOrNone<{ result: string }>(`SELECT id result FROM [${type}.v]  ${SQLGenegatorMetadata.noExpander(type)} WHERE code = @p1`, [code]);
   return result ? result.result as string : null;
 }
 
@@ -748,7 +751,7 @@ async function executePOSTRequest(opts: { url: string, data: any, config?: any }
   return await instance.post(opts.url, opts.data, opts.config);
 }
 
-async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy = true): Promise<void> {
+async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy = false): Promise<void> {
   if (!tx) tx = metaPoolTx();
   const queries = [
     ...SQLGenegatorMetadata.CreateViewCatalogIndex(type, withSecurityPolicy, true),
@@ -788,6 +791,10 @@ async function propsByType(type: string, operation?: string, tx?: MSSQL): Promis
 
 async function propByType(type: string, operation?: string, tx?: MSSQL): Promise<PropOptions | RegisterAccumulationOptions> {
   return (await createObject({ type, operation })).Prop();
+}
+
+function getStoredInTablesTypes() {
+  return { ...Global.storedInTablesTypes() };
 }
 
 async function createDocumentOperationServer(init: Partial<DocumentOperation>, tx: MSSQL): Promise<DocumentOperationServer> {
@@ -1157,7 +1164,8 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
       WHERE date < DATEADD(DAY, 1, EOMONTH(@p1)) AND company = @p2
       GROUP BY Storehouse, SKU
       HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
-    LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
+    LEFT JOIN [Catalog.Storehouse.v] Storehouse ${SQLGenegatorMetadata.noExpander('Catalog.Storehouse')}
+    ON Storehouse.id = q.Storehouse`, [date, company]);
   return result;
 }
 

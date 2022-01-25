@@ -14,6 +14,7 @@ import { bpApiHost, TRANSFORMED_REGISTER_MOVEMENTS_TABLE } from './env/environme
 import { Ref } from 'jetti-middle';
 import { DocumentCashRequestServer } from './models/Documents/Document.CashRequest.server';
 import axios from 'axios';
+import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 
 export interface Ix100Lib {
   account: {
@@ -287,7 +288,8 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
       WHERE date < DATEADD(DAY, 1, EOMONTH(@p1)) AND company = @p2
       GROUP BY Storehouse, SKU
       HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
-    LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
+    LEFT JOIN [Catalog.Storehouse.v] Storehouse${SQLGenegatorMetadata.noExpander('Catalog.Storehouse')}
+     ON Storehouse.id = q.Storehouse`, [date, company]);
   return result;
 }
 
@@ -312,9 +314,12 @@ async function getCompanyParentByDepartment(department: string, date: Date, type
       AND RegDepCompHistory.[Department] = @p2
       ORDER BY RegDepCompHistory.[date] DESC
       ) as Res
-      LEFT JOIN [dbo].[Catalog.Company.v] as CatCom with (noexpand) on CatCom.[id] = Res.[company]
-      LEFT JOIN [dbo].[Catalog.Company.v] as CatCom_Parent with (noexpand) on CatCom_Parent.[id] = CatCom.[parent]
-      LEFT JOIN [dbo].[Catalog.Currency.v] as CatCur_Parent with (noexpand) on CatCur_Parent.[id] = CatCom_Parent.[currency]
+      LEFT JOIN [dbo].[Catalog.Company.v] as CatCom ${SQLGenegatorMetadata.noExpander('Catalog.Company')}
+       on CatCom.[id] = Res.[company]
+      LEFT JOIN [dbo].[Catalog.Company.v] as CatCom_Parent ${SQLGenegatorMetadata.noExpander('Catalog.Company')}
+       on CatCom_Parent.[id] = CatCom.[parent]
+      LEFT JOIN [dbo].[Catalog.Currency.v] as CatCur_Parent ${SQLGenegatorMetadata.noExpander('Catalog.Currency')}
+       on CatCur_Parent.[id] = CatCom_Parent.[currency]
       WHERE Res.[TypeFranchise] = @p3
   `, [date, department, typeFranchise]);
   return result;
