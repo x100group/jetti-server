@@ -4,7 +4,7 @@
 
 import { Global } from './../models/global';
 import { CatalogOperationServer } from './../models/Catalogs/Catalog.Operation.server';
-import { PrimitiveTypes, DocumentOptions, PropOptions, excludeRegisterAccumulatioProps, SQLGenegator, Type, excludeProps } from 'jetti-middle';
+import { PrimitiveTypes, DocumentOptions, PropOptions, excludeRegisterAccumulatioProps, SQLGenegator, Type, excludeProps, DocumentBase } from 'jetti-middle';
 import { createDocument, RegisteredDocuments } from '../models/documents.factory';
 import { createRegisterAccumulation, RegisteredRegisterAccumulation } from '../models/Registers/Accumulation/factory';
 import { createRegisterInfo, GetRegisterInfo } from '../models/Registers/Info/factory';
@@ -581,7 +581,7 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
     return query;
   }
 
-  static QueryListRaw(doc: { [x: string]: any }, type: string) {
+  static QueryListRaw(doc: DocumentBase, type: string) {
 
     const simleProperty = (prop: string, type: string) => {
       if (type === 'boolean') return `
@@ -603,22 +603,27 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
     };
 
     let query = ``;
-    const excludedProps = Type.isOperation(type) ? ['f1', 'f2', 'f3'] : [];
-    const props = Object.keys(excludeProps(doc)).filter(prop => !excludedProps.includes(prop));
+    const columns = this.getDocColumns(doc);
     const docProps = doc.Props();
-    for (const prop of props) {
-      if (!docProps[prop]) continue;
+    for (const prop of columns.special) {
       const type = docProps[prop].type || 'string';
-      if (type !== 'table') {
-        query += simleProperty(prop, type);
-      }
+      query += simleProperty(prop, type);
     }
 
     query = `
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]${query}
+      SELECT ${columns.common.map(e => `[${e}]`).join(',')}, [version]${query}
 `;
 
     return query;
+  }
+
+  static getDocColumns(doc: DocumentBase) {
+    const excludedProps = Type.isOperation(doc.type) ? ['f1', 'f2', 'f3'] : [];
+    const docProps = doc.Props();
+    const docPropsKeys = Object.keys(docProps);
+    const special = Object.keys(excludeProps(doc))
+      .filter(prop => !excludedProps.includes(prop) && docPropsKeys.includes(prop) && docProps[prop].type !== 'table');
+    return { special, common: `id,type,date,code,description,posted,deleted,isfolder,timestamp,parent,company,user`.split(',') };
   }
 
   static CatalogsTablesAndTriggers(dynamic = false) {
@@ -633,7 +638,7 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
       const doc = createDocument(registeredCatalog.type);
       query += `${this.typeSpliter(registeredCatalog.type, true)}
       RAISERROR('${registeredCatalog.type} start', 0 ,1) WITH NOWAIT;
-      GO;
+      GO
       ${this.CatalogTableAndTrigger(doc, registeredCatalog.type)}
       RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
       ${this.typeSpliter(registeredCatalog.type, false)}`;
@@ -642,12 +647,13 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
     return query;
   }
 
-  static CatalogTableAndTrigger(doc: { [x: string]: any }, type: string, asArrayOfQueries = false) {
+  static CatalogTableAndTrigger(doc: DocumentBase, type: string, asArrayOfQueries = false) {
 
     const ql = this.QueryListRaw(doc, type);
     const props = doc.Props();
     const queries: string[] = [];
-
+    const columns = this.getDocColumns(doc);
+    const allColumns = [...columns.common, ...columns.special].map(e => `[${e}]`).join(',');
     queries.push(`
     CREATE OR ALTER TRIGGER [${type}.t] ON [Documents] AFTER INSERT, UPDATE, DELETE
     AS
@@ -658,8 +664,8 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
       IF (@COUNT_D) = 1 DELETE FROM [${type}.v] WHERE id = (SELECT id FROM deleted WHERE type = N'${type}');
       IF (SELECT COUNT(*) FROM inserted WHERE type = N'${type}') = 0 RETURN;
 
-      INSERT INTO [${type}.v]
-    ${ql}
+      INSERT INTO [${type}.v] (${allColumns})
+    ${ql.replace(', [version]', '')}
     FROM inserted r
     WHERE [type] = N'${type}'
     END`);

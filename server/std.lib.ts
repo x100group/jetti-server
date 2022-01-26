@@ -756,13 +756,17 @@ async function executePOSTRequest(opts: { url: string, data: any, config?: any }
 async function updateSQLViewsByType(type: string, tx?: MSSQL, withSecurityPolicy = false): Promise<void> {
   if (!tx) tx = metaPoolTx();
   const queries = await getSQLMetaByType(type, withSecurityPolicy, true);
+  const errs: any[] = [];
   for (const querText of queries) {
     try {
       await tx.none(`execute sp_executesql @p1`, [querText]);
     } catch (error) {
-      if (queries.indexOf(querText)) throw new Error(error);
+      errs.push(error);
     }
   }
+
+  if (errs.length) throw new Error(JSON.stringify(errs));
+
 }
 
 async function getSQLMetaByType(type: string, withSecurityPolicy = false, asArrayOfQueries = false): Promise<string[] | string> {
