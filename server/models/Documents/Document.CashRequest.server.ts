@@ -33,15 +33,15 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     return new Function('', dynamicModule!['module']).bind(this)();
   }
 
-  async dynamicHandler(eventKey: string, tx: MSSQL) {
+  async dynamicHandler(eventKey: string, tx: MSSQL, value?: any) {
     const dynamicModule = await this.dynamicModule(tx);
     if (!dynamicModule || !dynamicModule[eventKey]) return false;
-    await dynamicModule[eventKey](this, tx);
+    await dynamicModule[eventKey](this, tx, value);
     return true;
   }
 
   async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
-    if (await this.dynamicHandler(`onValueChanged_${prop}`, tx)) return this;
+    if (await this.dynamicHandler(`onValueChanged_${prop}`, tx, value)) return this;
 
     let query = '';
     switch (prop) {
