@@ -414,7 +414,7 @@ export class DocumentCashRequest extends DocumentBase {
 
 export class PayRoll {
 
-  @Props({ type: 'Catalog.Person', label: 'Сотрудник', style: { width: '350px' } })
+  @Props({ type: 'Catalog.Person', label: 'Сотрудник', style: { width: '350px' }, onChangeServer: true })
   Employee: Ref = null;
 
   @Props({ type: 'number', label: 'К выплате', totals: 1 })
