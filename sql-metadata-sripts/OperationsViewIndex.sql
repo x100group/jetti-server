@@ -2,14 +2,7 @@
 ------------------------------ BEGIN Operation.AdditionalParametersDepartment ------------------------------
 
       RAISERROR('Operation.AdditionalParametersDepartment start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.AdditionalParametersDepartment.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.AdditionalParametersDepartment.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.AdditionalParametersDepartment.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -71,9 +64,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.AdditionalParametersDepartment.v] ON [O
       
 GO
 GRANT SELECT ON dbo.[Operation.AdditionalParametersDepartment.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.AdditionalParametersDepartment.v];
       RAISERROR('Operation.AdditionalParametersDepartment finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.AdditionalParametersDepartment ------------------------------
@@ -82,14 +72,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.AutoAdditionSettings ------------------------------
 
       RAISERROR('Operation.AutoAdditionSettings start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.AutoAdditionSettings.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.AutoAdditionSettings.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.AutoAdditionSettings.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -116,9 +99,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.AutoAdditionSettings.v] ON [Operation.A
       
 GO
 GRANT SELECT ON dbo.[Operation.AutoAdditionSettings.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.AutoAdditionSettings.v];
       RAISERROR('Operation.AutoAdditionSettings finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.AutoAdditionSettings ------------------------------
@@ -127,14 +107,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.CashShifts ------------------------------
 
       RAISERROR('Operation.CashShifts start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.CashShifts.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.CashShifts.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.CashShifts.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -167,9 +140,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.CashShifts.v] ON [Operation.CashShifts.
       
 GO
 GRANT SELECT ON dbo.[Operation.CashShifts.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.CashShifts.v];
       RAISERROR('Operation.CashShifts finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.CashShifts ------------------------------
@@ -178,14 +148,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.CHECK_JETTI_FRONT ------------------------------
 
       RAISERROR('Operation.CHECK_JETTI_FRONT start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.CHECK_JETTI_FRONT.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.CHECK_JETTI_FRONT.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.CHECK_JETTI_FRONT.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -226,9 +189,6 @@ CREATE UNIQUE NONCLUSTERED INDEX[Operation.CHECK_JETTI_FRONT.v.Customer] ON[Oper
 CREATE UNIQUE NONCLUSTERED INDEX[Operation.CHECK_JETTI_FRONT.v.Storehouse] ON[Operation.CHECK_JETTI_FRONT.v](Storehouse, id) INCLUDE([company]);
 GO
 GRANT SELECT ON dbo.[Operation.CHECK_JETTI_FRONT.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.CHECK_JETTI_FRONT.v];
       RAISERROR('Operation.CHECK_JETTI_FRONT finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.CHECK_JETTI_FRONT ------------------------------
@@ -237,14 +197,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.DeliveryAreas ------------------------------
 
       RAISERROR('Operation.DeliveryAreas start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.DeliveryAreas.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.DeliveryAreas.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.DeliveryAreas.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -268,9 +221,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.DeliveryAreas.v] ON [Operation.Delivery
       
 GO
 GRANT SELECT ON dbo.[Operation.DeliveryAreas.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.DeliveryAreas.v];
       RAISERROR('Operation.DeliveryAreas finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.DeliveryAreas ------------------------------
@@ -279,14 +229,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.LOT_Sales ------------------------------
 
       RAISERROR('Operation.LOT_Sales start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.LOT_Sales.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.LOT_Sales.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.LOT_Sales.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -319,9 +262,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.LOT_Sales.v] ON [Operation.LOT_Sales.v]
       
 GO
 GRANT SELECT ON dbo.[Operation.LOT_Sales.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.LOT_Sales.v];
       RAISERROR('Operation.LOT_Sales finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.LOT_Sales ------------------------------
@@ -330,14 +270,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.LotModelsVsDepartment ------------------------------
 
       RAISERROR('Operation.LotModelsVsDepartment start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.LotModelsVsDepartment.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.LotModelsVsDepartment.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.LotModelsVsDepartment.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -364,9 +297,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.LotModelsVsDepartment.v] ON [Operation.
       
 GO
 GRANT SELECT ON dbo.[Operation.LotModelsVsDepartment.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.LotModelsVsDepartment.v];
       RAISERROR('Operation.LotModelsVsDepartment finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.LotModelsVsDepartment ------------------------------
@@ -375,14 +305,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.OnlineSalesManagementSettings ------------------------------
 
       RAISERROR('Operation.OnlineSalesManagementSettings start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.OnlineSalesManagementSettings.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.OnlineSalesManagementSettings.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.OnlineSalesManagementSettings.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -410,9 +333,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.OnlineSalesManagementSettings.v] ON [Op
       
 GO
 GRANT SELECT ON dbo.[Operation.OnlineSalesManagementSettings.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.OnlineSalesManagementSettings.v];
       RAISERROR('Operation.OnlineSalesManagementSettings finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.OnlineSalesManagementSettings ------------------------------
@@ -421,14 +341,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.Status_Opening_Registry ------------------------------
 
       RAISERROR('Operation.Status_Opening_Registry start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.Status_Opening_Registry.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.Status_Opening_Registry.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.Status_Opening_Registry.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -455,9 +368,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.Status_Opening_Registry.v] ON [Operatio
       
 GO
 GRANT SELECT ON dbo.[Operation.Status_Opening_Registry.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.Status_Opening_Registry.v];
       RAISERROR('Operation.Status_Opening_Registry finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.Status_Opening_Registry ------------------------------
@@ -466,14 +376,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.SyncManual ------------------------------
 
       RAISERROR('Operation.SyncManual start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.SyncManual.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.SyncManual.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.SyncManual.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -502,9 +405,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.SyncManual.v] ON [Operation.SyncManual.
       
 GO
 GRANT SELECT ON dbo.[Operation.SyncManual.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.SyncManual.v];
       RAISERROR('Operation.SyncManual finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.SyncManual ------------------------------
@@ -513,14 +413,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.Перенос операций LIQPAY (Приватбанк) ------------------------------
 
       RAISERROR('Operation.Перенос операций LIQPAY (Приватбанк) start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.Перенос операций LIQPAY (Приватбанк).v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.Перенос операций LIQPAY (Приватбанк).v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.Перенос операций LIQPAY (Приватбанк).v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -547,9 +440,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.Перенос операций LIQPAY 
       
 GO
 GRANT SELECT ON dbo.[Operation.Перенос операций LIQPAY (Приватбанк).v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.Перенос операций LIQPAY (Приватбанк).v];
       RAISERROR('Operation.Перенос операций LIQPAY (Приватбанк) finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.Перенос операций LIQPAY (Приватбанк) ------------------------------
@@ -558,14 +448,7 @@ ALTER SECURITY POLICY[rls].[companyAccessPolicy]
 ------------------------------ BEGIN Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода ------------------------------
 
       RAISERROR('Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода start', 0 ,1) WITH NOWAIT;
-      
-      BEGIN TRY
-        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода.v];
-      END TRY
-      BEGIN CATCH
-      END CATCH
-GO
-CREATE OR ALTER VIEW dbo.[Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода.v] WITH SCHEMABINDING AS 
+      CREATE OR ALTER VIEW dbo.[Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода.v] WITH SCHEMABINDING AS 
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
@@ -592,9 +475,6 @@ CREATE UNIQUE CLUSTERED INDEX [Operation.Перенос операций LIQPAY 
       
 GO
 GRANT SELECT ON dbo.[Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода.v]TO jetti; 
-GO
-ALTER SECURITY POLICY[rls].[companyAccessPolicy]
-      ADD FILTER PREDICATE[rls].[fn_companyAccessPredicate]([company]) ON[dbo].[Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода.v];
       RAISERROR('Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода finish', 0 ,1) WITH NOWAIT;
       
 ------------------------------ BEGIN Operation.Перенос операций LIQPAY (Приватбанк) из прочего прихода ------------------------------
