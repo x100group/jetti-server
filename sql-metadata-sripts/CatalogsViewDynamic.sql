@@ -186,12 +186,12 @@ GO
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [BRMRules.Level3]
         , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [BRMRules.Level2]
         , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [BRMRules.Level1]
-      FROM [Catalog.BRMRules.v] d WITH (NOEXPAND)
-        LEFT JOIN [Catalog.BRMRules.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
-        LEFT JOIN [Catalog.BRMRules.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
-        LEFT JOIN [Catalog.BRMRules.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
-        LEFT JOIN [Catalog.BRMRules.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
-        LEFT JOIN [Catalog.BRMRules.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      FROM [Catalog.BRMRules.v] d 
+        LEFT JOIN [Catalog.BRMRules.v] l5  ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.BRMRules.v] l4  ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.BRMRules.v] l3  ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.BRMRules.v] l2  ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.BRMRules.v] l1  ON (l1.id = l2.parent)
       
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -504,12 +504,12 @@ GO
         , ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))) [MoneyDocument.Level3]
         , ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description)))) [MoneyDocument.Level2]
         , ISNULL(l1.description, ISNULL(l2.description, ISNULL(l3.description, ISNULL(l4.description, ISNULL(l5.description, d.description))))) [MoneyDocument.Level1]
-      FROM [Catalog.MoneyDocument.v] d WITH (NOEXPAND)
-        LEFT JOIN [Catalog.MoneyDocument.v] l5 WITH (NOEXPAND) ON (l5.id = d.parent)
-        LEFT JOIN [Catalog.MoneyDocument.v] l4 WITH (NOEXPAND) ON (l4.id = l5.parent)
-        LEFT JOIN [Catalog.MoneyDocument.v] l3 WITH (NOEXPAND) ON (l3.id = l4.parent)
-        LEFT JOIN [Catalog.MoneyDocument.v] l2 WITH (NOEXPAND) ON (l2.id = l3.parent)
-        LEFT JOIN [Catalog.MoneyDocument.v] l1 WITH (NOEXPAND) ON (l1.id = l2.parent)
+      FROM [Catalog.MoneyDocument.v] d 
+        LEFT JOIN [Catalog.MoneyDocument.v] l5  ON (l5.id = d.parent)
+        LEFT JOIN [Catalog.MoneyDocument.v] l4  ON (l4.id = l5.parent)
+        LEFT JOIN [Catalog.MoneyDocument.v] l3  ON (l3.id = l4.parent)
+        LEFT JOIN [Catalog.MoneyDocument.v] l2  ON (l2.id = l3.parent)
+        LEFT JOIN [Catalog.MoneyDocument.v] l1  ON (l1.id = l2.parent)
       
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]
@@ -603,6 +603,7 @@ GO
         , d.[PlaceHolder] [PlaceHolder]
         , d.[maxTotalOrder] [maxTotalOrder]
         , d.[appAvailable] [appAvailable]
+        , d.[DefaultMapService] [DefaultMapService]
       
         , ISNULL(l5.id, d.id) [RetailNetwork.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [RetailNetwork.Level4.id]

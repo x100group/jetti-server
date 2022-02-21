@@ -2,12 +2,9 @@
 ------------------------------ BEGIN Catalog.Account ------------------------------
 
 RAISERROR('Catalog.Account start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Account.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.Account.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.Account.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Account.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -22,18 +19,15 @@ CREATE OR ALTER VIEW dbo.[Catalog.Account.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Account.v] ON [Catalog.Account.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.deleted] ON [Catalog.Account.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.code.f] ON [Catalog.Account.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.description.f] ON [Catalog.Account.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.description] ON [Catalog.Account.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.code] ON [Catalog.Account.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.user] ON [Catalog.Account.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.company] ON [Catalog.Account.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.deleted] ON [Catalog.Account.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.code.f] ON [Catalog.Account.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.description.f] ON [Catalog.Account.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.description] ON [Catalog.Account.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.code] ON [Catalog.Account.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.user] ON [Catalog.Account.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Account.v.company] ON [Catalog.Account.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.Account.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Account.v];
 RAISERROR('Catalog.Account end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Account ------------------------------
@@ -41,12 +35,9 @@ RAISERROR('Catalog.Account end', 0 ,1) WITH NOWAIT;
 ------------------------------ BEGIN Catalog.AcquiringTerminal ------------------------------
 
 RAISERROR('Catalog.AcquiringTerminal start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.AcquiringTerminal.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.AcquiringTerminal.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.AcquiringTerminal.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -63,18 +54,15 @@ CREATE OR ALTER VIEW dbo.[Catalog.AcquiringTerminal.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.AcquiringTerminal.v] ON [Catalog.AcquiringTerminal.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.deleted] ON [Catalog.AcquiringTerminal.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.code.f] ON [Catalog.AcquiringTerminal.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.description.f] ON [Catalog.AcquiringTerminal.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.description] ON [Catalog.AcquiringTerminal.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.code] ON [Catalog.AcquiringTerminal.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.user] ON [Catalog.AcquiringTerminal.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.company] ON [Catalog.AcquiringTerminal.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.deleted] ON [Catalog.AcquiringTerminal.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.code.f] ON [Catalog.AcquiringTerminal.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.description.f] ON [Catalog.AcquiringTerminal.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.description] ON [Catalog.AcquiringTerminal.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.code] ON [Catalog.AcquiringTerminal.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.user] ON [Catalog.AcquiringTerminal.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.AcquiringTerminal.v.company] ON [Catalog.AcquiringTerminal.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.AcquiringTerminal.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.AcquiringTerminal.v];
 RAISERROR('Catalog.AcquiringTerminal end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.AcquiringTerminal ------------------------------
@@ -82,12 +70,9 @@ RAISERROR('Catalog.AcquiringTerminal end', 0 ,1) WITH NOWAIT;
 ------------------------------ BEGIN Catalog.Advertising ------------------------------
 
 RAISERROR('Catalog.Advertising start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Advertising.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.Advertising.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.Advertising.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Advertising.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -108,68 +93,25 @@ CREATE OR ALTER VIEW dbo.[Catalog.Advertising.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Advertising.v] ON [Catalog.Advertising.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.deleted] ON [Catalog.Advertising.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.code.f] ON [Catalog.Advertising.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.description.f] ON [Catalog.Advertising.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.description] ON [Catalog.Advertising.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.code] ON [Catalog.Advertising.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.user] ON [Catalog.Advertising.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.company] ON [Catalog.Advertising.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.deleted] ON [Catalog.Advertising.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.code.f] ON [Catalog.Advertising.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.description.f] ON [Catalog.Advertising.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.description] ON [Catalog.Advertising.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.code] ON [Catalog.Advertising.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.user] ON [Catalog.Advertising.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Advertising.v.company] ON [Catalog.Advertising.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.Advertising.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Advertising.v];
 RAISERROR('Catalog.Advertising end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Advertising ------------------------------
 
------------------------------- BEGIN Catalog.BRMRules ------------------------------
-
-RAISERROR('Catalog.BRMRules start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BRMRules.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.BRMRules.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."functionName"')), '') [functionName]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."weight"')), 0) [weight]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.BRMRules'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX [Catalog.BRMRules.v] ON [Catalog.BRMRules.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BRMRules.v.deleted] ON [Catalog.BRMRules.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BRMRules.v.code.f] ON [Catalog.BRMRules.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BRMRules.v.description.f] ON [Catalog.BRMRules.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BRMRules.v.description] ON [Catalog.BRMRules.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BRMRules.v.code] ON [Catalog.BRMRules.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BRMRules.v.user] ON [Catalog.BRMRules.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BRMRules.v.company] ON [Catalog.BRMRules.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.BRMRules.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BRMRules.v];
-RAISERROR('Catalog.BRMRules end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.BRMRules ------------------------------
-
 ------------------------------ BEGIN Catalog.BusinessRegion ------------------------------
 
 RAISERROR('Catalog.BusinessRegion start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.BusinessRegion.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.BusinessRegion.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.BusinessRegion.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -195,18 +137,15 @@ CREATE OR ALTER VIEW dbo.[Catalog.BusinessRegion.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.BusinessRegion.v] ON [Catalog.BusinessRegion.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.deleted] ON [Catalog.BusinessRegion.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.code.f] ON [Catalog.BusinessRegion.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.description.f] ON [Catalog.BusinessRegion.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.description] ON [Catalog.BusinessRegion.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.code] ON [Catalog.BusinessRegion.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.user] ON [Catalog.BusinessRegion.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.company] ON [Catalog.BusinessRegion.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.deleted] ON [Catalog.BusinessRegion.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.code.f] ON [Catalog.BusinessRegion.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.description.f] ON [Catalog.BusinessRegion.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.description] ON [Catalog.BusinessRegion.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.code] ON [Catalog.BusinessRegion.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.user] ON [Catalog.BusinessRegion.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.BusinessRegion.v.company] ON [Catalog.BusinessRegion.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.BusinessRegion.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.BusinessRegion.v];
 RAISERROR('Catalog.BusinessRegion end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.BusinessRegion ------------------------------
@@ -214,12 +153,9 @@ RAISERROR('Catalog.BusinessRegion end', 0 ,1) WITH NOWAIT;
 ------------------------------ BEGIN Catalog.Counterpartie ------------------------------
 
 RAISERROR('Catalog.Counterpartie start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Counterpartie.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.Counterpartie.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.Counterpartie.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -247,18 +183,15 @@ CREATE OR ALTER VIEW dbo.[Catalog.Counterpartie.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Counterpartie.v] ON [Catalog.Counterpartie.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.deleted] ON [Catalog.Counterpartie.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.code.f] ON [Catalog.Counterpartie.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.description.f] ON [Catalog.Counterpartie.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.description] ON [Catalog.Counterpartie.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.code] ON [Catalog.Counterpartie.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.user] ON [Catalog.Counterpartie.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.company] ON [Catalog.Counterpartie.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.deleted] ON [Catalog.Counterpartie.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.code.f] ON [Catalog.Counterpartie.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.description.f] ON [Catalog.Counterpartie.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.description] ON [Catalog.Counterpartie.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.code] ON [Catalog.Counterpartie.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.user] ON [Catalog.Counterpartie.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Counterpartie.v.company] ON [Catalog.Counterpartie.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.Counterpartie.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Counterpartie.v];
 RAISERROR('Catalog.Counterpartie end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Counterpartie ------------------------------
@@ -266,12 +199,9 @@ RAISERROR('Catalog.Counterpartie end', 0 ,1) WITH NOWAIT;
 ------------------------------ BEGIN Catalog.Department.Company ------------------------------
 
 RAISERROR('Catalog.Department.Company start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Department.Company.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.Department.Company.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.Department.Company.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Department.Company.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -288,18 +218,15 @@ CREATE OR ALTER VIEW dbo.[Catalog.Department.Company.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Department.Company.v] ON [Catalog.Department.Company.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.deleted] ON [Catalog.Department.Company.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.code.f] ON [Catalog.Department.Company.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.description.f] ON [Catalog.Department.Company.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.description] ON [Catalog.Department.Company.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.code] ON [Catalog.Department.Company.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.user] ON [Catalog.Department.Company.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.company] ON [Catalog.Department.Company.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.deleted] ON [Catalog.Department.Company.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.code.f] ON [Catalog.Department.Company.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.description.f] ON [Catalog.Department.Company.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.description] ON [Catalog.Department.Company.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.code] ON [Catalog.Department.Company.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.user] ON [Catalog.Department.Company.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Department.Company.v.company] ON [Catalog.Department.Company.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.Department.Company.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Department.Company.v];
 RAISERROR('Catalog.Department.Company end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Department.Company ------------------------------
@@ -307,12 +234,9 @@ RAISERROR('Catalog.Department.Company end', 0 ,1) WITH NOWAIT;
 ------------------------------ BEGIN Catalog.JobTitle ------------------------------
 
 RAISERROR('Catalog.JobTitle start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.JobTitle.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.JobTitle.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.JobTitle.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -328,18 +252,15 @@ CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.JobTitle.v] ON [Catalog.JobTitle.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.deleted] ON [Catalog.JobTitle.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.code.f] ON [Catalog.JobTitle.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.description.f] ON [Catalog.JobTitle.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.description] ON [Catalog.JobTitle.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.code] ON [Catalog.JobTitle.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.user] ON [Catalog.JobTitle.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.company] ON [Catalog.JobTitle.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.deleted] ON [Catalog.JobTitle.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.code.f] ON [Catalog.JobTitle.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.description.f] ON [Catalog.JobTitle.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.description] ON [Catalog.JobTitle.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.code] ON [Catalog.JobTitle.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.user] ON [Catalog.JobTitle.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.v.company] ON [Catalog.JobTitle.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.JobTitle.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.JobTitle.v];
 RAISERROR('Catalog.JobTitle end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.JobTitle ------------------------------
@@ -347,12 +268,9 @@ RAISERROR('Catalog.JobTitle end', 0 ,1) WITH NOWAIT;
 ------------------------------ BEGIN Catalog.JobTitle.Functional ------------------------------
 
 RAISERROR('Catalog.JobTitle.Functional start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.JobTitle.Functional.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.JobTitle.Functional.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.JobTitle.Functional.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.Functional.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -364,71 +282,25 @@ CREATE OR ALTER VIEW dbo.[Catalog.JobTitle.Functional.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.JobTitle.Functional.v] ON [Catalog.JobTitle.Functional.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.deleted] ON [Catalog.JobTitle.Functional.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.code.f] ON [Catalog.JobTitle.Functional.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.description.f] ON [Catalog.JobTitle.Functional.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.description] ON [Catalog.JobTitle.Functional.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.code] ON [Catalog.JobTitle.Functional.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.user] ON [Catalog.JobTitle.Functional.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.company] ON [Catalog.JobTitle.Functional.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.deleted] ON [Catalog.JobTitle.Functional.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.code.f] ON [Catalog.JobTitle.Functional.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.description.f] ON [Catalog.JobTitle.Functional.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.description] ON [Catalog.JobTitle.Functional.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.code] ON [Catalog.JobTitle.Functional.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.user] ON [Catalog.JobTitle.Functional.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.JobTitle.Functional.v.company] ON [Catalog.JobTitle.Functional.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.JobTitle.Functional.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.JobTitle.Functional.v];
 RAISERROR('Catalog.JobTitle.Functional end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.JobTitle.Functional ------------------------------
 
------------------------------- BEGIN Catalog.MoneyDocument ------------------------------
-
-RAISERROR('Catalog.MoneyDocument start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.MoneyDocument.v];
-END TRY
-BEGIN CATCH
-END CATCH;
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.MoneyDocument.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."kind"')) [kind]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Owner"')) [Owner]
-      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Price"')), 0) [Price]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."ExpiredAt"'),127) [ExpiredAt]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.MoneyDocument'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX [Catalog.MoneyDocument.v] ON [Catalog.MoneyDocument.v](id);
-        
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.MoneyDocument.v.deleted] ON [Catalog.MoneyDocument.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.MoneyDocument.v.code.f] ON [Catalog.MoneyDocument.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.MoneyDocument.v.description.f] ON [Catalog.MoneyDocument.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.MoneyDocument.v.description] ON [Catalog.MoneyDocument.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.MoneyDocument.v.code] ON [Catalog.MoneyDocument.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.MoneyDocument.v.user] ON [Catalog.MoneyDocument.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.MoneyDocument.v.company] ON [Catalog.MoneyDocument.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.MoneyDocument.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.MoneyDocument.v];
-RAISERROR('Catalog.MoneyDocument end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.MoneyDocument ------------------------------
-
 ------------------------------ BEGIN Catalog.OrderSource ------------------------------
 
 RAISERROR('Catalog.OrderSource start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.OrderSource.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.OrderSource.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.OrderSource.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.OrderSource.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -443,18 +315,15 @@ CREATE OR ALTER VIEW dbo.[Catalog.OrderSource.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.OrderSource.v] ON [Catalog.OrderSource.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.deleted] ON [Catalog.OrderSource.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.code.f] ON [Catalog.OrderSource.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.description.f] ON [Catalog.OrderSource.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.description] ON [Catalog.OrderSource.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.code] ON [Catalog.OrderSource.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.user] ON [Catalog.OrderSource.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.company] ON [Catalog.OrderSource.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.deleted] ON [Catalog.OrderSource.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.code.f] ON [Catalog.OrderSource.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.description.f] ON [Catalog.OrderSource.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.description] ON [Catalog.OrderSource.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.code] ON [Catalog.OrderSource.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.user] ON [Catalog.OrderSource.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.OrderSource.v.company] ON [Catalog.OrderSource.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.OrderSource.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.OrderSource.v];
 RAISERROR('Catalog.OrderSource end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.OrderSource ------------------------------
@@ -462,12 +331,9 @@ RAISERROR('Catalog.OrderSource end', 0 ,1) WITH NOWAIT;
 ------------------------------ BEGIN Catalog.RetailNetwork ------------------------------
 
 RAISERROR('Catalog.RetailNetwork start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.RetailNetwork.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.RetailNetwork.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.RetailNetwork.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.RetailNetwork.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -487,24 +353,22 @@ CREATE OR ALTER VIEW dbo.[Catalog.RetailNetwork.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(250), JSON_VALUE(doc,N'$."PlaceHolder"')), '') [PlaceHolder]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."maxTotalOrder"')), 0) [maxTotalOrder]
       , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."appAvailable"')), 0) [appAvailable]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."DefaultMapService"')), '') [DefaultMapService]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.RetailNetwork'
 ;
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.RetailNetwork.v] ON [Catalog.RetailNetwork.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.deleted] ON [Catalog.RetailNetwork.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.code.f] ON [Catalog.RetailNetwork.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.description.f] ON [Catalog.RetailNetwork.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.description] ON [Catalog.RetailNetwork.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.code] ON [Catalog.RetailNetwork.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.user] ON [Catalog.RetailNetwork.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.company] ON [Catalog.RetailNetwork.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.deleted] ON [Catalog.RetailNetwork.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.code.f] ON [Catalog.RetailNetwork.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.description.f] ON [Catalog.RetailNetwork.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.description] ON [Catalog.RetailNetwork.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.code] ON [Catalog.RetailNetwork.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.user] ON [Catalog.RetailNetwork.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.RetailNetwork.v.company] ON [Catalog.RetailNetwork.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.RetailNetwork.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.RetailNetwork.v];
 RAISERROR('Catalog.RetailNetwork end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.RetailNetwork ------------------------------
@@ -512,12 +376,9 @@ RAISERROR('Catalog.RetailNetwork end', 0 ,1) WITH NOWAIT;
 ------------------------------ BEGIN Catalog.Specification ------------------------------
 
 RAISERROR('Catalog.Specification start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Specification.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.Specification.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.Specification.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Specification.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -536,18 +397,15 @@ CREATE OR ALTER VIEW dbo.[Catalog.Specification.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Specification.v] ON [Catalog.Specification.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.deleted] ON [Catalog.Specification.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.code.f] ON [Catalog.Specification.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.description.f] ON [Catalog.Specification.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.description] ON [Catalog.Specification.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.code] ON [Catalog.Specification.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.user] ON [Catalog.Specification.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.company] ON [Catalog.Specification.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.deleted] ON [Catalog.Specification.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.code.f] ON [Catalog.Specification.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.description.f] ON [Catalog.Specification.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.description] ON [Catalog.Specification.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.code] ON [Catalog.Specification.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.user] ON [Catalog.Specification.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Specification.v.company] ON [Catalog.Specification.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.Specification.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Specification.v];
 RAISERROR('Catalog.Specification end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Specification ------------------------------
@@ -555,12 +413,9 @@ RAISERROR('Catalog.Specification end', 0 ,1) WITH NOWAIT;
 ------------------------------ BEGIN Catalog.Vehicle ------------------------------
 
 RAISERROR('Catalog.Vehicle start', 0 ,1) WITH NOWAIT;
-      
-BEGIN TRY
-  ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[Catalog.Vehicle.v];
-END TRY
-BEGIN CATCH
-END CATCH;
+      DROP TABLE IF EXISTS dbo.[Catalog.Vehicle.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.Vehicle.t]
 GO
 CREATE OR ALTER VIEW dbo.[Catalog.Vehicle.v] WITH SCHEMABINDING AS
       SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
@@ -579,18 +434,15 @@ CREATE OR ALTER VIEW dbo.[Catalog.Vehicle.v] WITH SCHEMABINDING AS
 GO
 CREATE UNIQUE CLUSTERED INDEX [Catalog.Vehicle.v] ON [Catalog.Vehicle.v](id);
         
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.deleted] ON [Catalog.Vehicle.v](deleted,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.code.f] ON [Catalog.Vehicle.v](parent,isfolder,code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.description.f] ON [Catalog.Vehicle.v](parent,isfolder,description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.description] ON [Catalog.Vehicle.v](description,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.code] ON [Catalog.Vehicle.v](code,id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.user] ON [Catalog.Vehicle.v]([user],id);
-CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.company] ON [Catalog.Vehicle.v](company,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.deleted] ON [Catalog.Vehicle.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.code.f] ON [Catalog.Vehicle.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.description.f] ON [Catalog.Vehicle.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.description] ON [Catalog.Vehicle.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.code] ON [Catalog.Vehicle.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.user] ON [Catalog.Vehicle.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Vehicle.v.company] ON [Catalog.Vehicle.v](company,id);
 GO
 GRANT SELECT ON dbo.[Catalog.Vehicle.v]TO jetti;
-GO
-
-ALTER SECURITY POLICY [rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON [dbo].[Catalog.Vehicle.v];
 RAISERROR('Catalog.Vehicle end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Vehicle ------------------------------

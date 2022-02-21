@@ -592,6 +592,7 @@ GO
         , d.[menu] [menu]
         , d.[presentation] [presentation]
         , d.[hierarchy] [hierarchy]
+        , d.[storedIn] [storedIn]
         , d.[moduleClient] [moduleClient]
         , d.[moduleServer] [moduleServer]
       
@@ -3721,6 +3722,8 @@ GO
         , d.[tempSalaryKind] [tempSalaryKind]
         , ISNULL([Manager.v].description, '') [Manager.value], d.[Manager] [Manager.id], [Manager.v].type [Manager.type]
         , ISNULL([ResponsiblePerson.v].description, '') [ResponsiblePerson.value], d.[ResponsiblePerson] [ResponsiblePerson.id], [ResponsiblePerson.v].type [ResponsiblePerson.type]
+        , d.[StartDate] [StartDate]
+        , d.[EndDate] [EndDate]
       
         , ISNULL(l5.id, d.id) [CashRequest.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [CashRequest.Level4.id]
