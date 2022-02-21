@@ -36,11 +36,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   async dynamicHandler(eventKey: string, tx: MSSQL, value?: any) {
     const dynamicModule = await this.dynamicModule(tx);
     if (!dynamicModule || !dynamicModule[eventKey]) return false;
-    await dynamicModule[eventKey](this, tx, value);
-    return true;
+    const handleResult = await dynamicModule[eventKey](this, tx, value);
+    return handleResult || true;
   }
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
+  async onValueChanged(prop: string, value: any, tx: MSSQL) {
     if (await this.dynamicHandler(`onValueChanged_${prop}`, tx, value)) return this;
 
     let query = '';
@@ -174,7 +174,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     }
   }
 
-  async baseOn(source: Ref, tx: MSSQL): Promise<this> {
+  async baseOn(source: Ref, tx: MSSQL) {
     return this;
   }
 
@@ -498,6 +498,11 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 
   async onPost(tx: MSSQL) {
 
+    const dynamicPost = await this.dynamicHandler('onPost', tx);
+    if (dynamicPost && dynamicPost.Accumulation) return dynamicPost;
+
+    const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
+
     const superuser = await this.isSuperuser(tx);
     if (!superuser) {
       const taxFields = [
@@ -542,7 +547,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       else await this.FillTaxInfo(tx);
     }
 
-    const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
+
 
     if (this.Status === 'PREPARED' || this.Status === 'REJECTED') {
       return Registers;
