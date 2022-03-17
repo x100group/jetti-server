@@ -645,6 +645,23 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       (query, [this.id]);
   }
 
+  public async getAmountBalanceWithCashRecipients(
+    tx: MSSQL, onlyWithPositiveBalance: boolean):
+    Promise<{ CashRecipient: TypesCashRecipient, Amount: number }[]> {
+    const query = `
+    SELECT
+        Balance.[CashRecipient] AS CashRecipient,
+        SUM(Balance.[Amount]) AS Amount
+    FROM [dbo].[Register.Accumulation.CashToPay] AS Balance
+    WHERE Balance.[CashRequest] = @p1
+    GROUP BY
+        Balance.[CashRecipient]
+    ${onlyWithPositiveBalance ? 'HAVING SUM(Balance.[Amount]) > 0' : ''}`;
+
+    return await tx.manyOrNone<{ CashRecipient: TypesCashRecipient, Amount: number }>
+      (query, [this.id]);
+  }
+
   // возвращает связанные документы
   async getRelatedDocuments(tx: MSSQL): Promise<{ id: string, description: string }[]> {
     const query = `
@@ -673,25 +690,23 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     if (await this.isSuperuser(tx)) return;
     if (docOperation.Operation === '6A374EA0-4F57-11EA-821D-9904759DD7D7') return; // ЗАКРЫТИЕ - Заявки на расход ДС
     if (this.Operation === 'Выплата заработной платы') {
-      const rest = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx, false);
-      const Errors: { Employee, BankAccount, Amount: number }[] = [];
+      const rest = await this.getAmountBalanceWithCashRecipients(tx, false);
+      const Errors: { Employee, Amount: number }[] = [];
       rest.forEach(el => {
-        (docOperation['PayRolls'] as Array<{ Employee, BankAccount, Amount: number, AmountPenalty: number }>)
-          .filter(pr => (pr.Employee === el.CashRecipient &&
-            (pr.BankAccount === el.BankAccountPerson || !el.BankAccountPerson && !pr.BankAccount)
+        (docOperation['PayRolls'] as Array<{ Employee, Amount: number, AmountPenalty: number }>)
+          .filter(pr => (pr.Employee === el.CashRecipient
             && el.Amount < pr.Amount - (pr.AmountPenalty || 0)))
           .forEach(er => {
-            Errors.push({ Employee: er.Employee, BankAccount: er.BankAccount, Amount: er.Amount - el.Amount - (er.AmountPenalty || 0) });
+            Errors.push({ Employee: er.Employee,  Amount: er.Amount - el.Amount - (er.AmountPenalty || 0) });
           });
       });
       if (Errors.length) {
         let ErrorText = '';
         const query = `
-          SELECT Description Employee FROM dbo.Documents WHERE id = @p1
-          SELECT Description BankAccount FROM dbo.Documents WHERE id = @p2`;
+          SELECT Description Employee FROM dbo.Documents WHERE id = @p1`;
         for (const err of Errors) {
-          const descriptions = await tx.oneOrNone<{ Employee: string, BankAccount: string }>(query, [err.Employee, err.BankAccount]);
-          ErrorText += `\n\t ${descriptions!.Employee} ${descriptions!.BankAccount ? 'по ' + descriptions!.BankAccount : ''} на ${err.Amount.toFixed(2)} `;
+          const descriptions = await tx.oneOrNone<{ Employee: string }>(query, [err.Employee]);
+          ErrorText += `\n\t ${descriptions!.Employee} на ${err.Amount.toFixed(2)} `;
         }
         throw new Error(`${docOperation.description} не может быть проведен, первышение остатка по заявке для: ${ErrorText} `);
       }
