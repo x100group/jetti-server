@@ -901,7 +901,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, CashFlow, CashRequest, Contract, BankAccountPerson, Department, OperationType, Loan, CashOrBank, CashRecipient, ExpenseOrBalance, ExpenseAnalytics, BalanceAnalytics, PayDay
+        d.exchangeRate, currency, CashFlow, Status, CashRequest, Contract, BankAccountPerson, Department, OperationType, Loan, CashOrBank, CashRecipient, ExpenseOrBalance, ExpenseAnalytics, BalanceAnalytics, PayDay
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM [dbo].Accumulation r
         CROSS APPLY OPENJSON (data, N'$')
@@ -909,6 +909,7 @@
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [Status] NVARCHAR(250) N'$.Status'
         , [CashRequest] UNIQUEIDENTIFIER N'$.CashRequest'
         , [Contract] UNIQUEIDENTIFIER N'$.Contract'
         , [BankAccountPerson] UNIQUEIDENTIFIER N'$.BankAccountPerson'

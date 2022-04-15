@@ -410,6 +410,36 @@ GRANT SELECT ON dbo.[Operation.SyncManual.v]TO jetti;
 ------------------------------ BEGIN Operation.SyncManual ------------------------------
 
       
+------------------------------ BEGIN Operation.ЗНРС ------------------------------
+
+      RAISERROR('Operation.ЗНРС start', 0 ,1) WITH NOWAIT;
+      CREATE OR ALTER VIEW dbo.[Operation.ЗНРС.v] WITH SCHEMABINDING AS 
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Group"')) [Group]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Operation"')) [Operation]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Amount"')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."PersonOwner"')) [PersonOwner]
+      FROM dbo.[Documents]
+      WHERE [operation] = '89FDA830-7E92-11EC-94A9-8D5669150773'
+; 
+GO
+CREATE UNIQUE CLUSTERED INDEX [Operation.ЗНРС.v] ON [Operation.ЗНРС.v](id);
+      CREATE UNIQUE NONCLUSTERED INDEX[Operation.ЗНРС.v.date] ON[Operation.ЗНРС.v](date, id) INCLUDE([company]);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.ЗНРС.v.parent] ON [Operation.ЗНРС.v](parent,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.ЗНРС.v.deleted] ON [Operation.ЗНРС.v](deleted,date,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.ЗНРС.v.code] ON [Operation.ЗНРС.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.ЗНРС.v.user] ON [Operation.ЗНРС.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Operation.ЗНРС.v.company] ON [Operation.ЗНРС.v](company,id);
+      
+GO
+GRANT SELECT ON dbo.[Operation.ЗНРС.v]TO jetti; 
+      RAISERROR('Operation.ЗНРС finish', 0 ,1) WITH NOWAIT;
+      
+------------------------------ BEGIN Operation.ЗНРС ------------------------------
+
+      
 ------------------------------ BEGIN Operation.Перенос операций LIQPAY (Приватбанк) ------------------------------
 
       RAISERROR('Operation.Перенос операций LIQPAY (Приватбанк) start', 0 ,1) WITH NOWAIT;

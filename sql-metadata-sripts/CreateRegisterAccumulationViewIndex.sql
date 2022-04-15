@@ -722,6 +722,7 @@
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"')) [CashFlow]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, '$."Status"')) [Status]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashRequest"')) [CashRequest]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) [Contract]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccountPerson"')) [BankAccountPerson]
@@ -740,7 +741,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.CashToPay';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.id] ON [Register.Accumulation.CashToPay.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay.v]([date], [document], [company], [calculated], [parent], [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount], [Amount.In], [Amount.Out]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.CashToPay] ON [Register.Accumulation.CashToPay.v]([date], [document], [company], [calculated], [parent], [currency], [CashFlow], [Status], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay], [Amount], [Amount.In], [Amount.Out]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.CashToPay] AS SELECT * FROM [Register.Accumulation.CashToPay.v] WITH (NOEXPAND);
     GO

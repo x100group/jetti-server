@@ -1640,7 +1640,7 @@
       INSERT INTO [Register.Accumulation.CashToPay]
       SELECT
         r.id, r.parent, r.date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
+        d.exchangeRate, [currency], [CashFlow], [Status], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
         FROM inserted r
         CROSS APPLY OPENJSON (data, N'$')
@@ -1648,6 +1648,7 @@
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [Status] NVARCHAR(250) N'$.Status'
         , [CashRequest] UNIQUEIDENTIFIER N'$.CashRequest'
         , [Contract] UNIQUEIDENTIFIER N'$.Contract'
         , [BankAccountPerson] UNIQUEIDENTIFIER N'$.BankAccountPerson'
@@ -1670,7 +1671,7 @@
     DROP VIEW IF EXISTS [Register.Accumulation.CashToPay.v];
     SELECT
       r.id, r.parent,  ISNULL(CAST(r.date AS DATE), '1800-01-01') [date], r.document, r.company, r.kind, r.calculated,
-      d.exchangeRate, [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
+      d.exchangeRate, [currency], [CashFlow], [Status], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics], [PayDay]
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
     INTO [Register.Accumulation.CashToPay]
     FROM [Accumulation] r
@@ -1679,6 +1680,7 @@
       exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
         , [CashFlow] UNIQUEIDENTIFIER N'$.CashFlow'
+        , [Status] NVARCHAR(250) N'$.Status'
         , [CashRequest] UNIQUEIDENTIFIER N'$.CashRequest'
         , [Contract] UNIQUEIDENTIFIER N'$.Contract'
         , [BankAccountPerson] UNIQUEIDENTIFIER N'$.BankAccountPerson'

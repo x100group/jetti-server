@@ -899,6 +899,7 @@
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"')) AS [CashFlow]
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."Status"')) AS [Status]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashRequest"')) AS [CashRequest]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"')) AS [Contract]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccountPerson"')) AS [BankAccountPerson]
@@ -920,6 +921,7 @@
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashFlow"'))
+        , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."Status"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CashRequest"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Contract"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BankAccountPerson"'))
@@ -932,7 +934,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ExpenseAnalytics"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."BalanceAnalytics"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.TO] ON [dbo].[Register.Accumulation.CashToPay.TO.v] ([date], [company], [currency], [CashFlow], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.CashToPay.TO] ON [dbo].[Register.Accumulation.CashToPay.TO.v] ([date], [company], [currency], [CashFlow], [Status], [CashRequest], [Contract], [BankAccountPerson], [Department], [OperationType], [Loan], [CashOrBank], [CashRecipient], [ExpenseOrBalance], [ExpenseAnalytics], [BalanceAnalytics]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.CashToPay.TO] AS SELECT * FROM [dbo].[Register.Accumulation.CashToPay.TO.v] WITH (NOEXPAND);
       GO
