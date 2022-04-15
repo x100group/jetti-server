@@ -24,7 +24,7 @@ spec:
         - name: DB_PORT
           value: "1433"
         - name: DB_HOST
-          value: JETTI-DB-01
+          value: JETTI-DB-01-NEW
         - name: DB_NAME
           value: smv
         - name: DB_USER
