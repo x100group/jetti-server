@@ -13,12 +13,24 @@ export const router = express.Router();
 router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
+    if (!req.query.filter) return [];
     const type = req.params.type as string;
     const filterLike = req.query.filter as string;
     const filter = req.body.filters as FormListFilter[];
-    const filterQuery = await filterBuilder(filter, sdb);
+    const isDoc = Type.isDocument(type);
+
+    const filterQuery = await filterBuilder(filter, sdb, type);
     let query = '';
-    const queryOrder = 'type, description, deleted, code'.split(', ');
+
+    const queryWhere = () => isDoc ?
+      `code LIKE N'${filterLike}%'`
+      :
+      `(description LIKE N'%${filterLike}%' OR code LIKE N'%${filterLike}%')`;
+
+    const queryOrder = () => isDoc ?
+      `date desc`
+      :
+      `LEN([description]), type, description, deleted, code`;
 
     if (Type.isType(type)) {
       const select = createTypes(type as any).getTypes()
@@ -28,18 +40,16 @@ router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunc
             description: (createDocument(el as DocTypes).Prop() as DocumentOptions).description
           }));
       query = suggestQuery(select);
-    } else if (type === 'Catalog.Subcount') query = suggestQuery(allTypes(), 'Catalog.Subcount');
+    } else if (type === 'Catalog.Subcount')
+      query = suggestQuery(allTypes(), 'Catalog.Subcount');
     else {
       filterQuery.where += userContextFilter(sdb.userContext, type === 'Catalog.Company' ? 'id' : 'company');
       query = `${filterQuery.tempTable}
     SELECT top 10 id as id, description as value, code as code, description + ' (' + code + ')' as description, type as type, isfolder, deleted
     FROM [${type}.v] ${SQLGenegatorMetadata.noExpander(type)}
     WHERE ${filterQuery.where}`;
-      queryOrder.unshift('LEN([description])');
     }
-    query = query.concat(
-      `AND (description LIKE @p1 OR code LIKE @p1)
-    ORDER BY ${queryOrder.join(', ')}`);
+    query += `AND ${queryWhere()}\nORDER BY ${queryOrder()}`;
     const data = await sdb.manyOrNone<ISuggest>(query, ['%' + filterLike + '%']);
     res.json(data);
   } catch (err) { next(err); }

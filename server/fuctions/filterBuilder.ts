@@ -1,4 +1,4 @@
-import { FormListFilter, FilterInterval } from 'jetti-middle';
+import { FormListFilter, FilterInterval, Type } from 'jetti-middle';
 import { MSSQL } from '../mssql';
 import { lib } from '../std.lib';
 
@@ -12,7 +12,7 @@ export interface IUserContext {
   email: string;
 }
 
-const defaultExcludesTypes = ['Catalog.Operation.Group', 'Catalog.User', 'Catalog.Operation'];
+const excludesTypes = ['Catalog.Operation.Group', 'Catalog.User', 'Catalog.Operation'];
 
 export function userContextFilter(context: IUserContext, compField = '"company.id"') {
   return context.isAdmin ? '' :
@@ -23,10 +23,14 @@ export function userContextFilter(context: IUserContext, compField = '"company.i
       AND company = ${compField})`;
 }
 
-export async function filterBuilder(filter: FormListFilter[], tx: MSSQL, excludesTypes = defaultExcludesTypes): Promise<IQueryFilter> {
+export async function filterBuilder(filter: FormListFilter[], tx: MSSQL, type: string): Promise<IQueryFilter> {
 
   let where = ' (1 = 1) ';
   let tempTable = '';
+
+  const isDoc = Type.isDocument(type);
+  const filterLikeCode = filter.find(e => e.left === 'code' && e.center === 'like');
+  if (isDoc && filterLikeCode) filterLikeCode.center = 'start with';
 
   const mapFilter = async (f: FormListFilter) => ({
     ...f,

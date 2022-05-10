@@ -69,7 +69,7 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   orderbyAfter = orderbyAfter.slice(0, -2);
 
   valueOrder = valueOrder.filter(el => !(el.value === null || el.value === undefined));
-  const queryFilter = await filterBuilder(params.filter, tx);
+  const queryFilter = await filterBuilder(params.filter, tx, params.type);
   if (!Type.isType(params.type))
     queryFilter.where += userContextFilter(tx.userContext, params.type === 'Catalog.Company' ? 'd.id' : `"company.id"`);
 

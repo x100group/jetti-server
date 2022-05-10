@@ -320,6 +320,8 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       if (prop.isComplex) queryOb.joins.push(leftJoin(prop.key, prop.type));
     }
 
+    const recieverType = await this.getRecieverType();
+
     let query = `
     SELECT
     d.id "Object",
@@ -328,7 +330,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
     ${queryOb.joins.join(`\n`)}
     WHERE 1 = 1
     AND d."type" = N'${(await this.getRecieverType())}'
-    AND ${(await filterBuilder(listFilter, this.getTX())).where.replace(/"/g, '').replace('d.user', 'd."user"')}`.trim();
+    AND ${(await filterBuilder(listFilter, this.getTX(), recieverType)).where.replace(/"/g, '').replace('d.user', 'd."user"')}`.trim();
     if (this.OperationType) query += `AND d.Operation = '${this.OperationType}'`;
     return query;
   }
