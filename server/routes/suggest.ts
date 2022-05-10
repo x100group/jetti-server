@@ -15,7 +15,7 @@ router.post('/suggest/:type', async (req: Request, res: Response, next: NextFunc
     const sdb = SDB(req);
     if (!req.query.filter) return [];
     const type = req.params.type as string;
-    const filterLike = req.query.filter as string;
+    const filterLike = (req.query.filter as string || '').replace(/'/g, '');
     const filter = req.body.filters as FormListFilter[];
     const isDoc = Type.isDocument(type);
 
