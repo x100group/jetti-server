@@ -54,6 +54,8 @@
         , d.[AreaTrade] [AreaTrade]
         , d.[AreaKitchen] [AreaKitchen]
         , d.[MaxOrdersPerHour] [MaxOrdersPerHour]
+        , d.[provider] [provider]
+        , d.[outletId] [outletId]
       FROM [Operation.AdditionalParametersDepartment.v] d WITH (NOEXPAND)
         LEFT JOIN dbo.[Documents] [parent] ON [parent].id = d.[parent]
         LEFT JOIN dbo.[Catalog.User.v] [user] WITH (NOEXPAND) ON [user].id = d.[user]

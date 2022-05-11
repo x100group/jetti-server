@@ -50,6 +50,8 @@
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."AreaTrade"')), 0) [AreaTrade]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."AreaKitchen"')), 0) [AreaKitchen]
       , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."MaxOrdersPerHour"')), 0) [MaxOrdersPerHour]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."provider"')), '') [provider]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."outletId"')), '') [outletId]
       FROM dbo.[Documents]
       WHERE [operation] = 'CE62E430-3004-11E8-A0FF-732D589B1ACA'
 ; 

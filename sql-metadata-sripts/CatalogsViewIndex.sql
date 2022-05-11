@@ -860,37 +860,6 @@ RAISERROR('Catalog.Dynamic end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Dynamic ------------------------------
 
------------------------------- BEGIN Catalog.Employee ------------------------------
-
-RAISERROR('Catalog.Employee start', 0 ,1) WITH NOWAIT;
-      DROP TABLE IF EXISTS dbo.[Catalog.Employee.v]
-GO
-DROP TRIGGER IF EXISTS dbo.[Catalog.Employee.t]
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Employee.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Person"')) [Person]
-      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."InnerPhone"')), '') [InnerPhone]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Employee'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX [Catalog.Employee.v] ON [Catalog.Employee.v](id);
-        
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.deleted] ON [Catalog.Employee.v](deleted,description,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.code.f] ON [Catalog.Employee.v](parent,isfolder,code,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.description.f] ON [Catalog.Employee.v](parent,isfolder,description,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.description] ON [Catalog.Employee.v](description,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.code] ON [Catalog.Employee.v](code,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.user] ON [Catalog.Employee.v]([user],id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Employee.v.company] ON [Catalog.Employee.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Employee.v]TO jetti;
-RAISERROR('Catalog.Employee end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Employee ------------------------------
-
 ------------------------------ BEGIN Catalog.Expense ------------------------------
 
 RAISERROR('Catalog.Expense start', 0 ,1) WITH NOWAIT;
@@ -1434,39 +1403,6 @@ GRANT SELECT ON dbo.[Catalog.Person.v]TO jetti;
 RAISERROR('Catalog.Person end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.Person ------------------------------
-
------------------------------- BEGIN Catalog.Person.BankAccount ------------------------------
-
-RAISERROR('Catalog.Person.BankAccount start', 0 ,1) WITH NOWAIT;
-      DROP TABLE IF EXISTS dbo.[Catalog.Person.BankAccount.v]
-GO
-DROP TRIGGER IF EXISTS dbo.[Catalog.Person.BankAccount.t]
-GO
-CREATE OR ALTER VIEW dbo.[Catalog.Person.BankAccount.v] WITH SCHEMABINDING AS
-      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Bank"')) [Bank]
-      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."SalaryProject"')) [SalaryProject]
-      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."OpenDate"'),127) [OpenDate]
-      FROM dbo.[Documents]
-      WHERE [type] = N'Catalog.Person.BankAccount'
-;
-GO
-CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.BankAccount.v] ON [Catalog.Person.BankAccount.v](id);
-        
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.deleted] ON [Catalog.Person.BankAccount.v](deleted,description,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.code.f] ON [Catalog.Person.BankAccount.v](parent,isfolder,code,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.description.f] ON [Catalog.Person.BankAccount.v](parent,isfolder,description,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.description] ON [Catalog.Person.BankAccount.v](description,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.code] ON [Catalog.Person.BankAccount.v](code,id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.user] ON [Catalog.Person.BankAccount.v]([user],id);
-      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.BankAccount.v.company] ON [Catalog.Person.BankAccount.v](company,id);
-GO
-GRANT SELECT ON dbo.[Catalog.Person.BankAccount.v]TO jetti;
-RAISERROR('Catalog.Person.BankAccount end', 0 ,1) WITH NOWAIT;
-      
------------------------------- END Catalog.Person.BankAccount ------------------------------
 
 ------------------------------ BEGIN Catalog.PersonIdentity ------------------------------
 
