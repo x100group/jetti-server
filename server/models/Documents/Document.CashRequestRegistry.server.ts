@@ -11,14 +11,31 @@ import { insertDocument, upsertDocument } from '../../routes/utils/post';
 import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
 import { DocumentOperation } from './Document.Operation';
 import { Ref } from 'jetti-middle';
+import { CatalogOperation } from './../Catalogs/Catalog.Operation';
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
-  private dynamicModuleId = '8F58AE90-963C-11EB-B245-F3054AA54AB9';
+  async dynamicOperation(tx: MSSQL) {
+    return (await lib.doc.byId('8F58AE90-963C-11EB-B245-F3054AA54AB9', tx)) as CatalogOperation;
+  }
+
+  async dynamicPostScript(tx: MSSQL) {
+    const oper = await this.dynamicOperation(tx);
+    if (!oper?.script) return;
+
+    const script = `
+    ${oper?.script
+        .replace(/\$\./g, 'doc.')
+        .replace(/tx\./g, 'await tx.')
+        .replace(/lib\./g, 'await lib.')
+        .replace(/\'doc\./g, '\'$.')}
+    `;
+    const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
+    return new AsyncFunction('doc, Registers, tx, lib', script);
+  }
 
   async dynamicModule(tx: MSSQL) {
-    const dynamicModule = await lib.doc.byId(this.dynamicModuleId, tx);
-    if (!dynamicModule) return;
-    return new Function('', dynamicModule!['module']).bind(this)();
+    const oper = await this.dynamicOperation(tx);
+    if (oper) return new Function('', oper.module || '').bind(this, tx)();
   }
 
   async dynamicHandler(eventKey: string, tx: MSSQL, params?: any) {
@@ -29,6 +46,7 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
   }
 
   async onCommand(command: string, args: any, tx: MSSQL) {
+
     if (await this.dynamicHandler(command, tx, args))
       return this;
 
@@ -440,6 +458,9 @@ HAVING SUM(Balance.[Amount]) > 0;
 
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
+
+    const dynamic = await this.dynamicPostScript(tx);
+    if (dynamic) return await dynamic(this, Registers, tx, lib);
 
     if (['REJECTED', 'APPROVED', 'PAID'].includes(this.Status)) return Registers;
 
