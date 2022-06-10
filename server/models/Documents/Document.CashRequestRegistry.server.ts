@@ -20,8 +20,8 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     return (await lib.doc.byId(DocumentCashRequestRegistryServer.DynamicOperationId, tx)) as CatalogOperation;
   }
 
-  async getDynamicPostScript(tx: MSSQL) {
-    const oper = await this.getDynamicOperation(tx);
+  async dynamicPostScript(tx: MSSQL) {
+    const oper = await this.dynamicOperation(tx);
     if (!oper?.script) return;
 
     const script = `
@@ -33,18 +33,23 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     `;
     const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
     return new AsyncFunction('doc, Registers, tx, lib', script);
-
   }
 
-  async getDynamicModule(tx: MSSQL) {
-    const oper = await this.getDynamicOperation(tx);
+  async dynamicModule(tx: MSSQL) {
+    const oper = await this.dynamicOperation(tx);
     if (oper) return new Function('', oper.module || '').bind(this, tx)();
   }
 
+  async dynamicHandler(eventKey: string, tx: MSSQL, params?: any) {
+    const dynamicModule = await this.dynamicModule(tx);
+    if (!dynamicModule || !dynamicModule[eventKey]) return false;
+    await dynamicModule[eventKey](this, tx, params);
+    return true;
+  }
+
   async onCommand(command: string, args: any, tx: MSSQL) {
-    const dynamicModule = await this.getDynamicModule(tx);
-    if (dynamicModule[command]) {
-      await dynamicModule[command](this, tx, args);
+
+    if (await this.dynamicHandler(command, tx, args))
       return this;
 
     switch (command) {
@@ -456,9 +461,9 @@ HAVING SUM(Balance.[Amount]) > 0;
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
 
-    const dynamic = await this.getDynamicPostScript(tx);
+    const dynamic = await this.dynamicPostScript(tx);
     if (dynamic) return await dynamic(this, Registers, tx, lib);
-   
+
     if (['REJECTED', 'APPROVED', 'PAID'].includes(this.Status)) return Registers;
 
     for (const row of this.CashRequests
