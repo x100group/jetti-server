@@ -14,8 +14,10 @@ import { Ref } from 'jetti-middle';
 import { CatalogOperation } from './../Catalogs/Catalog.Operation';
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
+  private static DynamicOperationId = '8F58AE90-963C-11EB-B245-F3054AA54AB9'; 
+
   async dynamicOperation(tx: MSSQL) {
-    return (await lib.doc.byId('8F58AE90-963C-11EB-B245-F3054AA54AB9', tx)) as CatalogOperation;
+    return (await lib.doc.byId(DocumentCashRequestRegistryServer.DynamicOperationId, tx)) as CatalogOperation;
   }
 
   async dynamicPostScript(tx: MSSQL) {
