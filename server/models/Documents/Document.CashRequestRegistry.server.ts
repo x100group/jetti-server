@@ -14,12 +14,12 @@ import { Ref } from 'jetti-middle';
 import { CatalogOperation } from './../Catalogs/Catalog.Operation';
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
-  async dynamicOperation(tx: MSSQL) {
+  async getDynamicOperation(tx: MSSQL) {
     return (await lib.doc.byId('8F58AE90-963C-11EB-B245-F3054AA54AB9', tx)) as CatalogOperation;
   }
 
-  async dynamicPostScript(tx: MSSQL) {
-    const oper = await this.dynamicOperation(tx);
+  async getDynamicPostScript(tx: MSSQL) {
+    const oper = await this.getDynamicOperation(tx);
     if (!oper?.script) return;
 
     const script = `
@@ -31,23 +31,18 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
     `;
     const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
     return new AsyncFunction('doc, Registers, tx, lib', script);
+
   }
 
-  async dynamicModule(tx: MSSQL) {
-    const oper = await this.dynamicOperation(tx);
+  async getDynamicModule(tx: MSSQL) {
+    const oper = await this.getDynamicOperation(tx);
     if (oper) return new Function('', oper.module || '').bind(this, tx)();
   }
 
-  async dynamicHandler(eventKey: string, tx: MSSQL, params?: any) {
-    const dynamicModule = await this.dynamicModule(tx);
-    if (!dynamicModule || !dynamicModule[eventKey]) return false;
-    await dynamicModule[eventKey](this, tx, params);
-    return true;
-  }
-
   async onCommand(command: string, args: any, tx: MSSQL) {
-
-    if (await this.dynamicHandler(command, tx, args))
+    const dynamicModule = await this.getDynamicModule(tx);
+    if (dynamicModule[command]) {
+      await dynamicModule[command](this, tx, args);
       return this;
 
     switch (command) {
@@ -459,9 +454,9 @@ HAVING SUM(Balance.[Amount]) > 0;
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
 
-    const dynamic = await this.dynamicPostScript(tx);
+    const dynamic = await this.getDynamicPostScript(tx);
     if (dynamic) return await dynamic(this, Registers, tx, lib);
-
+   
     if (['REJECTED', 'APPROVED', 'PAID'].includes(this.Status)) return Registers;
 
     for (const row of this.CashRequests
