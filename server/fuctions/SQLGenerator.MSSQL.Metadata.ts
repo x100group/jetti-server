@@ -342,19 +342,22 @@ export class SQLGenegatorMetadata {
 
   static CreateViewCatalogsIndex(withSecurityPolicy = false, dynamic = false) {
 
+    const delSpaces = (s: string) => s.split('\n').map(e => e.trim()).join('\n');
+
     const registeredCatalogs = [...RegisteredDocuments().values()]
       .filter(e => !Type.isOperation(e.type) && e.dynamic === dynamic && !this.storedInTablesTypes[e.type]);
 
     let query = '';
 
-    for (const registeredCatalog of registeredCatalogs) {
-      const doc = createDocument(registeredCatalog.type);
+    for (const cat of registeredCatalogs) {
+      const doc = createDocument(cat.type);
       if (doc['QueryList']) continue;
-      query += `${this.typeSpliter(registeredCatalog.type, true)}
-RAISERROR('${registeredCatalog.type} start', 0 ,1) WITH NOWAIT;
-      ${this.CreateViewCatalogIndex(registeredCatalog.type, withSecurityPolicy)}
-RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
-      ${this.typeSpliter(registeredCatalog.type, false)}`;
+      query += `
+    ${this.typeSpliter(cat.type, true)}
+    RAISERROR('${cat.type} start', 0 ,1) WITH NOWAIT;
+    ${this.CreateViewCatalogIndex(cat.type, withSecurityPolicy)}
+    RAISERROR('${cat.type} end', 0 ,1) WITH NOWAIT;
+    ${this.typeSpliter(cat.type, false)}`;
     }
 
     query += `
@@ -380,10 +383,81 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
     CREATE UNIQUE NONCLUSTERED INDEX [Document.Operation.v.CompanyGroup] ON [dbo].[Document.Operation.v]([company],[Group],[date],[id])INCLUDE([deleted])
     `;
 
-    return query;
+    return delSpaces(query);
   }
 
+
   static CreateViewCatalogIndex(type: string, withSecurityPolicy = true, asArrayOfQueries = false) {
+
+    const querySpliter = '\nGO\n';
+    let query = '';
+    const result = () => asArrayOfQueries ? query.split(querySpliter) : query;
+
+    const queryAdd = (subQuery: string, before = '\n', after = querySpliter) => query += subQuery && `${before}${subQuery.trim()}${after}`;
+
+    const doc = createDocument(type);
+    if (doc['QueryList']) return result();
+
+    queryAdd(`DROP TABLE IF EXISTS dbo.[${type}.v]`, '');
+    queryAdd(`DROP TRIGGER IF EXISTS dbo.[${type}.t]`);
+
+    if (withSecurityPolicy)
+      queryAdd(`
+      BEGIN TRY
+        ALTER SECURITY POLICY[rls].[companyAccessPolicy] DROP FILTER PREDICATE ON[dbo].[${type}.v];
+      END TRY
+      BEGIN CATCH
+      END CATCH;`);
+
+    const Props = doc.Props();
+    const select = SQLGenegator.QueryListRaw(Props, doc.type);
+    queryAdd(`CREATE OR ALTER VIEW dbo.[${type}.v] WITH SCHEMABINDING AS
+    ${select.trim()};`);
+
+    // INDEX SECTION BEGIN
+    queryAdd(`CREATE UNIQUE CLUSTERED INDEX [${type}.v] ON [${type}.v](id);`, undefined, '');
+
+    const addIndex = (column: string, name: string, includeColumns: string[]) =>
+      `CREATE NONCLUSTERED INDEX [${name}] ON [${type}.v]([${column}]) INCLUDE(${includeColumns.map(e => `[${e}]`).join(',')});`;
+
+    const unique = Object.keys(Props).filter(key => Props[key].isUnique).map(key => key);
+    const indexed = Object.keys(Props).filter(key => Props[key].isUnique).map(key => key);
+
+    const uniqueIndex = unique.map(column => addIndex(column, `${type}.v.${column}.u`, ['company', 'description', 'id'])).join('\n');
+    const indexedIndex = indexed.map(column => addIndex(column, `${type}.v.${column}.c`, ['company'])).join('\n');
+
+    queryAdd(uniqueIndex, undefined, '');
+    queryAdd(indexedIndex, undefined, '');
+
+
+    if (Type.isDocument(type))
+      queryAdd(`
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.date] ON [${type}.v](date,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [${type}.v](parent,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,date,id);`, undefined, '');
+    else
+      queryAdd(`
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,description,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code.f] ON [${type}.v](parent,isfolder,code,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.description.f] ON [${type}.v](parent,isfolder,description,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.description] ON [${type}.v](description,id);`, undefined, '');
+
+    queryAdd(`
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.code] ON [${type}.v](code,id);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.user] ON [${type}.v]([user],id);
+    CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.company] ON [${type}.v](company,id);`, undefined);
+    // INDEX SECTION END
+
+    queryAdd(`GRANT SELECT ON dbo.[${type}.v] TO jetti;`, undefined, '');
+
+    if (withSecurityPolicy)
+      queryAdd(`ALTER SECURITY POLICY[rls].[companyAccessPolicy] ADD FILTER PREDICATE [rls].[fn_companyAccessPredicate]([company]) ON[dbo].[${type}.v];`);
+
+    return result();
+
+  }
+
+  static CreateViewCatalogIndexOLD(type: string, withSecurityPolicy = true, asArrayOfQueries = false) {
     const subQueries: string[] = [];
     const doc = createDocument(type);
     if (!doc['QueryList']) {
@@ -654,6 +728,7 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
     const queries: string[] = [];
     const columns = this.getDocColumns(doc);
     const allColumns = [...columns.common, ...columns.special].map(e => `[${e}]`).join(',');
+    const indexedColumns = [...new Set(Object.keys(props).filter(key => props[key].isIndexed || props[key].isUnique).map(key => key))];
     queries.push(`
     CREATE OR ALTER TRIGGER [${type}.t] ON [Documents] AFTER INSERT, UPDATE, DELETE
     AS
@@ -685,12 +760,11 @@ RAISERROR('${registeredCatalog.type} end', 0 ,1) WITH NOWAIT;
 
     queries.push(`
     ALTER TABLE [${type}.v] ADD CONSTRAINT [PK_${type}.v] PRIMARY KEY NONCLUSTERED ([id]);
-    CREATE UNIQUE CLUSTERED INDEX [${type}.v] ON [${type}.v](id);${Object.keys(props)
-        .filter(key => props[key].isIndexed)
-        .map(key => `CREATE NONCLUSTERED INDEX[${doc.type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
+    CREATE UNIQUE CLUSTERED INDEX [${type}.v] ON [${type}.v](id);${indexedColumns
+        .map(key => `CREATE NONCLUSTERED INDEX[${type}.v.${key}] ON [${doc.type}.v]([${key}]) INCLUDE([company]);`)
         .join('\n')
       }
-      ${Type.isDocument(doc.type) ? `
+      ${Type.isDocument(type) ? `
     CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.date] ON [${type}.v](date,id);
     CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.parent] ON [${type}.v](parent,id);
     CREATE UNIQUE NONCLUSTERED INDEX [${type}.v.deleted] ON [${type}.v](deleted,date,id);` : `
