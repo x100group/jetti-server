@@ -18,6 +18,7 @@ import { TypesCompanyOrCounterpartieOrPerson } from './Types.CompanyOrCounterpar
 import { createDocument, RegisteredDocumentsTypes } from '../documents.factory';
 import { DocumentOptions, Type } from 'jetti-middle';
 import { TypesExpenseOrIncome } from './Types.ExpenseOrIncome';
+import { TypesExpenseAnalyticsOrDepartment } from './Types.ExpenseAnalyticsOrDepartment';
 
 export interface IRegisteredTypes {
   type: ComplexTypes;
@@ -82,6 +83,7 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.Catalog', Class: TypesCatalog },
   { type: 'Types.Subcount', Class: TypesSubcount },
   { type: 'Types.Object', Class: TypesObject },
+  { type: 'Types.ExpenseAnalyticsOrDepartment', Class: TypesExpenseAnalyticsOrDepartment },
   { type: 'Types.ExpenseOrBalanceOrIncome', Class: TypesExpenseOrBalanceOrIncome },
   { type: 'Types.TypesExpenseOrIncome', Class: TypesExpenseOrIncome },
   { type: 'Types.CashOrBank', Class: TypesCashOrBank },

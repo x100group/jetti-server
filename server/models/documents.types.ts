@@ -127,6 +127,7 @@ export type ComplexTypes =
   'Types.CompanyOrCounterpartieOrPersonOrRetailClient' |
   'Types.CompanyOrCompanyGroup' |
   'Types.ExpenseOrBalanceOrIncome' |
+  'Types.ExpenseAnalyticsOrDepartment' |
   'Types.TypesExpenseOrIncome';
 
 export type IncomeExpenseTypes =
