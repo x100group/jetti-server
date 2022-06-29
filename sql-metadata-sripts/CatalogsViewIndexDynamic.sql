@@ -150,6 +150,59 @@ RAISERROR('Catalog.BusinessRegion end', 0 ,1) WITH NOWAIT;
       
 ------------------------------ END Catalog.BusinessRegion ------------------------------
 
+------------------------------ BEGIN Catalog.Contract ------------------------------
+
+RAISERROR('Catalog.Contract start', 0 ,1) WITH NOWAIT;
+      DROP TABLE IF EXISTS dbo.[Catalog.Contract.v]
+GO
+DROP TRIGGER IF EXISTS dbo.[Catalog.Contract.t]
+GO
+CREATE OR ALTER VIEW dbo.[Catalog.Contract.v] WITH SCHEMABINDING AS
+      SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."owner"')) [owner]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Status"')), '') [Status]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."kind"')), '') [kind]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."StartDate"'),127) [StartDate]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."EndDate"'),127) [EndDate]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Indulgence"')), 0) [Indulgence]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."Amount"')), 0) [Amount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BusinessDirection"')) [BusinessDirection]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."CashFlow"')) [CashFlow]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."currency"')) [currency]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."BankAccount"')) [BankAccount]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Manager"')) [Manager]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ResponsiblePerson"')) [ResponsiblePerson]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."isDefault"')), 0) [isDefault]
+      , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."notAccounting"')), 0) [notAccounting]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."RoyaltyArrangements"')), '') [RoyaltyArrangements]
+      , TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."RoyaltyDelayTo"'),127) [RoyaltyDelayTo]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."PaymentKC"')), '') [PaymentKC]
+      , ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(doc,N'$."RoyaltyPercent"')), 0) [RoyaltyPercent]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."PaymentOVM"')), '') [PaymentOVM]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."PaymentOKK"')), '') [PaymentOKK]
+      , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."PaymentKRO"')), '') [PaymentKRO]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."OtherServices"')), '') [OtherServices]
+      , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
+      FROM dbo.[Documents]
+      WHERE [type] = N'Catalog.Contract'
+;
+GO
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Contract.v] ON [Catalog.Contract.v](id);CREATE NONCLUSTERED INDEX[Catalog.Contract.v.owner] ON [Catalog.Contract.v]([owner]) INCLUDE([company]);
+        
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.deleted] ON [Catalog.Contract.v](deleted,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.code.f] ON [Catalog.Contract.v](parent,isfolder,code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.description.f] ON [Catalog.Contract.v](parent,isfolder,description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.description] ON [Catalog.Contract.v](description,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.code] ON [Catalog.Contract.v](code,id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.user] ON [Catalog.Contract.v]([user],id);
+      CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Contract.v.company] ON [Catalog.Contract.v](company,id);
+GO
+GRANT SELECT ON dbo.[Catalog.Contract.v]TO jetti;
+RAISERROR('Catalog.Contract end', 0 ,1) WITH NOWAIT;
+      
+------------------------------ END Catalog.Contract ------------------------------
+
 ------------------------------ BEGIN Catalog.Counterpartie ------------------------------
 
 RAISERROR('Catalog.Counterpartie start', 0 ,1) WITH NOWAIT;
@@ -340,6 +393,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.OrderSource.v] WITH SCHEMABINDING AS
       , ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."SourceType"')), '') [SourceType]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Country"')) [Country]
       , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Counterpartie"')) [Counterpartie]
+      , ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."venusHubSource"')), '') [venusHubSource]
       FROM dbo.[Documents]
       WHERE [type] = N'Catalog.OrderSource'
 ;
