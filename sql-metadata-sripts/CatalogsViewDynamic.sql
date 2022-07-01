@@ -720,6 +720,8 @@ GO
         , d.[CryptoNetwork] [CryptoNetwork]
         , d.[PersonExchangeId] [PersonExchangeId]
         , d.[PersonExchangeValue] [PersonExchangeValue]
+        , d.[CorporateBankAccount] [CorporateBankAccount]
+        , d.[CorporateBankCode] [CorporateBankCode]
       
         , ISNULL(l5.id, d.id) [PersonBankAccount.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [PersonBankAccount.Level4.id]
@@ -884,6 +886,7 @@ GO
         , d.[maxTotalOrder] [maxTotalOrder]
         , d.[appAvailable] [appAvailable]
         , d.[DefaultMapService] [DefaultMapService]
+        , d.[usePriceByAggregator] [usePriceByAggregator]
       
         , ISNULL(l5.id, d.id) [RetailNetwork.Level5.id]
         , ISNULL(l4.id, ISNULL(l5.id, d.id)) [RetailNetwork.Level4.id]
