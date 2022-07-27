@@ -191,7 +191,7 @@ async function counterpartieByINNAndKPP(INN: string, KPP: string, tx: MSSQL): Pr
 }
 
 async function bankStatementUnloadById(docsID: string[], tx: MSSQL): Promise<string> {
-  return await BankStatementUnloader.getBankStatementAsString(docsID, tx);
+  return await BankStatementUnloader.getBankStatementAsString(docsID, tx, true);
 }
 
 async function salaryCompanyByCompany(company: Ref, tx: MSSQL): Promise<string | null> {

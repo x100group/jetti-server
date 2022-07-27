@@ -686,8 +686,10 @@ export class BankStatementUnloader {
     let result = '';
     const naznMaxLength = 210;
     const rowSpliter = this.isKAZAKHSTAN() ? '\r\n' : '\n';
-    for (const row of bankStatementData) {
 
+
+    for (const row of bankStatementData) {
+      const isSber = row['ПлательщикБИК'] === '044525225'; // =ПАО СБЕРБАНК
       for (const prop of Object.keys(row)) {
 
         if (prop.search('_ig') === -1) {
@@ -696,6 +698,10 @@ export class BankStatementUnloader {
             case 'Номер':
             case 'НомерДокумента':
               val = this.getShortDocNumber(val, false);
+              break;
+            case 'ПлательщикБанк2':
+            case 'ПолучательБанк2':
+              if (isSber) val = (val || '').split(',')[0].slice(0, 30).trim();
               break;
             case 'НазначениеПлатежа':
               // НазначениеПлатежа1
@@ -767,11 +773,14 @@ export class BankStatementUnloader {
     return '';
   }
 
-  static async getBankStatementAsString(docsID: any[], tx: MSSQL): Promise<string> {
+  static async getBankStatementAsString(docsID: any[], tx: MSSQL, dontSearch = false): Promise<string> {
     if (!docsID.length) return '';
     this.docsIdsString = docsID.map(el => '\'' + el + '\'').join(',');
-    let result = await this.getBankStatementAsStringWithRules(docsID, tx);
-    if (result) return result;
+    let result = '';
+    if (!dontSearch) {
+      result = await this.getBankStatementAsStringWithRules(docsID, tx);
+      if (result) return result;
+    }
     if (!await this.init(docsID, tx)) return '';
     result = await this.BankStatementDataAsSalaryProjectBankStatementString();
     if (result) return result;
