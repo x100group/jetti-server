@@ -88,7 +88,10 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'number', order: 666, useIn: 'all', hiddenInList: true })
   CookingTime = 0;
 
-  @Props({ type: 'string', order: 666, useIn: 'all', hiddenInList: true })
+  @Props({
+    type: 'string', order: 666, useIn: 'all', controlType: 'textarea',
+    hiddenInList: true, validators: [{ key: 'maxLength', value: 500 }]
+  })
   Composition = '';
 
   @Props({ type: 'enum', order: 666, useIn: 'all', value: ['OUTLET', 'COLD_SHOP', 'PIZZA_SHOP', 'HOT_SHOP'] })
