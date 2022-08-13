@@ -447,6 +447,72 @@ RAISERROR('Catalog.OrderSource end', 0 ,1) WITH NOWAIT;
 ------------------------------ END Catalog.OrderSource ------------------------------
 
 
+------------------------------ BEGIN Catalog.Person ------------------------------
+
+RAISERROR('Catalog.Person start', 0 ,1) WITH NOWAIT;
+DROP TABLE IF EXISTS dbo.[Catalog.Person.v]
+GO
+
+DROP TRIGGER IF EXISTS dbo.[Catalog.Person.t]
+GO
+
+CREATE OR ALTER VIEW dbo.[Catalog.Person.v] WITH SCHEMABINDING AS
+SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+, TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+, TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."ParentPerson"')) [ParentPerson]
+, ISNULL(TRY_CONVERT(NVARCHAR(36), JSON_VALUE(doc,N'$."Gender"')), '') [Gender]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."FirstName"')), '') [FirstName]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."LastName"')), '') [LastName]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."MiddleName"')), '') [MiddleName]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code1"')), '') [Code1]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Code2"')), '') [Code2]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Address"')), '') [Address]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."AddressResidence"')), '') [AddressResidence]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."City"')), '') [City]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Phone"')), '') [Phone]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."PersonalPhone"')), '') [PersonalPhone]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Email"')), '') [Email]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."PersonalEmail"')), '') [PersonalEmail]
+, TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."Birthday"'),127) [Birthday]
+, TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."EmploymentDate"'),127) [EmploymentDate]
+, TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Department"')) [Department]
+, TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."JobTitle"')) [JobTitle]
+, TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."Country"')) [Country]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Profile"')), '') [Profile]
+, TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."DocumentType"')) [DocumentType]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DocumentCode"')), '') [DocumentCode]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DocumentNumber"')), '') [DocumentNumber]
+, TRY_CONVERT(DATE, JSON_VALUE(doc,N'$."DocumentDate"'),127) [DocumentDate]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."DocumentAuthority"')), '') [DocumentAuthority]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."AccountAD"')), '') [AccountAD]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."SMAccount"')), '') [SMAccount]
+, ISNULL(TRY_CONVERT(NVARCHAR(150), JSON_VALUE(doc, N'$."Pincode"')), '') [Pincode]
+, ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."Fired"')), 0) [Fired]
+, ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."PayoutBlocked"')), 0) [PayoutBlocked]
+FROM dbo.[Documents]
+WHERE [type] = N'Catalog.Person';
+GO
+
+CREATE UNIQUE CLUSTERED INDEX [Catalog.Person.v] ON [Catalog.Person.v](id);
+CREATE NONCLUSTERED INDEX [Catalog.Person.v.AccountAD.u] ON [Catalog.Person.v]([AccountAD]) INCLUDE([company],[description],[id]);
+CREATE NONCLUSTERED INDEX [Catalog.Person.v.SMAccount.u] ON [Catalog.Person.v]([SMAccount]) INCLUDE([company],[description],[id]);
+CREATE NONCLUSTERED INDEX [Catalog.Person.v.AccountAD.c] ON [Catalog.Person.v]([AccountAD]) INCLUDE([company]);
+CREATE NONCLUSTERED INDEX [Catalog.Person.v.SMAccount.c] ON [Catalog.Person.v]([SMAccount]) INCLUDE([company]);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.deleted] ON [Catalog.Person.v](deleted,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.code.f] ON [Catalog.Person.v](parent,isfolder,code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.description.f] ON [Catalog.Person.v](parent,isfolder,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.description] ON [Catalog.Person.v](description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.code] ON [Catalog.Person.v](code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.user] ON [Catalog.Person.v]([user],id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.Person.v.company] ON [Catalog.Person.v](company,id);
+GO
+
+GRANT SELECT ON dbo.[Catalog.Person.v] TO jetti;
+RAISERROR('Catalog.Person end', 0 ,1) WITH NOWAIT;
+
+------------------------------ END Catalog.Person ------------------------------
+
+
 ------------------------------ BEGIN Catalog.Person.BankAccount ------------------------------
 
 RAISERROR('Catalog.Person.BankAccount start', 0 ,1) WITH NOWAIT;
@@ -654,6 +720,39 @@ GRANT SELECT ON dbo.[Catalog.Specification.v] TO jetti;
 RAISERROR('Catalog.Specification end', 0 ,1) WITH NOWAIT;
 
 ------------------------------ END Catalog.Specification ------------------------------
+
+
+------------------------------ BEGIN Catalog.UsersGroup ------------------------------
+
+RAISERROR('Catalog.UsersGroup start', 0 ,1) WITH NOWAIT;
+DROP TABLE IF EXISTS dbo.[Catalog.UsersGroup.v]
+GO
+
+DROP TRIGGER IF EXISTS dbo.[Catalog.UsersGroup.t]
+GO
+
+CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup.v] WITH SCHEMABINDING AS
+SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
+, TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
+, ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."Checked"')), 0) [Checked]
+FROM dbo.[Documents]
+WHERE [type] = N'Catalog.UsersGroup';
+GO
+
+CREATE UNIQUE CLUSTERED INDEX [Catalog.UsersGroup.v] ON [Catalog.UsersGroup.v](id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.deleted] ON [Catalog.UsersGroup.v](deleted,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.code.f] ON [Catalog.UsersGroup.v](parent,isfolder,code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.description.f] ON [Catalog.UsersGroup.v](parent,isfolder,description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.description] ON [Catalog.UsersGroup.v](description,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.code] ON [Catalog.UsersGroup.v](code,id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.user] ON [Catalog.UsersGroup.v]([user],id);
+CREATE UNIQUE NONCLUSTERED INDEX [Catalog.UsersGroup.v.company] ON [Catalog.UsersGroup.v](company,id);
+GO
+
+GRANT SELECT ON dbo.[Catalog.UsersGroup.v] TO jetti;
+RAISERROR('Catalog.UsersGroup end', 0 ,1) WITH NOWAIT;
+
+------------------------------ END Catalog.UsersGroup ------------------------------
 
 
 ------------------------------ BEGIN Catalog.Vehicle ------------------------------
