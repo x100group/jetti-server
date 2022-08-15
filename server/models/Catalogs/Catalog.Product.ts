@@ -90,6 +90,7 @@ export class CatalogProduct extends DocumentBase {
 
   @Props({
     type: 'string', order: 666, useIn: 'all', controlType: 'textarea',
+    label: 'Composition (max 500 symbols)',
     hiddenInList: true, validators: [{ key: 'maxLength', value: 500 }]
   })
   Composition = '';
