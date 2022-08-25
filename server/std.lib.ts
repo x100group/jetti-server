@@ -1085,9 +1085,9 @@ FROM
             at.StorageType,
             at.LoadDataOnInit
         FROM
-            [Catalog.Attachment.v] a
-            LEFT JOIN [Catalog.Attachment.Type.v] at ON a.AttachmentType = at.id
-            LEFT JOIN [Catalog.User.v] us ON a.[user] = us.id
+            [Catalog.Attachment.v] a WITH (NOEXPAND)
+            LEFT JOIN [Catalog.Attachment.Type.v] at WITH (NOEXPAND) ON a.AttachmentType = at.id
+            LEFT JOIN [Catalog.User.v] us WITH (NOEXPAND) ON a.[user] = us.id
         WHERE
             a.owner = @p1
             ${withDeleted ? '' : 'and a.deleted = 0'}
