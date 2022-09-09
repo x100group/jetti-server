@@ -21,7 +21,7 @@ export class CatalogCompany extends DocumentBase {
   @Props({ type: 'Catalog.Company', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
-  @Props({ type: 'enum', value: ['ЮрЛицо', 'ИндПред'] })
+  @Props({ type: 'enum', value: ['ЮрЛицо', 'ИндПред', 'Упр'] })
   kind = 'ЮрЛицо';
 
   @Props({ type: 'string', required: false })
