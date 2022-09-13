@@ -61,6 +61,9 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'string', order: 666, useIn: 'all' })
   ShortCode = '';
 
+  @Props({ type: 'string', order: 666, useIn: 'all', hiddenInList: true })
+  DescriptionCustomer = '';
+
   @Props({ type: 'string', order: 666, useIn: 'all', label: 'Short name (max 21 symbols)', validators: [{ key: 'maxLength', value: 21 }] })
   ShortName = '';
 
