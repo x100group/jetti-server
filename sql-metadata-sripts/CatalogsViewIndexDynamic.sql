@@ -735,6 +735,7 @@ CREATE OR ALTER VIEW dbo.[Catalog.UsersGroup.v] WITH SCHEMABINDING AS
 SELECT id, type, date, code, description, posted, deleted, isfolder, timestamp, parent, company, [user], [version]
 , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."workflow"')) [workflow]
 , ISNULL(TRY_CONVERT(BIT, JSON_VALUE(doc,N'$."Checked"')), 0) [Checked]
+, TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(doc, N'$."DepartmentCompany"')) [DepartmentCompany]
 FROM dbo.[Documents]
 WHERE [type] = N'Catalog.UsersGroup';
 GO

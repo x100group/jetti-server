@@ -2089,6 +2089,7 @@ GO
         , ISNULL([Settings.v].description, '') [Settings.value], d.[Settings] [Settings.id], [Settings.v].type [Settings.type]
         , d.[Purchased] [Purchased]
         , d.[ShortCode] [ShortCode]
+        , d.[DescriptionCustomer] [DescriptionCustomer]
         , d.[ShortName] [ShortName]
         , d.[Tags] [Tags]
         , d.[Weight] [Weight]
