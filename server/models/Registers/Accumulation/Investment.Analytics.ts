@@ -19,6 +19,12 @@ export class RegisterAccumulationInvestmentAnalytics extends RegisterAccumulatio
   @Props({ type: 'Catalog.Operation.Type', required: true, dimension: true })
   OperationType: Ref = null;
 
+  @Props({ type: 'Types.Catalog', required: true, dimension: true })
+  Analytics: Ref = null;
+
+  @Props({ type: 'Types.Catalog', required: true, dimension: true })
+  Analytics2: Ref = null;
+
   @Props({ type: 'Types.CounterpartieOrPerson', required: true, dimension: true })
   Investor: Ref = null;
 
