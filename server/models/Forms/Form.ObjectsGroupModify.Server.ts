@@ -152,7 +152,7 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
 
     const setId = 'createFilterElements';
     const filterFields = this.PropSettings.filter(e => e.isFilter).map(e => e.PropName);
-    const matchOperator = ['=', '>=', '<=', '<', '>', 'like', 'in', 'beetwen', 'is null'];
+    const matchOperator = ['=', '<>', '>=', '<=', '<', '>', 'like', 'in', 'beetwen', 'is null'];
     const storageType = !!filterFields.includes('parent') &&
       Type.isCatalog(await this.getRecieverType()) &&
       (await this.getRecieverProp()).hierarchy || null;
@@ -171,6 +171,9 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
       this.DynamicPropsPush('add', 'value', matchOperator, `${prop.key}_center`, '', setId);
       this.DynamicPropsPush('add', 'label', `Вид сравнения: ${prop.label || prop.key}`, `${prop.key}_center`, '', setId);
       this.DynamicPropsPush('add', 'panel', panel, `${prop.key}_center`, '', setId);
+
+      if (prop.type === 'enum')
+        this.DynamicPropsPush('add', 'value', prop.value || [], `${prop.key}_right`, '', setId);
 
       if (storageType || prop.storageType) {
         this.DynamicPropsPush('add', 'storageType', storageType || prop.storageType, `${prop.key}_right`, '', setId);
@@ -195,13 +198,15 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
 
     for (const modField of modFields) {
       const prop = { ...props[modField] as PropOptions, key: modField };
-
       this.DynamicPropsPush('add', 'type', prop.type, `${prop.key}_value`, '', setId);
       this.DynamicPropsPush('add', 'label', prop.label || prop.key, `${prop.key}_value`, '', setId);
       this.DynamicPropsPush('add', 'panel', panel, `${prop.key}_value`, '', setId);
+      if (prop.type === 'enum')
+        this.DynamicPropsPush('add', 'value', prop.value || [], `${prop.key}_value`, '', setId);
       if (storageType || prop.storageType) {
         this.DynamicPropsPush('add', 'storageType', storageType || prop.storageType, `${prop.key}_value`, '', setId);
       }
+
     }
 
   }
