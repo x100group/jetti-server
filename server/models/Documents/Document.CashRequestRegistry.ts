@@ -86,7 +86,7 @@ export class DocumentCashRequestRegistry extends DocumentBase {
   @Props({ type: 'Catalog.CashFlow', storageType: 'all' })
   CashFlow: Ref = null;
 
-  @Props({ type: 'Catalog.BusinessDirection' })
+  @Props({ type: 'Catalog.BusinessDirection', storageType: 'all' })
   BusinessDirection: Ref = null;
 
   @Props({ type: 'number', readOnly: true, style: { width: '100px', textAlign: 'right' }, totals: 1 })
