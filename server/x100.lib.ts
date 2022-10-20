@@ -287,7 +287,7 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
       FROM [dbo].[Register.Accumulation.Inventory] r
       WHERE date < DATEADD(DAY, 1, EOMONTH(@p1)) AND company = @p2
       GROUP BY Storehouse, SKU
-      HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
+      HAVING ISNULL(SUM([Qty]), 0) = 0 AND SUM([Cost]) <> 0) q
     LEFT JOIN [Catalog.Storehouse.v] Storehouse${SQLGenegatorMetadata.noExpander('Catalog.Storehouse')}
      ON Storehouse.id = q.Storehouse`, [date, company]);
   return result;
