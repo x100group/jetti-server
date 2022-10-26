@@ -281,7 +281,7 @@ GO
         LEFT JOIN dbo.[Catalog.Operation.Group.v] [Group.v] WITH (NOEXPAND) ON [Group.v].id = d.[Group]
         LEFT JOIN dbo.[Catalog.Operation.v] [Operation.v] WITH (NOEXPAND) ON [Operation.v].id = d.[Operation]
         LEFT JOIN dbo.[Catalog.Currency.v] [currency.v] WITH (NOEXPAND) ON [currency.v].id = d.[currency]
-        LEFT JOIN dbo.[Catalog.Person.v] [Customer.v] WITH (NOEXPAND) ON [Customer.v].id = d.[Customer]
+        LEFT JOIN dbo.[Documents] [Customer.v] ON [Customer.v].id = d.[Customer]
         LEFT JOIN dbo.[Catalog.Department.v] [Department.v] WITH (NOEXPAND) ON [Department.v].id = d.[Department]
         LEFT JOIN dbo.[Catalog.Company.v] [CompanySeller.v] WITH (NOEXPAND) ON [CompanySeller.v].id = d.[CompanySeller]
         LEFT JOIN dbo.[Catalog.Department.v] [Department_CompanySeller.v] WITH (NOEXPAND) ON [Department_CompanySeller.v].id = d.[Department_CompanySeller]
