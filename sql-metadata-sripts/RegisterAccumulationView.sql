@@ -90,7 +90,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, Department, SourceTransaction, CreditTransaction, OperationType, Investor, CompanyProduct, Product
+        d.exchangeRate, Department, SourceTransaction, CreditTransaction, OperationType, Analytics, Analytics2, Investor, CompanyProduct, Product
       , d.[Qty] * IIF(r.kind = 1, 1, -1) [Qty], d.[Qty] * IIF(r.kind = 1, 1, null) [Qty.In], d.[Qty] * IIF(r.kind = 1, null, 1) [Qty.Out], CurrencyProduct
       , d.[AmountProduct] * IIF(r.kind = 1, 1, -1) [AmountProduct], d.[AmountProduct] * IIF(r.kind = 1, 1, null) [AmountProduct.In], d.[AmountProduct] * IIF(r.kind = 1, null, 1) [AmountProduct.Out], PaymentSource, CurrencySource
       , d.[AmountSource] * IIF(r.kind = 1, 1, -1) [AmountSource], d.[AmountSource] * IIF(r.kind = 1, 1, null) [AmountSource.In], d.[AmountSource] * IIF(r.kind = 1, null, 1) [AmountSource.Out], CompanyLoan, Loan, CurrencyLoan
@@ -103,6 +103,8 @@
         , [SourceTransaction] NVARCHAR(250) N'$.SourceTransaction'
         , [CreditTransaction] UNIQUEIDENTIFIER N'$.CreditTransaction'
         , [OperationType] UNIQUEIDENTIFIER N'$.OperationType'
+        , [Analytics] UNIQUEIDENTIFIER N'$.Analytics'
+        , [Analytics2] UNIQUEIDENTIFIER N'$.Analytics2'
         , [Investor] UNIQUEIDENTIFIER N'$.Investor'
         , [CompanyProduct] UNIQUEIDENTIFIER N'$.CompanyProduct'
         , [Product] UNIQUEIDENTIFIER N'$.Product'
@@ -231,7 +233,7 @@
     AS
       SELECT
         r.id, r.owner, r.parent, CAST(r.date AS DATE) date, r.document, r.company, r.kind, r.calculated,
-        d.exchangeRate, currency, Department, AO, Supplier, PayDay
+        d.exchangeRate, currency, SupplierDocDate, Department, AO, Supplier, PayDay
       , d.[Amount] * IIF(r.kind = 1, 1, -1) [Amount], d.[Amount] * IIF(r.kind = 1, 1, null) [Amount.In], d.[Amount] * IIF(r.kind = 1, null, 1) [Amount.Out]
       , d.[AmountInBalance] * IIF(r.kind = 1, 1, -1) [AmountInBalance], d.[AmountInBalance] * IIF(r.kind = 1, 1, null) [AmountInBalance.In], d.[AmountInBalance] * IIF(r.kind = 1, null, 1) [AmountInBalance.Out]
       , d.[AmountInAccounting] * IIF(r.kind = 1, 1, -1) [AmountInAccounting], d.[AmountInAccounting] * IIF(r.kind = 1, 1, null) [AmountInAccounting.In], d.[AmountInAccounting] * IIF(r.kind = 1, null, 1) [AmountInAccounting.Out]
@@ -242,6 +244,7 @@
         WITH (
           exchangeRate NUMERIC(15,10) N'$.exchangeRate'
         , [currency] UNIQUEIDENTIFIER N'$.currency'
+        , [SupplierDocDate] DATE N'$.SupplierDocDate'
         , [Department] UNIQUEIDENTIFIER N'$.Department'
         , [AO] UNIQUEIDENTIFIER N'$.AO'
         , [Supplier] UNIQUEIDENTIFIER N'$.Supplier'

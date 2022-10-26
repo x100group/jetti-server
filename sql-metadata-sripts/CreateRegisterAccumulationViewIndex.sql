@@ -77,6 +77,8 @@
         , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, '$."SourceTransaction"')) [SourceTransaction]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CreditTransaction"')) [CreditTransaction]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) [OperationType]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) [Analytics]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"')) [Analytics2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Investor"')) [Investor]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CompanyProduct"')) [CompanyProduct]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) [Product]
@@ -101,7 +103,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.Investment.Analytics';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Investment.Analytics.id] ON [Register.Accumulation.Investment.Analytics.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Investment.Analytics] ON [Register.Accumulation.Investment.Analytics.v]([date], [document], [company], [calculated], [parent], [Department], [SourceTransaction], [CreditTransaction], [OperationType], [Investor], [CompanyProduct], [Product], [Qty], [Qty.In], [Qty.Out], [CurrencyProduct], [AmountProduct], [AmountProduct.In], [AmountProduct.Out], [PaymentSource], [CurrencySource], [AmountSource], [AmountSource.In], [AmountSource.Out], [CompanyLoan], [Loan], [CurrencyLoan], [AmountLoan], [AmountLoan.In], [AmountLoan.Out]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.Investment.Analytics] ON [Register.Accumulation.Investment.Analytics.v]([date], [document], [company], [calculated], [parent], [Department], [SourceTransaction], [CreditTransaction], [OperationType], [Analytics], [Analytics2], [Investor], [CompanyProduct], [Product], [Qty], [Qty.In], [Qty.Out], [CurrencyProduct], [AmountProduct], [AmountProduct.In], [AmountProduct.Out], [PaymentSource], [CurrencySource], [AmountSource], [AmountSource.In], [AmountSource.Out], [CompanyLoan], [Loan], [CurrencyLoan], [AmountLoan], [AmountLoan.In], [AmountLoan.Out]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.Investment.Analytics] AS SELECT * FROM [Register.Accumulation.Investment.Analytics.v] WITH (NOEXPAND);
     GO
@@ -191,6 +193,7 @@
     CREATE OR ALTER VIEW [Register.Accumulation.AP.v] WITH SCHEMABINDING AS
     SELECT [id], [kind], [parent], CAST(date AS DATE) [date], [document], [company], [calculated]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."SupplierDocDate"'),127) [SupplierDocDate]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AO"')) [AO]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Supplier"')) [Supplier]
@@ -213,7 +216,7 @@
       FROM dbo.[Accumulation] WHERE [type] = N'Register.Accumulation.AP';
     GO
     CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.id] ON [Register.Accumulation.AP.v]([id]);
-    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP.v]([date], [document], [company], [calculated], [parent], [currency], [Department], [AO], [Supplier], [PayDay], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [AmountToPay], [AmountToPay.In], [AmountToPay.Out], [AmountIsPaid], [AmountIsPaid.In], [AmountIsPaid.Out]);
+    CREATE NONCLUSTERED COLUMNSTORE INDEX [Register.Accumulation.AP] ON [Register.Accumulation.AP.v]([date], [document], [company], [calculated], [parent], [currency], [SupplierDocDate], [Department], [AO], [Supplier], [PayDay], [Amount], [Amount.In], [Amount.Out], [AmountInBalance], [AmountInBalance.In], [AmountInBalance.Out], [AmountInAccounting], [AmountInAccounting.In], [AmountInAccounting.Out], [AmountToPay], [AmountToPay.In], [AmountToPay.Out], [AmountIsPaid], [AmountIsPaid.In], [AmountIsPaid.Out]);
     GO
     CREATE OR ALTER VIEW [Register.Accumulation.AP] AS SELECT * FROM [Register.Accumulation.AP.v] WITH (NOEXPAND);
     GO

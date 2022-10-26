@@ -96,6 +96,8 @@
         , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."SourceTransaction"')) AS [SourceTransaction]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CreditTransaction"')) AS [CreditTransaction]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) AS [OperationType]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"')) AS [Analytics]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"')) AS [Analytics2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Investor"')) AS [Investor]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CompanyProduct"')) AS [CompanyProduct]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"')) AS [Product]
@@ -125,6 +127,8 @@
         , TRY_CONVERT(VARCHAR(36), JSON_VALUE(data, N'$."SourceTransaction"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CreditTransaction"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics"'))
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytics2"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Investor"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CompanyProduct"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Product"'))
@@ -135,7 +139,7 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."CurrencyLoan"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Investment.Analytics.TO] ON [dbo].[Register.Accumulation.Investment.Analytics.TO.v] ([date], [company], [SourceTransaction], [CreditTransaction], [OperationType], [Investor], [CompanyProduct], [Product], [CurrencyProduct], [PaymentSource], [CurrencySource], [CompanyLoan], [Loan], [CurrencyLoan]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.Investment.Analytics.TO] ON [dbo].[Register.Accumulation.Investment.Analytics.TO.v] ([date], [company], [SourceTransaction], [CreditTransaction], [OperationType], [Analytics], [Analytics2], [Investor], [CompanyProduct], [Product], [CurrencyProduct], [PaymentSource], [CurrencySource], [CompanyLoan], [Loan], [CurrencyLoan]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.Investment.Analytics.TO] AS SELECT * FROM [dbo].[Register.Accumulation.Investment.Analytics.TO.v] WITH (NOEXPAND);
       GO
@@ -254,6 +258,7 @@
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) AS [currency]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."SupplierDocDate"'),127) AS [SupplierDocDate]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AO"')) AS [AO]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Supplier"')) AS [Supplier]
         , SUM(ISNULL(TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."Amount"')) * IIF(kind = 1, 1, -1), 0)) [Amount]
@@ -277,10 +282,11 @@
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"'))
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."SupplierDocDate"'),127)
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AO"'))
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Supplier"'))
       GO
-      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.TO] ON [dbo].[Register.Accumulation.AP.TO.v] ([date], [company], [currency], [AO], [Supplier]);
+      CREATE UNIQUE CLUSTERED INDEX [Register.Accumulation.AP.TO] ON [dbo].[Register.Accumulation.AP.TO.v] ([date], [company], [currency], [SupplierDocDate], [AO], [Supplier]);
       GO
       CREATE OR ALTER VIEW [dbo].[Register.Accumulation.AP.TO] AS SELECT * FROM [dbo].[Register.Accumulation.AP.TO.v] WITH (NOEXPAND);
       GO

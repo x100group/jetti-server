@@ -109,6 +109,8 @@
         , [SourceTransaction]
         , [CreditTransaction]
         , [OperationType]
+        , [Analytics]
+        , [Analytics2]
         , [Investor]
         , [CompanyProduct]
         , [Product]
@@ -138,6 +140,8 @@
         , [SourceTransaction]
         , [CreditTransaction]
         , [OperationType]
+        , [Analytics]
+        , [Analytics2]
         , [Investor]
         , [CompanyProduct]
         , [Product]
@@ -154,6 +158,8 @@
         , [SourceTransaction]
         , [CreditTransaction]
         , [OperationType]
+        , [Analytics]
+        , [Analytics2]
         , [Investor]
         , [CompanyProduct]
         , [Product]
@@ -305,6 +311,7 @@
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE)) [date]
         , [company]
         , [currency]
+        , [SupplierDocDate]
         , [AO]
         , [Supplier]
         , SUM(ISNULL([Amount], 0)) [Amount]
@@ -328,6 +335,7 @@
           DATEADD(DAY, 1, CAST(EOMONTH([date], -1) AS DATE))
         , [company]
         , [currency]
+        , [SupplierDocDate]
         , [AO]
         , [Supplier]
       GO
@@ -335,6 +343,7 @@
           [date],
           [company]
         , [currency]
+        , [SupplierDocDate]
         , [AO]
         , [Supplier]);
       GO
