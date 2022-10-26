@@ -10,6 +10,9 @@ export class RegisterAccumulationAP extends RegisterAccumulation {
   @Props({ type: 'Catalog.Currency', required: true, dimension: true })
   currency: Ref = null;
 
+  @Props({ type: 'date', label: 'Supplier doc date', dimension: true })
+  SupplierDocDate: Date | null = null;
+
   @Props({ type: 'Catalog.Department' })
   Department: Ref = null;
 
