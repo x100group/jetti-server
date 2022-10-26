@@ -779,7 +779,7 @@ export class SQLGenegatorMetadata {
     return asArrayOfQueries ? queries : queries.join(`\t\nGO\n`);
   }
 
-
+  // TODO add drop TO, drop first, then create table, then create trigger
   static RegisterAccumulationClusteredTable(doc: { [x: string]: any }, type: string) {
 
     const simleProperty = (prop: string, type: string) => {

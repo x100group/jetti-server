@@ -125,8 +125,9 @@ Global.init().then(e => {
     script = SQLGenegatorMetadata.RegisterAccumulationView();
     fs.writeFile('./sql-metadata-sripts/RegisterAccumulationView.sql', script, ef);
 
-    script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTO();
-    fs.writeFile('./sql-metadata-sripts/CreateTableRegisterAccumulationTotals.sql', script, ef);
+    // DEPRECATED
+    // script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTO();
+    // fs.writeFile('./sql-metadata-sripts/CreateTableRegisterAccumulationTotals.sql', script, ef);
 
     script = SQLGenegatorMetadata.CreateTableRegisterAccumulationTOv2();
     fs.writeFile('./sql-metadata-sripts/CreateTableRegisterAccumulationTotalsv2.sql', script, ef);
