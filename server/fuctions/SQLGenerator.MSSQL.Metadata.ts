@@ -345,7 +345,7 @@ export class SQLGenegatorMetadata {
     const delSpaces = (s: string) => s.split('\n').map(e => e.trim()).join('\n');
 
     const registeredCatalogs = [...RegisteredDocuments().values()]
-      .filter(e => !Type.isOperation(e.type) && e.dynamic === dynamic && !this.storedInTablesTypes[e.type]);
+      .filter(e => !Type.isOperation(e.type) && e.dynamic === dynamic);
 
     let query = '';
 
