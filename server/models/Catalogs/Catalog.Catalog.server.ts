@@ -76,14 +76,26 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
     this.dimensions = prop['dimensions'] ? prop['dimensions'].map(e => mapDimension(e)) : [];
     this.Parameters = [];
     const props = doc.Props();
-    const commonProps = [...Object.keys((new DocumentBase).Props()).filter(key => key !== 'parent'), 'type'];
-    const propsKeys = Object.keys(props).filter(key => !commonProps.includes(key));
-    this.Parameters = propsKeys.map(key => this.getPropsAsParameter(key, props[key]));
+    const staticProps = ['id', 'parent', 'type'];
+    this.Parameters = Object.keys(props).filter(key => !staticProps.includes(key)).map(key => this.getPropsAsParameter(key, props[key]));
 
     return this;
   }
 
   async beforeDelete(tx: MSSQL) { return this; }
+
+  async beforeSave(tx: MSSQL) {
+    const commonProps = Object.entries((new DocumentBase).Props())
+      .filter(([key]) => key !== 'parent' || Type.isCatalog(this.typeString))
+      .map(([key, value]) => ({ key, ...value }));
+    const propsKeys = commonProps
+      .filter(prop => this.Parameters.find(e => e.parameter === prop.key) && this.Parameters.find(e => e.parameter === prop.key)?.type != prop.type)
+      .map(prop => prop.key)
+      .join(', ');
+    if (propsKeys) throw new Error(`Incorrect default property type: ${propsKeys}`);
+
+    return this;
+  }
 
   async getDynamicMetadata(): Promise<IDynamicProps> {
     return {
