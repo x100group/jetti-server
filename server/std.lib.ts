@@ -484,7 +484,7 @@ async function saveDoc(
   if (isPostedUsingQueue) servDoc.posted = false;
   await upsertDocument(servDoc, tx, opts);
   if (isPostedAfter) {
-    if (isPostedUsingQueue) await lib.queuePost.addId(servDoc.id, queuePostFlow, tx);
+    if (isPostedUsingQueue) await lib.queuePost.addId(servDoc.id, queuePostFlow as number, tx);
     else await postDocument(servDoc, tx);
   }
   return servDoc;
