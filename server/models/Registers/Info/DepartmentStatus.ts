@@ -13,10 +13,10 @@ export class RegisterInfoDepartmentStatus extends RegisterInfo {
   @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
 
-  @Props({ type: 'date' })
+  @Props({ type: 'datetime' })
   BeginDate = null;
 
-  @Props({ type: 'date' })
+  @Props({ type: 'datetime' })
   EndDate = null;
 
   @Props({ type: 'string' })
