@@ -37,7 +37,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     const dynamicModule = await this.dynamicModule(tx);
     if (!dynamicModule || !dynamicModule[eventKey]) return false;
     const handleResult = await dynamicModule[eventKey](this, tx, value);
-    return handleResult || true;
+    return handleResult === undefined ? true : handleResult;
   }
 
   async onValueChanged(prop: string, value: any, tx: MSSQL) {
@@ -478,22 +478,23 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async checkTaxCheck(tx: MSSQL): Promise<string> {
-    const q = `
-    select
-      document,
-      receiptId
-    from [dbo].[Register.Info.TaxCheck] where document in (
-      select top 1 document from
-        ${REGISTER_ACCUMULATION_SOURCE}[dbo].[Register.Accumulation.Bank]
-      where company = @p1
-        and Analytics = @p2
-        and CashFlow = @p3
-        and Amount <> 0
-      order by date desc)`;
-    const qRes = await tx.oneOrNone<{ document, receiptId }>(q, [this.company, this.CashRecipient, this.CashFlow]);
-    if (!qRes || qRes.receiptId) return '';
-    const cr = await lib.doc.byId(qRes.document, tx);
-    return `Проведение невозможно - не предоставлен чек по последней оплаченной заявке: ${cr!.description}`;
+    return await this.dynamicHandler('checkTaxCheck', tx);
+    // const q = `
+    // select
+    //   document,
+    //   receiptId
+    // from [dbo].[Register.Info.TaxCheck] where document in (
+    //   select top 1 document from
+    //     ${REGISTER_ACCUMULATION_SOURCE}[dbo].[Register.Accumulation.Bank]
+    //   where company = @p1
+    //     and Analytics = @p2
+    //     and CashFlow = @p3
+    //     and Amount <> 0
+    //   order by date desc)`;
+    // const qRes = await tx.oneOrNone<{ document, receiptId }>(q, [this.company, this.CashRecipient, this.CashFlow]);
+    // if (!qRes || qRes.receiptId) return '';
+    // const cr = await lib.doc.byId(qRes.document, tx);
+    // return `Проведение невозможно - не предоставлен чек по последней оплаченной заявке: ${cr!.description}`;
   }
 
   async onPost(tx: MSSQL) {
@@ -697,7 +698,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
           .filter(pr => (pr.Employee === el.CashRecipient
             && el.Amount < pr.Amount - (pr.AmountPenalty || 0)))
           .forEach(er => {
-            Errors.push({ Employee: er.Employee,  Amount: er.Amount - el.Amount - (er.AmountPenalty || 0) });
+            Errors.push({ Employee: er.Employee, Amount: er.Amount - el.Amount - (er.AmountPenalty || 0) });
           });
       });
       if (Errors.length) {
