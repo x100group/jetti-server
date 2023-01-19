@@ -480,9 +480,11 @@ async function saveDoc(
   const isPostedAfter = Type.isDocument(servDoc.type) && servDoc.posted;
   if (isPostedBefore) await unpostDocument(servDoc, tx);
   if (!servDoc.code) servDoc.code = await lib.doc.docPrefix(servDoc.type, tx);
+  const isPostedUsingQueue = isPostedAfter && queuePostFlow !== undefined;
+  if (isPostedUsingQueue) servDoc.posted = false;
   await upsertDocument(servDoc, tx, opts);
   if (isPostedAfter) {
-    if (queuePostFlow) await lib.queuePost.addId(servDoc.id, queuePostFlow, tx);
+    if (isPostedUsingQueue) await lib.queuePost.addId(servDoc.id, queuePostFlow, tx);
     else await postDocument(servDoc, tx);
   }
   return servDoc;
