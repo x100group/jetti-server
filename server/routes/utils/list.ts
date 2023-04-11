@@ -4,7 +4,7 @@ import { lib } from '../../std.lib';
 import { filterBuilder, userContextFilter } from '../../fuctions/filterBuilder';
 import { DocListRequestBody, DocListResponse, FormListFilter, DocumentBase, Type } from 'jetti-middle';
 
-export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocListResponse> {
+export async function List(params: DocListRequestBody & { used: string }, tx: MSSQL): Promise<DocListResponse> {
   params.filter = (params.filter || [])
     .filter(el => !(el.right === null || el.right === undefined) || el.center === 'is null' || el.center === 'is not null');
 
@@ -70,6 +70,22 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
   valueOrder = valueOrder.filter(el => !(el.value === null || el.value === undefined));
   const queryFilter = await filterBuilder(params.filter, tx, params.type);
+
+  const usedInQuery = (dir: '>' | '<') => {
+    if (!params.used) {
+      return '';
+    }
+    let q = ` AND id in (SELECT TOP ${params.count + 1}
+      id
+   FROM
+      DOCUMENTS
+   WHERE
+      CONTAINS(doc, '${params.used}') AND type = N'${params.type}'`;
+    if (params.id) q += ` AND id ${dir === '>' ? '>=' : dir} N'${params.id}'`;
+    q += ')';
+    return q;
+  };
+
   if (!Type.isType(params.type))
     queryFilter.where += userContextFilter(tx.userContext, params.type === 'Catalog.Company' ? 'd.id' : `"company.id"`);
 
@@ -77,9 +93,14 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
     if (valueOrder.length === 0) return '';
     const order = valueOrder.slice();
     const dir = lastORDER ? isAfter ? '>' : '<' : isAfter ? '<' : '>';
+    const usedQuery = usedInQuery(dir);
     let queryBuilderResult = `
-      SELECT TOP ${params.count + 1} id FROM (${QueryList}) d
-      WHERE ${queryFilter.where} AND (`;
+      SELECT TOP ${params.count + 1} id FROM(${QueryList}) d
+      WHERE ${queryFilter.where} ${usedQuery}`;
+
+    if (usedQuery) return queryBuilderResult;
+
+    queryBuilderResult += `AND (`;
 
     valueOrder.forEach(_or => {
       let where = '(';
@@ -95,7 +116,8 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
 
     queryBuilderResult += `\n${lastORDER ?
       (dir === '>') ? orderbyAfter : orderbyBefore :
-      (dir === '<') ? orderbyAfter : orderbyBefore}\n`;
+      (dir === '<') ? orderbyAfter : orderbyBefore
+      } \n`;
     return queryBuilderResult;
   };
 
@@ -103,18 +125,18 @@ export async function List(params: DocListRequestBody, tx: MSSQL): Promise<DocLi
   const queryAfter = queryBuilder(true);
   if (queryBefore && queryAfter && row) {
     query = `${queryFilter.tempTable}
-    SELECT * FROM (${QueryList}) d WHERE id IN (
-      SELECT id FROM (${queryBefore}) q1
+SELECT * FROM(${QueryList}) d WHERE id IN(
+  SELECT id FROM(${queryBefore}) q1
       UNION ALL
-      SELECT id FROM (${queryAfter}) q2
-    )
-    ${orderbyAfter}`;
+      SELECT id FROM(${queryAfter}) q2
+)
+    ${orderbyAfter} `;
   } else {
     // const filter = filterBuilder(params.filter);
     if (params.command === 'last')
-      query = `${queryFilter.tempTable}SELECT * FROM (SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(queryFilter.where)} ${orderbyBefore}) d ${orderbyAfter}`;
+      query = `${queryFilter.tempTable} SELECT * FROM(SELECT TOP ${params.count + 1} * FROM(${QueryList}) d WHERE ${(queryFilter.where)} ${usedInQuery('<')} ${orderbyBefore}) d ${orderbyAfter} `;
     else
-      query = `${queryFilter.tempTable}SELECT TOP ${params.count + 1} * FROM (${QueryList}) d WHERE ${(queryFilter.where)} ${orderbyAfter}`;
+      query = `${queryFilter.tempTable}SELECT TOP ${params.count + 1} * FROM(${QueryList}) d WHERE ${(queryFilter.where)} ${usedInQuery('>')} ${orderbyAfter} `;
   }
 
   if (process.env.NODE_ENV !== 'production') console.log(query);

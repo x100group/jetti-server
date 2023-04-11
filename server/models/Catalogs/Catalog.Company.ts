@@ -86,4 +86,7 @@ export class CatalogCompany extends DocumentBase {
   @Props({ type: 'string', readOnly: true, isAdditional: true })
   GLN = '';
 
+  @Props({ type: 'enum', value: ['ACTIVE', 'CLOSED'], isIndexed: true, isAdditional: true })
+  Status = 'ACTIVE';
+
 }

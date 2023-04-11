@@ -9,43 +9,47 @@ import { Props, Ref } from 'jetti-middle';
 })
 export class FormSearchAndReplace extends FormBase {
 
-  @Props({ type: 'Types.Catalog', label: 'Searched value' })
+  @Props({ type: 'Types.Catalog', label: 'Искомое значение' })
   OldValue: Ref = null;
 
-  @Props({ type: 'string', label: 'Old value exchange code', readOnly: true })
+  @Props({ type: 'string', label: 'Старое значение exchange code', readOnly: true })
   OldValueExchangeCode = '';
 
-  @Props({ type: 'string', label: 'Old value exchange base', readOnly: true })
+  @Props({ type: 'string', label: 'Старое значение exchange base', readOnly: true })
   OldValueExchangeBase = '';
 
-  @Props({ type: 'Types.Catalog', label: 'New value' })
+  @Props({ type: 'Types.Catalog', label: 'Новое значение' })
   NewValue: Ref = null;
 
-  @Props({ type: 'string', label: 'New value exchange code', readOnly: true })
+  @Props({ type: 'string', label: 'Новое значение exchange code', readOnly: true })
   NewValueExchangeCode = '';
 
-  @Props({ type: 'string', label: 'New value exchange base', readOnly: true })
+  @Props({ type: 'string', label: 'Новое значение exchange base', readOnly: true })
   NewValueExchangeBase = '';
 
-  @Props({ type: 'boolean', label: 'Replace exchange code' })
+  @Props({ type: 'boolean', label: 'Заменять exchange code' })
   ReplaceExchangeCode = false;
 
   @Props({
-    type: 'table', label: 'Search result', readOnly: true,
+    type: 'table', label: 'Search result', readOnly: true
   })
   SearchResult: SearchResult[] = [new SearchResult()];
 
+  @Props({
+    type: 'table', label: 'dynamicProps', hidden: true,
+  })
+  dynamicProps: any = [new SearchResult()];
 }
 
 export class SearchResult {
 
-  @Props({ type: 'string' })
+  @Props({ type: 'string', hidden: true, label: 'Источник' })
   Source = '';
 
-  @Props({ type: 'string', label: 'Type' })
+  @Props({ type: 'string', label: 'Тип' })
   Type = '';
 
-  @Props({ type: 'number', totals: 1 })
+  @Props({ type: 'number', totals: 1, label: 'Количество' })
   Records = 0;
 
 }

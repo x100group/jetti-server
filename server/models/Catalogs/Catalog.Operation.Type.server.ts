@@ -37,8 +37,13 @@ export class CatalogOperationTypeServer extends CatalogOperationType implements 
     if (modelProp.module || (modelProp.commands || []).length) {
       const thisProp = this.Prop() || {};
       this.Prop = () => ({ ...thisProp, module: modelProp.module, commands: modelProp.commands || [] });
+      if (modelProp.module) {
+        const func = new Function('tx', modelProp.module);
+        this['serverModule'] = func.bind(this, tx)() || {};
+        const onCreate: (tx: MSSQL) => Promise<any> = this['serverModule']['onCreate'];
+        if (typeof onCreate === 'function') await onCreate(tx);
+      }
     }
-
     return true;
   }
 
@@ -56,6 +61,8 @@ export class CatalogOperationTypeServer extends CatalogOperationType implements 
 
   async beforeSave(tx: MSSQL) {
     delete this['isExtended'];
+    const beforeSave: (tx: MSSQL) => Promise<any> = this['serverModule']['beforeSave'];
+    if (typeof beforeSave === 'function') await beforeSave(tx);
     return this;
   }
 

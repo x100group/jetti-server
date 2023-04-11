@@ -44,9 +44,8 @@ export async function insertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
   const noSqlDocument = lib.doc.noSqlDocument(serverDoc);
   const jsonDoc = JSON.stringify(noSqlDocument);
   const withExchangeInfo = (opts && opts.withExchangeInfo) || serverDoc['ExchangeBase'];
-  let response: INoSqlDocument;
 
-  response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
+  const response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
     INSERT INTO Documents(
       [id], [type], [date], [code], [description], [posted], [deleted],
       [parent], [isfolder], [company], [user], [info], [doc] ${withExchangeInfo ? ', [ExchangeCode], [ExchangeBase]' : ''})
@@ -88,8 +87,7 @@ export async function updateDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
   const jsonDoc = JSON.stringify(noSqlDocument);
   const withExchangeInfo = (opts && opts.withExchangeInfo) || serverDoc['ExchangeBase'];
 
-  let response: INoSqlDocument;
-  response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
+  const response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
     UPDATE Documents
       SET
         type = i.type, parent = i.parent,
@@ -135,8 +133,7 @@ export async function upsertDocument(serverDoc: DocumentBaseServer, tx: MSSQL, o
   const jsonDoc = JSON.stringify(noSqlDocument);
   const withExchangeInfo = (opts && opts.withExchangeInfo) || serverDoc['ExchangeBase'];
 
-  let response: INoSqlDocument;
-  response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
+  const response = <INoSqlDocument>await tx.oneOrNone<INoSqlDocument>(`
   DECLARE @DocId UNIQUEIDENTIFIER;
 
   SELECT @DocId = id FROM Documents WHERE id = @p2;

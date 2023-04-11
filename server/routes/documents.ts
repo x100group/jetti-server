@@ -33,7 +33,7 @@ export async function buildViewModel<T>(ServerDoc: DocumentBase, tx: MSSQL) {
 router.post('/list', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sdb = SDB(req);
-    const params = JSON.parse(JSON.stringify(req.body), dateReviverUTC) as DocListRequestBody;
+    const params = JSON.parse(JSON.stringify(req.body), dateReviverUTC) as DocListRequestBody & { used: string };
     res.json(await List(params, sdb));
   } catch (err) { next(err); }
 });
@@ -130,6 +130,8 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
       metadata['Operation'] = await lib.doc.formControlRef(params.operation, sdb);
     else if (params.group)
       metadata['Group'] = await lib.doc.formControlRef(params.group, sdb);
+    else if (params.used)
+      metadata['Used'] = await lib.doc.formControlRef(params.used, sdb);
     const result: IViewModel = { schema: ServerDoc.Props(), model, columnsDef, metadata, settings };
     res.json(result);
   } catch (err) { next(err); }

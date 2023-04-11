@@ -265,7 +265,8 @@ export default class FormObjectsGroupModifyServer extends FormObjectsGroupModify
         count: 1000,
         offset: 0,
         filter: listFilter,
-        order: [new FormListOrder('description')]
+        order: [new FormListOrder('description')],
+        used: ''
       };
       resData = (await List(filterBody, this.getTX())).data
         .map(e => {
