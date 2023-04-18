@@ -76,7 +76,7 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
     this.dimensions = prop['dimensions'] ? prop['dimensions'].map(e => mapDimension(e)) : [];
     this.Parameters = [];
     const props = doc.Props();
-    const staticProps = ['id', 'parent', 'type'];
+    const staticProps = ['id', 'type'];
     this.Parameters = Object.keys(props).filter(key => !staticProps.includes(key)).map(key => this.getPropsAsParameter(key, props[key]));
 
     return this;
@@ -86,7 +86,7 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
 
   async beforeSave(tx: MSSQL) {
     const commonProps = Object.entries((new DocumentBase).Props())
-      .filter(([key]) => key !== 'parent' || Type.isCatalog(this.typeString))
+      .filter(([key]) => key !== 'parent')
       .map(([key, value]) => ({ key, ...value }));
     const propsKeys = commonProps
       .filter(prop => this.Parameters.find(e => e.parameter === prop.key) && this.Parameters.find(e => e.parameter === prop.key)?.type != prop.type)
