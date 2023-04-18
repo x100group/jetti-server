@@ -126,7 +126,7 @@ class Relation {
   @Props({ type: 'string', required: true })
   name = '';
 
-  @Props({ type: 'Catalog.Subcount', required: true })
+  @Props({ type: 'string', required: true })
   type: Ref = null;
 
   @Props({ type: 'string' })
