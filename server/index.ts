@@ -64,7 +64,7 @@ app.get('*', (req: Request, res: Response) => {
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
   const errAny = err as any;
   const errText = `${err.message}${errAny.response ? ' Response data: ' + JSON.stringify(errAny.response.data) : ''}`;
-  console.error(errText);
+  console.error(errText, 'Stack', err.stack);
   const status = err && errAny.status ? errAny.status : 500;
   res.status(status).send(errText);
 }
