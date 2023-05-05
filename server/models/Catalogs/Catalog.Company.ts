@@ -66,8 +66,8 @@ export class CatalogCompany extends DocumentBase {
   @Props({ type: 'string', required: false })
   Code3: Ref = null;
 
-  @Props({ type: 'string', required: false })// Код Бенефициара (для Казахастана)
-  BC = '';
+  @Props({ type: 'string', required: false })
+  Email = '';
 
   @Props({
     type: 'enum', required: true, value: [
