@@ -107,7 +107,7 @@ export const sqlConfigMeta: ConnectionConfigAndPool = {
     encrypt: false,
     database: DB_NAME,
     port: DB_PORT,
-    requestTimeout: 20 * 1000,
+    requestTimeout: 120 * 1000,
     rowCollectionOnRequestCompletion: true,
   },
   pool: {

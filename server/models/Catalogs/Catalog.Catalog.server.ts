@@ -20,6 +20,11 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
     await lib.meta.updateSQLViewsByType(this.typeString as any);
   }
 
+  async generateSQLMeta() {
+    const q = await lib.meta.getSQLMetaByType(this.typeString as any, false, false) as string;
+    throw new Error(q);
+  }
+
   async createSequence() {
     if (!this.prefix) throw new Error('Prefix must be specified');
     const err = await getAdminTX().metaSequenceCreate(`Sq.${this.typeString}`);
@@ -111,7 +116,8 @@ export class CatalogCatalogServer extends CatalogCatalog implements IServerDocum
         dimensions: this.dimensions ? this.dimensions.map(e => mapDimension(e)) : [] as any,
         relations: this.relations as any || [],
         copyTo: this.CopyTo as any || [],
-        commands: this.commandsOnServer as any
+        commands: this.commandsOnServer as any,
+        storedIn: (this.storedIn || 'view') as any
       };
     };
 

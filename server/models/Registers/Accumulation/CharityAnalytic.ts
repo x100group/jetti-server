@@ -8,6 +8,9 @@ import { JRegisterAccumulation, RegisterAccumulation } from 'jetti-middle';
 export class RegisterAccumulationCharityAnalytic extends RegisterAccumulation {
 
   @Props({ type: 'Catalog.Operation.Type', dimension: true })
+  Analytics: Ref = null;
+
+  @Props({ type: 'Catalog.Operation.Type', dimension: true })
   MovementType: Ref = null;
 
   @Props({ type: 'Types.CounterpartieOrPerson', dimension: true })

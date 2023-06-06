@@ -1,9 +1,10 @@
 import { lib } from '../../std.lib';
 import { PostResult } from '../post.interfaces';
 import { RegisterInfoRLS } from '../Registers/Info/RLS';
-import { DocumentUserSettings } from './Document.UserSettings';
+import { CompanyItems, DocumentUserSettings } from './Document.UserSettings';
 import { MSSQL } from '../../mssql';
 import { IServerDocument } from '../documents.factory.server';
+import { SQLGenegatorMetadata } from '../../fuctions/SQLGenerator.MSSQL.Metadata';
 
 export const queryPost = `
 --DECLARE @p1 uniqueidentifier = 'F787EA90-D593-11EA-A56A-0B950F0DDFD1'
@@ -43,7 +44,7 @@ SELECT (SELECT TOP 1 [documents] FROM @UserOrGroup) as "document"
 FROM [dbo].[documents] as DocUserGroup
 CROSS APPLY OPENJSON(JSON_QUERY(DocUserGroup.[doc], '$.Users'))
 WITH ([User] uniqueidentifier) as Users
-LEFT JOIN [dbo].[Catalog.User.v] as CatUser with (noexpand) on CatUser.[id] = Users.[User]
+LEFT JOIN [dbo].[Catalog.User.v] as CatUser ${SQLGenegatorMetadata.noExpander('Catalog.User')} on CatUser.[id] = Users.[User]
 where DocUserGroup.[type] = (SELECT TOP 1 [type] FROM @UserOrGroup) and DocUserGroup.[id] = (SELECT TOP 1 [UserOrGroup] FROM @UserOrGroup)
 END
 
@@ -54,7 +55,7 @@ SELECT (SELECT TOP 1 [documents] FROM @UserOrGroup) as "document"
 ,DocUser.[id] as "User"
 ,CatUser.[code] as "AccountAD"
 FROM [dbo].[documents] as DocUser
-LEFT JOIN [dbo].[Catalog.User.v] as CatUser with (noexpand) on CatUser.[id] = DocUser.[id]
+LEFT JOIN [dbo].[Catalog.User.v] as CatUser ${SQLGenegatorMetadata.noExpander('Catalog.User')} on CatUser.[id] = DocUser.[id]
 where DocUser.[type] = (SELECT TOP 1 [type] FROM @UserOrGroup) and DocUser.[id] = (SELECT TOP 1 [UserOrGroup] FROM @UserOrGroup)
 END
 
@@ -77,13 +78,37 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
 
   async AddDescendantsCompany(tx: MSSQL) {
     if (!this.company) throw new Error(`Empty company!`);
-    const query = `SELECT id company FROM dbo.[Descendants](@p1, '')`;
-    const companyItems = await tx.manyOrNone<{ company: string }>(query, [this.company]);
-    for (const CompanyItem of companyItems) {
-      if (this.CompanyList.filter(ci => (ci.company === CompanyItem.company)).length === 0) {
-        this.CompanyList.push(CompanyItem);
-      }
-    }
+    const query = `
+    SELECT
+      cat.id company,
+      [Group.id] [group],
+      [ResponsibilityCenter.id] responsibilityCenter
+    FROM dbo.[Descendants](@p1, '') comp
+    left join [dbo].[Catalog.Company] cat on cat.id = comp.id
+    order by
+      [Group.value],
+      [ResponsibilityCenter.value],
+      cat.[Company]`;
+    const companyItems = await tx.manyOrNone<CompanyItems>(query, [this.company]);
+    companyItems
+      .filter(c => !this.CompanyList.find(cl => cl.company === c.company))
+      .forEach(c => this.CompanyList.push(c));
+  }
+
+  async RefreshCompanyList(tx: MSSQL) {
+    const compIds = this.CompanyList.filter(e => !!e.company).map(e => `'${e.company}'`).join(',');
+    const query = `
+    SELECT
+      id company,
+      [Group.id] [group],
+      [ResponsibilityCenter.id] responsibilityCenter
+    FROM [dbo].[Catalog.Company]
+    WHERE id IN (${compIds})
+    order by
+      [Group.value],
+      [ResponsibilityCenter.value],
+      [Company]`;
+    this.CompanyList = await tx.manyOrNone<CompanyItems>(query);
   }
 
   async ClearCompanyList(tx: MSSQL) {
@@ -105,6 +130,9 @@ export class DocumentUserSettingsServer extends DocumentUserSettings implements 
         return {};
       case 'AddDescendantsCompany':
         await this.AddDescendantsCompany(tx);
+        return this;
+      case 'RefreshCompanyList':
+        await this.RefreshCompanyList(tx);
         return this;
       case 'ClearCompanyList':
         await this.ClearCompanyList(tx);

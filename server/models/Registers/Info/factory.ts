@@ -30,6 +30,7 @@ import { RegisterInfoIntl } from './Intl';
 import { RegisterInfoBusinessCalendar } from './BusinessCalendar';
 import { RegisterInfoBusinessCalendarMonths } from './BusinessCalendar.Months';
 import { RegisterInfo } from 'jetti-middle';
+import { RegisterInfoDepartmentLimitIndicators } from './Department.LimitIndicators';
 
 export type RegistersInfo =
     RegisterInfoDynamic |
@@ -38,6 +39,7 @@ export type RegistersInfo =
     RegisterInfoBusinessCalendar |
     RegisterInfoBusinessCalendarMonths |
     RegisterInfoDepartmentStatus |
+    RegisterInfoDepartmentLimitIndicators |
     RegisterInfoRoyaltySales |
     RegisterInfoSettlementsReconciliation |
     RegisterInfoCompanyResponsiblePersons |
@@ -84,6 +86,7 @@ const RegisteredRegisterInfo: IRegisteredRegisterInfo[] = [
     { type: 'Register.Info.BudgetItemRule', Class: RegisterInfoBudgetItemRule },
     { type: 'Register.Info.IntercompanyHistory', Class: RegisterInfoIntercompanyHistory },
     { type: 'Register.Info.DepartmentCompanyHistory', Class: DepartmentCompanyHistory },
+    { type: 'Register.Info.Department.LimitIndicators', Class: RegisterInfoDepartmentLimitIndicators },
     { type: 'Register.Info.DepartmentStatus', Class: RegisterInfoDepartmentStatus },
     { type: 'Register.Info.CounterpartiePriceList', Class: RegisterInfoCounterpartiePriceList },
     { type: 'Register.Info.CompanyResponsiblePersons', Class: RegisterInfoCompanyResponsiblePersons },

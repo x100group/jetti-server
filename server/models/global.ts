@@ -3,14 +3,14 @@ import { AllDocTypes, DocTypes } from './documents.types';
 import { x100 } from '../x100.lib';
 import { lib } from '../std.lib';
 import * as moment from 'moment';
-import { getConfigSchema, getRegisteredDocuments, IConfigSchema } from './config';
+import { getConfigSchema, getRegisteredDocuments, IConfigSchema, storedInTablesTypes } from './config';
 import { getIndexedOperationsMap } from './indexedOperation';
 import { DocumentBase } from 'jetti-middle';
 import { RegisteredDocumentType } from './documents.factory';
 
 export class Global {
 
-    private static _dynamicFields = ['RegisteredDocuments', 'dynamicMeta', 'indexedOperations', 'configSchema'];
+    private static _dynamicFields = ['RegisteredDocuments', 'dynamicMeta', 'indexedOperations', 'configSchema', 'storedInTablesTypes'];
     static x100 = x100;
     static lib = lib;
     static isProd: boolean = global['isProd'];
@@ -24,6 +24,7 @@ export class Global {
     static RegisteredDocumentDynamic = () =>
         (global['dynamicMeta'] ? global['dynamicMeta']['RegisteredDocument'] : []) as RegisteredDocumentType[]
     static moment = () => global['moment'];
+    static storedInTablesTypes = () => (global['storedInTablesTypes'] || {}) as { [x: string]: boolean };
 
     static async init() {
         global['x100'] = x100;
@@ -42,6 +43,7 @@ export class Global {
         global['dynamicMeta'] = await getDynamicMeta();
         global['indexedOperations'] = await getIndexedOperationsMap();
         global['RegisteredDocuments'] = await getRegisteredDocuments(); // static + dynamic
+        global['storedInTablesTypes'] = await storedInTablesTypes();
         global['configSchema'] = getConfigSchema();
     }
 }

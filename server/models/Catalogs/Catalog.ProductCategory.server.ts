@@ -12,7 +12,7 @@ export class CatalogProductCategoryServer extends CatalogProductCategory impleme
       where
       deleted = 0 and
       ProductCategory = @p1`, [this.id]);
-    if (exist) throw new Error(`Deletion prohibited: there are ${exist.idCount} products with a category "${this.description}"`);
+    if (exist && exist.idCount) throw new Error(`Deletion prohibited: there are ${exist.idCount} products with a category "${this.description}"`);
 
     return this;
   }

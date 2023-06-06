@@ -44,6 +44,7 @@ export type CatalogTypes =
   'Catalog.ManufactureLocation' |
   'Catalog.Salary.Analytics' |
   'Catalog.Subcount' |
+  'Catalog.MoneyDocument' |
   'Catalog.Documents' |
   'Catalog.Catalogs' |
   'Catalog.Forms' |
@@ -126,6 +127,7 @@ export type ComplexTypes =
   'Types.CompanyOrCounterpartieOrPersonOrRetailClient' |
   'Types.CompanyOrCompanyGroup' |
   'Types.ExpenseOrBalanceOrIncome' |
+  'Types.ExpenseAnalyticsOrDepartment' |
   'Types.TypesExpenseOrIncome';
 
 export type IncomeExpenseTypes =

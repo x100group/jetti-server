@@ -10,6 +10,9 @@ export class DepartmentCompanyHistory extends RegisterInfo {
   @Props({ type: 'Catalog.Department', required: true, unique: true, order: 1 })
   Department: Ref = null;
 
+  @Props({ type: 'Catalog.Department', order: 1 })
+  Department2: Ref = null;
+
   @Props({ type: 'Catalog.Company', required: true, unique: true, order: 2 })
   company: Ref = null;
 

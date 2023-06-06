@@ -8,7 +8,7 @@ metadata:
   name: sm
   namespace: default
 spec:
-  replicas: 6
+  replicas: 4
   selector:
     matchLabels:
       app: sm
@@ -24,7 +24,7 @@ spec:
         - name: DB_PORT
           value: "1433"
         - name: DB_HOST
-          value: JETTI-DB-01
+          value: JETTI-DB-01-NEW
         - name: DB_NAME
           value: sm
         - name: DB_USER
@@ -57,7 +57,7 @@ spec:
         - name: LOGIC_USECASHREQUESTAPPROVING
           value: "1"
         - name: REFRESH_ID
-          value: "000032"
+          value: "0024"
         - name: NODE_ENV
           value: production
         image: eu.gcr.io/jetti-x100/jetti-api:latest

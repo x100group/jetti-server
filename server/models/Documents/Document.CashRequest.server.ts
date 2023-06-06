@@ -25,9 +25,32 @@ import { Ref } from 'jetti-middle';
 
 export class DocumentCashRequestServer extends DocumentCashRequest implements IServerDocument {
 
-  async onValueChanged(prop: string, value: any, tx: MSSQL): Promise<DocumentBaseServer> {
+  private dynamicModuleId = '6FBD64C0-0BD7-11EC-8655-0B653CB53BE7';
+
+  async dynamicModule(tx: MSSQL) {
+    const dynamicModule = await lib.doc.byId(this.dynamicModuleId, tx);
+    if (!dynamicModule) return;
+    return new Function('', dynamicModule!['module']).bind(this)();
+  }
+
+  async dynamicHandler(eventKey: string, tx: MSSQL, value?: any) {
+    const dynamicModule = await this.dynamicModule(tx);
+    if (!dynamicModule || !dynamicModule[eventKey]) return false;
+    const handleResult = await dynamicModule[eventKey](this, tx, value);
+    return handleResult || true;
+  }
+
+  async onValueChanged(prop: string, value: any, tx: MSSQL) {
+    if (await this.dynamicHandler(`onValueChanged_${prop}`, tx, value)) return this;
+
     let query = '';
     switch (prop) {
+      case 'Operation':
+        if (this.Operation === 'Выплата ЗП для самозанятых') {
+          const props = this.Props();
+          this.Props = () => ({ ...props, PersonContract: { ...props.PersonContract, required: true } });
+        }
+        return this;
       case 'company':
         this.CashOrBank = null;
         this.tempCompanyParent = null;
@@ -42,6 +65,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
         this.CashRecipientBankAccount = null;
         this.Contract = null;
         this.Department = null;
+        this.PersonContract = null;
         this.TaxKPP = '';
         const company = await lib.doc.byIdT<CatalogCompany>(value.id, tx);
         if (company) {
@@ -80,6 +104,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       case 'CashRecipient':
         this.Contract = null;
         this.CashRecipientBankAccount = null;
+        this.PersonContract = null;
         if (this.Operation === 'Оплата ДС в другую организацию') { this.CashOrBankIn = null; return this; }
         if (!value.id || value.type !== 'Catalog.Counterpartie') { this.Contract = null; return this; }
         query = `
@@ -117,21 +142,25 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
   }
 
   async onCommand(command: string, args: any, tx: MSSQL): Promise<{ [x: string]: any }> {
+    if (await this.dynamicHandler(`onCommand_${command}`, tx)) return this;
+
     switch (command) {
       case 'returnToStatusPrepared':
         await this.returnToStatusPrepared(tx);
         return this;
       case 'FillSalaryBalanceByPersons':
-        await this.FillSalaryBalance(tx, true, false);
+        await this.FillSalaryBalance(tx, true, false, false);
         return this;
       case 'FillSalaryBalanceByDepartment':
-        await this.FillSalaryBalance(tx, false, false);
+        await this.FillSalaryBalance(tx, false, false, false);
         return this;
       case 'FillSalaryBalanceByDepartmentWithCurrentMonth':
-        await this.FillSalaryBalance(tx, false, true);
+      case 'FillSalaryBalanceByDepartmentWithCurrentMonthPeriod':
+        await this.FillSalaryBalance(tx, false, true, command === 'FillSalaryBalanceByDepartmentWithCurrentMonthPeriod');
         return this;
       case 'FillSalaryBalanceByPersonsWithCurrentMonth':
-        await this.FillSalaryBalance(tx, true, true);
+      case 'FillSalaryBalanceByPersonsWithCurrentMonthPeriod':
+        await this.FillSalaryBalance(tx, true, true, command === 'FillSalaryBalanceByPersonsWithCurrentMonthPeriod');
         return this;
       case 'CloseCashRequest':
         await this.CloseCashRequest(tx);
@@ -145,7 +174,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     }
   }
 
-  async baseOn(source: Ref, tx: MSSQL): Promise<this> {
+  async baseOn(source: Ref, tx: MSSQL) {
     return this;
   }
 
@@ -159,9 +188,9 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
 
   async FillByWebAPIBody(body: { [x: string]: any }, tx: MSSQL) {
     const query = `
-          SELECT [id]
-                ,[company]
-            FROM [dbo].[Documents] where ExchangeCode = @p1 and type = 'Catalog.Department'`;
+          SELECT[id]
+        , [company]
+    FROM[dbo].[Documents] where ExchangeCode = @p1 and type = 'Catalog.Department'`;
     const dep = await tx.oneOrNone<{ id, company }>(query, [body.DepartmentId]);
     if (dep) {
       this['Department'] = dep.id;
@@ -213,12 +242,12 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     let taxInfo = '';
     if (countryCode === 'UKR') {
       // tslint:disable-next-line: max-line-length
-      taxInfo = taxRate ? `В т.ч. ПДВ (${taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без податку (ПДВ)';
+      taxInfo = taxRate ? `В т.ч.ПДВ(${taxRate} %) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без податку (ПДВ)';
     } else {
-      taxInfo = taxRate ? `В т.ч. НДС (${taxRate}%) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без налога (НДС)';
+      taxInfo = taxRate ? `В т.ч.НДС(${taxRate} %) ${String(Tax.toFixed(2)).replace('.', '-')} ${currencyShortName}.` : 'Без налога (НДС)';
     }
     newInfo.push(infoArr[0].trim());
-    newInfo.push(`${countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(amount.toFixed(2)).replace('.', '-')} ${currencyShortName}. ${taxInfo}`);
+    newInfo.push(`${countryCode === 'UKR' ? 'Сума' : 'Сумма'} ${String(amount.toFixed(2)).replace('.', '-')} ${currencyShortName}.${taxInfo} `);
     return newInfo.join('\n');
   }
 
@@ -235,7 +264,7 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
       if (relatedDocs.length) {
         let relatedDocsString = '';
         relatedDocs.forEach(doc => { relatedDocsString += '\n' + doc.description; });
-        throw new Error(`Операция не может быть выполнена, есть связанные документы: \n ${relatedDocsString}`);
+        throw new Error(`Операция не может быть выполнена, есть связанные документы: \n ${relatedDocsString} `);
       }
       if (this.workflowID) {
         await DeleteProcess(this.workflowID);
@@ -271,114 +300,145 @@ export class DocumentCashRequestServer extends DocumentCashRequest implements IS
     await upsertDocument(this, tx);
   }
 
-  async FillSalaryBalance(tx: MSSQL, byPersons: boolean, withCurrentMonth: boolean) {
+  async FillSalaryBalance(tx: MSSQL, byPersons: boolean, withCurrentMonth: boolean, byPeriod: boolean): Promise<void> {
     if (!(await this.isSuperuser(tx)) && this.Status !== 'PREPARED') throw new Error(`Заполнение возможно только в статусе \"PREPARED\"`);
+    if (byPeriod && (!this.StartDate || !this.EndDate)) throw new Error(`Не указан период начислений`);
+
     let query = `
-DROP TABLE IF EXISTS #Person;
-DROP TABLE IF EXISTS #Salary;
-DROP TABLE IF EXISTS #ExceptDocs;
+
+    --DECLARE @p1 VARCHAR(50) = '9BDA3100-3203-11EA-974C-23397E2DEFA2' -- 9BDA3100-3203-11EA-974C-23397E2DEFA2 DEP
+    --DECLARE @p2 VARCHAR(50) = 'B559C270-42E6-11E8-9F62-93768160FCE2' -- uaH cur
+    --DECLARE @p3 DATETIME = '20221201' --- CR date @p3
+    --DECLARE @p4 VARCHAR(50) = 'E5850830-02D2-11EA-A524-E592E08C23A5'--- ru company
+    --DECLARE @p5 VARCHAR(50) = 'E5850830-02D2-11EA-A524-E592E08C23A5'--- ru person
+    --DECLARE @p6 BIT = 0; -- dep or pers
+    --DECLARE @p7 DATETIME = '20211101'
+    --DECLARE @p8 DATETIME = '20221201'
+    --DECLARE @p9 BIT =0; -- withCurrentMonth
+
+    DROP TABLE IF EXISTS #Person;
+    DROP TABLE IF EXISTS #Salary;
+    DROP TABLE IF EXISTS #ExceptDocs;
+    DROP TABLE IF EXISTS #SalaryCashToPay;
+    DROP TABLE IF EXISTS #SalaryUnion;
+
     SELECT id personId
-    INTO #Person
-    FROM
-        [dbo].[Catalog.Person]
-    WHERE [Department.id] = @p1 AND @p6 = 0
-UNION
-    SELECT DISTINCT
-        id personId
-    FROM
-        [dbo].[Catalog.Person]
-    WHERE id IN (@p5) AND @p6 = 1;
+        INTO #Person
+        FROM
+            [dbo].[Catalog.Person]
+        WHERE [Department.id] = @p1 AND @p6 = 0
+    UNION
+        SELECT DISTINCT
+            id personId
+        FROM
+            [dbo].[Catalog.Person]
+        WHERE id IN (@p5) AND @p6 = 1;
 
     SELECT
-doc.id
-INTO #ExceptDocs
-FROM [dbo].[Register.Accumulation.Salary] s
-INNER JOIN [dbo].[Documents] doc
-ON doc.id = document
-and [ExchangeBase]='PortalNach'
-and s.date BETWEEN @p7 AND @p8
-and @p9 = 0;
+      doc.id
+    INTO #ExceptDocs
+    FROM [dbo].[Register.Accumulation.Salary] s
+    INNER JOIN [dbo].[Documents] doc
+    ON doc.id = document
+      and [ExchangeBase]='PortalNach'
+      and s.date BETWEEN @p7 AND @p8
+      and @p9 = 0;
 
-SELECT
-    Person PersonID,
-    SUM(Amount) Salary
-INTO #Salary
-FROM [dbo].[Register.Accumulation.Salary] register
-WHERE (1=1)
-    AND register.document NOT IN (SELECT id FROM #ExceptDocs)
-    AND ((@p6 = 0
-    AND (Person in (SELECT personId
-    FROM #Person) OR @p1 is NULL))
-    OR (@p6 = 1 AND Person in (SELECT personId
-    FROM #Person)))
-    AND currency = @p2
-    AND date <= @p3
-    AND company in (SELECT id FROM [dbo].Descendants(@p4, ''))
-GROUP BY Person
-HAVING SUM(Amount) > 0;
+    SELECT
+        Person PersonID,
+        SUM(Amount) Salary
+    INTO #Salary
+    FROM [dbo].[Register.Accumulation.Salary] register
+    WHERE (1=1)
+        AND register.document NOT IN (SELECT id FROM #ExceptDocs)
+        AND ((@p6 = 0
+        AND (Person in (SELECT personId FROM #Person) OR @p1 is NULL))
+        OR (@p6 = 1 AND Person in (SELECT personId FROM #Person)))
+        AND currency = @p2
+        AND ((date <= @p3 AND @p10 = 0) OR (date BETWEEN @p7 AND @p8 AND @p10 = 1))
+        AND company in (SELECT id FROM [dbo].Descendants(@p4, ''))
+    GROUP BY Person
+    HAVING SUM(Amount) > 0;
 
-SELECT
-    PersonID Employee,
-    ROUND(SUM(Salary),0) Salary
-FROM (        SELECT *
-        FROM #Salary
+    SELECT
+      ft.CashRecipient PersonID,
+      -IIF(d.[type] = 'Document.Operation'
+      AND JSON_VALUE(d.doc, '$.Group') in ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E')
+      AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT) = 0,0,SUM(ft.Amount)) Amount
+    INTO #SalaryCashToPay
+    FROM [dbo].[Register.Accumulation.CashToPay] ft
+      LEFT JOIN [dbo].[Documents] d ON d.id = ft.document
+    WHERE (1=1)
+      AND ft.document NOT IN (SELECT id FROM #ExceptDocs)
+      AND (ft.CashRecipient IN (SELECT personId from #Person) OR
+          (@p1 is NULL and ft.CashRecipient IN (SELECT personId from #Salary)))
+      AND ft.currency = @p2
+      AND ((ft.date <= @p3 AND @p10 = 0) OR (ft.date BETWEEN @p7 AND @p8 AND @p10 = 1))
+      AND ft.OperationType in (N'Выплата заработной платы без ведомости',N'Выплата заработной платы')
+    GROUP BY
+        ft.CashRecipient,JSON_VALUE(d.doc, '$.Group'),CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT),d.type
+    HAVING
+        IIF(d.[type] = 'Document.Operation'
+        AND JSON_VALUE(d.doc, '$.Group') IN ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E')
+        AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT)  = 0,0,SUM([Amount])) <> 0;
 
+    SELECT *
+    INTO #SalaryUnion
+    FROM #Salary
     UNION
+    SELECT
+        res.PersonID,
+        SUM(res.Amount)
+    FROM #SalaryCashToPay as res
+    GROUP BY PersonID;
 
-        SELECT
-            res.PersonID,
-            SUM(res.Amount)
-        FROM (
-                SELECT
-                ft.CashRecipient PersonID,
-                -IIF(d.[type] = 'Document.Operation'
-                AND JSON_VALUE(d.doc, '$.Group') in ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E')
-                AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT) = 0,0,SUM(ft.Amount)) Amount
-            FROM [dbo].[Register.Accumulation.CashToPay] ft
-                LEFT JOIN [dbo].[Documents] d ON d.id = ft.document
-            WHERE (1=1)
-                AND ft.document NOT IN (SELECT id FROM #ExceptDocs)
-                AND (ft.CashRecipient IN (SELECT personId
-                from #Person) or (@p1 is NULL and ft.CashRecipient IN (SELECT personId
-                from #Salary)))
-                AND ft.currency = @p2
-                AND ft.date <= @p3
-                AND ft.OperationType in (N'Выплата заработной платы без ведомости',N'Выплата заработной платы')
-            GROUP BY
-                    ft.CashRecipient,JSON_VALUE(d.doc, '$.Group'),CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT),d.type
-            HAVING
-                  IIF(d.[type] = 'Document.Operation'
-                  AND JSON_VALUE(d.doc, '$.Group') IN ('269BBFE8-BE7A-11E7-9326-472896644AE4', '3BCDFD50-BE79-11E7-A223-BB955AD4DD9E')
-                  AND CAST(ISNULL(JSON_VALUE(d.doc, N'$.BankConfirm'),0) AS BIT)  = 0,0,SUM([Amount])) <> 0) as res
-        GROUP BY
-              PersonID) as fin
-    LEFT JOIN [dbo].[Catalog.Person] p ON fin.PersonID = p.id
-GROUP BY
-        PersonID, p.Person
-HAVING SUM(Salary) >= 20 AND not PersonID is NULL
-ORDER BY
-        p.Person`;
+    SELECT
+      p.Person,
+        PersonID Employee,
+        ROUND(SUM(Salary),0) Salary
+    FROM #SalaryUnion as fin
+        LEFT JOIN [dbo].[Catalog.Person] p ON fin.PersonID = p.id
+    GROUP BY
+      PersonID, p.Person
+    HAVING SUM(Salary) >= 20
+      AND not PersonID is NULL
+    ORDER BY
+      p.Person`;
 
-    const CompanyEmployee = await lib.util.salaryCompanyByCompany(this.company, tx);
-    const CompanyParent = await lib.doc.byId(CompanyEmployee, tx);
-    const persons = '';
-    if (byPersons) query = query.replace('@p5', this.PayRolls.map(el => '\'' + el.Employee + '\'').join(','));
+    const salaryCompanyId = await lib.util.salaryCompanyByCompany(this.company, tx);
+    if (!salaryCompanyId) throw new Error(`Не удалось определить организацию отражения ЗП для текущей организации`);
+
+    const salaryCompany = await lib.doc.byId(salaryCompanyId, tx);
+
+
+    if (byPersons) {
+      const personsIds = this.PayRolls.map(el => '\'' + el.Employee + '\'').join(',');
+      if (!personsIds) throw new Error('Не указаны сотрудники');
+      query = query.replace('@p5', personsIds);
+    }
+
     const currentMounth = {
       begin: new Date(this.date.getFullYear(), this.date.getMonth(), 1),
       end: new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0, 23, 59, 59)
     };
 
-    const params = [byPersons ? null : this.Department,
-    this.сurrency,
-    this.date,
-    CompanyParent!.parent,
-      persons,
-    byPersons ? 1 : 0,
-    currentMounth.begin,
-    currentMounth.end,
-    withCurrentMonth ? 1 : 0];
+    const period = byPeriod ? { begin: this.StartDate, end: this.EndDate } : currentMounth;
+
+    const params = [
+      byPersons ? null : this.Department,
+      this.сurrency,
+      this.date,
+      salaryCompany!.parent,
+      ,
+      byPersons ? 1 : 0,
+      period.begin,
+      period.end,
+      withCurrentMonth ? 1 : 0,
+      byPeriod ? 1 : 0,
+    ];
 
     const salaryBalance = await tx.manyOrNone<{ Employee, Salary }>(query, params);
+
     this.PayRolls = [];
     this.Amount = 0;
     this.PayDay = new Date;
@@ -390,6 +450,8 @@ ORDER BY
   }
 
   async beforeSave(tx: MSSQL): Promise<this> {
+    if (await this.dynamicHandler('beforeSave', tx))
+      return this;
     if (this.PayDay && this.PayDay.setHours(0) < this.date.setHours(0, 0, 0, 0)) throw new Error(`Дата платежа не может быть раньше даты документа`);
     if (this.Amount < 0.01) throw new Error(`${this.description} неверно указана сумма`);
     if (!this.CashKind) throw new Error(`${this.description} не указан тип платежа`);
@@ -436,6 +498,11 @@ ORDER BY
 
   async onPost(tx: MSSQL) {
 
+    const dynamicPost = await this.dynamicHandler('onPost', tx);
+    if (dynamicPost && dynamicPost.Accumulation) return dynamicPost;
+
+    const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
+
     const superuser = await this.isSuperuser(tx);
     if (!superuser) {
       const taxFields = [
@@ -480,7 +547,7 @@ ORDER BY
       else await this.FillTaxInfo(tx);
     }
 
-    const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
+
 
     if (this.Status === 'PREPARED' || this.Status === 'REJECTED') {
       return Registers;
@@ -578,6 +645,23 @@ ORDER BY
       (query, [this.id]);
   }
 
+  public async getAmountBalanceWithCashRecipients(
+    tx: MSSQL, onlyWithPositiveBalance: boolean):
+    Promise<{ CashRecipient: TypesCashRecipient, Amount: number }[]> {
+    const query = `
+    SELECT
+        Balance.[CashRecipient] AS CashRecipient,
+        SUM(Balance.[Amount]) AS Amount
+    FROM [dbo].[Register.Accumulation.CashToPay] AS Balance
+    WHERE Balance.[CashRequest] = @p1
+    GROUP BY
+        Balance.[CashRecipient]
+    ${onlyWithPositiveBalance ? 'HAVING SUM(Balance.[Amount]) > 0' : ''}`;
+
+    return await tx.manyOrNone<{ CashRecipient: TypesCashRecipient, Amount: number }>
+      (query, [this.id]);
+  }
+
   // возвращает связанные документы
   async getRelatedDocuments(tx: MSSQL): Promise<{ id: string, description: string }[]> {
     const query = `
@@ -606,25 +690,23 @@ ORDER BY
     if (await this.isSuperuser(tx)) return;
     if (docOperation.Operation === '6A374EA0-4F57-11EA-821D-9904759DD7D7') return; // ЗАКРЫТИЕ - Заявки на расход ДС
     if (this.Operation === 'Выплата заработной платы') {
-      const rest = await this.getAmountBalanceWithCashRecipientsAndBankAccounts(tx, false);
-      const Errors: { Employee, BankAccount, Amount: number }[] = [];
+      const rest = await this.getAmountBalanceWithCashRecipients(tx, false);
+      const Errors: { Employee, Amount: number }[] = [];
       rest.forEach(el => {
-        (docOperation['PayRolls'] as Array<{ Employee, BankAccount, Amount: number, AmountPenalty: number }>)
-          .filter(pr => (pr.Employee === el.CashRecipient &&
-            (pr.BankAccount === el.BankAccountPerson || !el.BankAccountPerson && !pr.BankAccount)
+        (docOperation['PayRolls'] as Array<{ Employee, Amount: number, AmountPenalty: number }>)
+          .filter(pr => (pr.Employee === el.CashRecipient
             && el.Amount < pr.Amount - (pr.AmountPenalty || 0)))
           .forEach(er => {
-            Errors.push({ Employee: er.Employee, BankAccount: er.BankAccount, Amount: er.Amount - el.Amount - (er.AmountPenalty || 0) });
+            Errors.push({ Employee: er.Employee,  Amount: er.Amount - el.Amount - (er.AmountPenalty || 0) });
           });
       });
       if (Errors.length) {
         let ErrorText = '';
         const query = `
-          SELECT Description Employee FROM dbo.Documents WHERE id = @p1
-          SELECT Description BankAccount FROM dbo.Documents WHERE id = @p2`;
+          SELECT Description Employee FROM dbo.Documents WHERE id = @p1`;
         for (const err of Errors) {
-          const descriptions = await tx.oneOrNone<{ Employee: string, BankAccount: string }>(query, [err.Employee, err.BankAccount]);
-          ErrorText += `\n\t ${descriptions!.Employee} ${descriptions!.BankAccount ? 'по ' + descriptions!.BankAccount : ''} на ${err.Amount.toFixed(2)} `;
+          const descriptions = await tx.oneOrNone<{ Employee: string }>(query, [err.Employee]);
+          ErrorText += `\n\t ${descriptions!.Employee} на ${err.Amount.toFixed(2)} `;
         }
         throw new Error(`${docOperation.description} не может быть проведен, первышение остатка по заявке для: ${ErrorText} `);
       }

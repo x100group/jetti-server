@@ -3,7 +3,7 @@ import { CatalogContractServer } from './Catalogs/Catalog.Contract.server';
 import { CatalogEmployeeServer } from './Catalogs/Catalog.Employee.server';
 import { CatalogStaffingTableServer } from './Catalogs/Catalog.StaffingTable.server';
 import { lib } from '../std.lib';
-import { createDocument, RegisteredDocumentType } from './../models/documents.factory';
+import { createDocument, RegisteredDocuments, RegisteredDocumentType } from './../models/documents.factory';
 import { CatalogOperation } from './Catalogs/Catalog.Operation';
 import { CatalogOperationServer } from './Catalogs/Catalog.Operation.server';
 import { DocumentExchangeRatesServer } from './Documents/Document.ExchangeRates.server';
@@ -26,6 +26,7 @@ import { Ref, DocumentBase, IFlatDocument, DocumentOptions, RefValue, calculateD
 import { CatalogUserServer } from './Catalogs/Catalog.User.server';
 import { CatalogOperationTypeServer } from './Catalogs/Catalog.Operation.Type.server';
 import { CatalogUsersGroupServer } from './Catalogs/Catalog.UsersGroup.server';
+import { CatalogDepartmentServer } from './Catalogs/Catalog.Department.server';
 
 export interface IServerDocument {
 
@@ -53,6 +54,7 @@ export interface IServerDocument {
 export type DocumentBaseServer = DocumentBase & IServerDocument;
 
 export const RegisteredServerDocument: RegisteredDocumentType[] = [
+  { type: 'Catalog.Department', Class: CatalogDepartmentServer },
   { type: 'Catalog.Contract', Class: CatalogContractServer },
   { type: 'Catalog.Operation', Class: CatalogOperationServer },
   { type: 'Catalog.Operation.Type', Class: CatalogOperationTypeServer },
@@ -79,7 +81,9 @@ export const RegisteredServerDocument: RegisteredDocumentType[] = [
 export async function createDocumentServer<T extends DocumentBaseServer>
   (type: string, document: IFlatDocument | undefined, tx: MSSQL) {
   let result: T;
-  const doc = RegisteredServerDocument.find(el => el.type === type);
+
+  const isDynamic = RegisteredDocuments().get(type)?.dynamic;
+  const doc = !isDynamic && RegisteredServerDocument.find(el => el.type === type);
   if (doc) {
     const serverResult = <T>new doc.Class;
     const ArrayProps = Object.keys(serverResult).filter(k => Array.isArray(serverResult[k]));

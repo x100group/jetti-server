@@ -252,19 +252,18 @@ async function checkDocumentUnique(serverDoc: DocumentBaseServer, tx: MSSQL) {
 
   if (!serverDoc.isCatalog) return;
   const uniqueProps = serverDoc.getPropsWithOption('isUnique', true);
-  const propsKeys = Object.keys(uniqueProps);
+  const propsKeys = Object.keys(uniqueProps).filter(key => !!serverDoc[key]);
+
   if (!propsKeys.length) return;
 
-  const propFilter = {};
-  propsKeys.filter(e => serverDoc[e]).forEach(e => propFilter[e] = serverDoc[e]);
-
-  const cat = await lib.doc.findDocumentByProps<any>(
-    serverDoc.type as AllDocTypes,
-    propFilter,
-    tx,
-    { matching: 'OR', selectedFields: [...propsKeys, 'description, id'].join(',') });
-  const exist = cat.filter(e => e.id !== serverDoc.id);
-  if (!exist.length) return;
+  const getExisting = async (propName: string, propValue: any): Promise<{ id: string, description: string } | null> =>
+    await tx.oneOrNone(`
+    SELECT TOP 1 description, id
+    FROM [dbo].[${serverDoc.type}.v]
+    WHERE ${propName} = @p1
+    and id <> @p2`,
+      [propValue, serverDoc.id]
+    );
 
   const getValueDescription = async (type: AllTypes, value: any) => {
     if (!value) return `<empty>`;
@@ -272,19 +271,16 @@ async function checkDocumentUnique(serverDoc: DocumentBaseServer, tx: MSSQL) {
     return (await lib.doc.byId(value, tx))!.description;
   };
 
-  const existErrors: string[] = [];
   for (const propKey of propsKeys) {
-    const descriptions = exist
-      .filter(e => e[propKey] === serverDoc[propKey])
-      .map(e => e.description)
-      .join('\n');
-    if (descriptions) existErrors.push(
-      `field "${uniqueProps[propKey].label || propKey}" value
-     "${await getValueDescription(uniqueProps[propKey].type as any, serverDoc[propKey])}" alredy exists:
-     ${descriptions}`);
+    const existing = await getExisting(propKey, serverDoc[propKey]);
+    if (!existing) continue;
+    const propLabel = uniqueProps[propKey].label || propKey;
+    const propDesctiption = await getValueDescription(uniqueProps[propKey].type as any, serverDoc[propKey]);
+    const msg = `
+    Объект "${serverDoc.description}" должен быть уникален по реквизиту "${propLabel}".
+    Уже существует объект "${existing.description}" (id: ${existing.id}) с значением "${propLabel}"="${propDesctiption}".`;
+    throw new Error(msg);
   }
-
-  throw new Error(`"${serverDoc.description}" non unique by\n${existErrors.join('\n')}`);
 }
 
 async function checkProtectedPropsModify(serverDoc: DocumentBaseServer, tx: MSSQL) {

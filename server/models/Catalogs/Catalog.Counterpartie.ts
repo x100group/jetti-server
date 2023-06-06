@@ -11,12 +11,15 @@ import { DocumentBase, JDocument, Props, Ref } from 'jetti-middle';
     { name: 'Bank accounts', type: 'Catalog.Counterpartie.BankAccount', field: 'owner' },
     { name: 'Loan contracts', type: 'Catalog.Loan', field: 'owner' }
   ],
-  hierarchy: 'folders'
+  hierarchy: 'all'
 })
 export class CatalogCounterpartie extends DocumentBase {
 
-  @Props({ type: 'Catalog.Counterpartie', hiddenInList: true, order: -1 })
+  @Props({ type: 'Catalog.Counterpartie', hiddenInList: true, order: -1, storageType: 'all' })
   parent: Ref = null;
+
+  @Props({ type: 'Catalog.Counterpartie', label: 'Головной контрагент' })
+  ParentCounterpartie: Ref = null;
 
   @Props({ type: 'enum', required: true, value: ['ЮрЛицо', 'ФизЛицо', 'ИндПред', 'Нерез', 'Обособ'] })
   kind = 'ЮрЛицо';
@@ -44,6 +47,9 @@ export class CatalogCounterpartie extends DocumentBase {
 
   @Props({ type: 'string', required: false })
   Phone: Ref = null;
+
+  @Props({ type: 'string', required: false })
+  Mail: Ref = null;
 
   @Props({ type: 'string', required: false })
   Code1: Ref = null;

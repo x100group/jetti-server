@@ -14,6 +14,7 @@ import { bpApiHost, TRANSFORMED_REGISTER_MOVEMENTS_TABLE } from './env/environme
 import { Ref } from 'jetti-middle';
 import { DocumentCashRequestServer } from './models/Documents/Document.CashRequest.server';
 import axios from 'axios';
+import { SQLGenegatorMetadata } from './fuctions/SQLGenerator.MSSQL.Metadata';
 
 export interface Ix100Lib {
   account: {
@@ -31,6 +32,7 @@ export interface Ix100Lib {
   info: {
     companyByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
     company2ByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
+    department2ByDepartment: (department: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
     IntercompanyByCompany: (company: Ref, date: Date, tx: MSSQL) => Promise<Ref | null>
     getCompanyParentByDepartment: (department: string, date: Date, typeFranchise: string, tx: MSSQL) => Promise<{
       company: Ref,
@@ -69,6 +71,7 @@ export const x100: Ix100Lib = {
   info: {
     companyByDepartment,
     company2ByDepartment,
+    department2ByDepartment,
     IntercompanyByCompany,
     getCompanyParentByDepartment
   },
@@ -241,30 +244,27 @@ async function personFIFO(date: Date, person: Ref, currency: Ref, amount: number
 }
 
 
-async function companyByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
-  let result: Ref | null = null;
+async function departmentCompanyHistory<T>(department: Ref, date = new Date(), column: string, tx: MSSQL): Promise<T | null> {
   const queryText = `
-    SELECT TOP 1 company FROM [Register.Info.DepartmentCompanyHistory] WITH (NOEXPAND)
-    WHERE (1=1)
-      AND date <= @p1
-      AND Department = @p2
-    ORDER BY date DESC`;
-  const res = await tx.oneOrNone<{ company: string }>(queryText, [date, department]);
-  if (res) result = res.company;
-  return result;
+  SELECT TOP 1 ${column} FROM [Register.Info.DepartmentCompanyHistory] WITH (NOEXPAND)
+  WHERE (1=1)
+    AND date <= @p1
+    AND Department = @p2
+  ORDER BY date DESC`;
+  const res = await tx.oneOrNone<T>(queryText, [date, department]);
+  return res ? res[column] : null;
+}
+
+async function companyByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
+  return await departmentCompanyHistory(department, date, 'company', tx);
 }
 
 async function company2ByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
-  let result: Ref | null = null;
-  const queryText = `
-    SELECT TOP 1 company2 FROM [Register.Info.DepartmentCompanyHistory] WITH (NOEXPAND)
-    WHERE (1=1)
-      AND date <= @p1
-      AND Department = @p2
-    ORDER BY date DESC`;
-  const res = await tx.oneOrNone<{ company2: string }>(queryText, [date, department]);
-  if (res) result = res.company2;
-  return result;
+  return await departmentCompanyHistory(department, date, 'company2', tx);
+}
+
+async function department2ByDepartment(department: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
+  return await departmentCompanyHistory(department, date, 'Department2', tx);
 }
 
 async function IntercompanyByCompany(company: Ref, date = new Date(), tx: MSSQL): Promise<Ref | null> {
@@ -288,7 +288,8 @@ async function closeMonthErrors(company: Ref, date: Date, tx: MSSQL) {
       WHERE date < DATEADD(DAY, 1, EOMONTH(@p1)) AND company = @p2
       GROUP BY Storehouse, SKU
       HAVING SUM([Qty]) = 0 AND SUM([Cost]) <> 0) q
-    LEFT JOIN [Catalog.Storehouse.v] Storehouse WITH (NOEXPAND) ON Storehouse.id = q.Storehouse`, [date, company]);
+    LEFT JOIN [Catalog.Storehouse.v] Storehouse${SQLGenegatorMetadata.noExpander('Catalog.Storehouse')}
+     ON Storehouse.id = q.Storehouse`, [date, company]);
   return result;
 }
 
@@ -313,9 +314,12 @@ async function getCompanyParentByDepartment(department: string, date: Date, type
       AND RegDepCompHistory.[Department] = @p2
       ORDER BY RegDepCompHistory.[date] DESC
       ) as Res
-      LEFT JOIN [dbo].[Catalog.Company.v] as CatCom with (noexpand) on CatCom.[id] = Res.[company]
-      LEFT JOIN [dbo].[Catalog.Company.v] as CatCom_Parent with (noexpand) on CatCom_Parent.[id] = CatCom.[parent]
-      LEFT JOIN [dbo].[Catalog.Currency.v] as CatCur_Parent with (noexpand) on CatCur_Parent.[id] = CatCom_Parent.[currency]
+      LEFT JOIN [dbo].[Catalog.Company.v] as CatCom ${SQLGenegatorMetadata.noExpander('Catalog.Company')}
+       on CatCom.[id] = Res.[company]
+      LEFT JOIN [dbo].[Catalog.Company.v] as CatCom_Parent ${SQLGenegatorMetadata.noExpander('Catalog.Company')}
+       on CatCom_Parent.[id] = CatCom.[parent]
+      LEFT JOIN [dbo].[Catalog.Currency.v] as CatCur_Parent ${SQLGenegatorMetadata.noExpander('Catalog.Currency')}
+       on CatCur_Parent.[id] = CatCom_Parent.[currency]
       WHERE Res.[TypeFranchise] = @p3
   `, [date, department, typeFranchise]);
   return result;

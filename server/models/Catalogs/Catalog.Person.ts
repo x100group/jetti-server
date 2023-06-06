@@ -22,6 +22,9 @@ export class CatalogPerson extends DocumentBase {
   @Props({ type: 'Catalog.Person', hiddenInList: true, order: -1 })
   parent: Ref = null;
 
+  @Props({ type: 'Catalog.Counterpartie', label: 'Parent person' })
+  ParentPerson: Ref = null;
+
   @Props({ type: 'enum', value: ['MALE', 'FEMALE', 'SELF'] })
   Gender = null;
 

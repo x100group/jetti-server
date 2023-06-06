@@ -3,7 +3,7 @@ import { MSSQL } from '../../mssql';
 import { lib } from '../../std.lib';
 import { CatalogOperationType } from './Catalog.Operation.Type';
 import { createDocument } from '../documents.factory';
-import { IFlatDocument, Ref } from 'jetti-middle';
+import { DocumentOptions, IFlatDocument, Ref } from 'jetti-middle';
 import { DocumentOperationServer } from './../Documents/Document.Operation.server';
 
 export class CatalogOperationTypeServer extends CatalogOperationType implements IServerDocument {
@@ -33,6 +33,11 @@ export class CatalogOperationTypeServer extends CatalogOperationType implements 
 
     this.Props = () => thisProps;
     this['serverModule'] = ServerDoc['serverModule'];
+    const modelProp = (ServerDoc.Prop() || {}) as DocumentOptions;
+    if (modelProp.module || (modelProp.commands || []).length) {
+      const thisProp = this.Prop() || {};
+      this.Prop = () => ({ ...thisProp, module: modelProp.module, commands: modelProp.commands || [] });
+    }
 
     return true;
   }

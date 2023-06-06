@@ -16,6 +16,9 @@ export class RegisterInfoCompanyResponsiblePersons extends RegisterInfo {
   @Props({ type: 'Types.CompanyOrCompanyGroup', dimension: true })
   companyOrGroup: Ref = null;
 
+  @Props({ type: 'Catalog.InvestorGroup', dimension: true })
+  InvestorGroup: Ref = null;
+
   @Props({ type: 'Catalog.Department', dimension: true })
   Department: Ref = null;
 
@@ -33,6 +36,12 @@ export class RegisterInfoCompanyResponsiblePersons extends RegisterInfo {
 
   @Props({ type: 'boolean', resource: true })
   isActive = false;
+
+  @Props({ type: 'boolean', resource: true })
+  GrantSales = false;
+
+  @Props({ type: 'boolean', resource: true })
+  GrantPL = false;
 
   constructor(init: Partial<RegisterInfoCompanyResponsiblePersons>) {
     super(init);

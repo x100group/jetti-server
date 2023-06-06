@@ -50,6 +50,7 @@ export function getConfigSchema() {
 }
 
 export function ConfigSchemaFromRegisteredDocument(documents: RegisteredDocumentType[]): IConfigSchema[] {
+  SQLGenegator.storedInTablesTypes = Global.storedInTablesTypes();
   return [
     ...documents.map(el => {
       const doc = createDocument(el.type);
@@ -76,6 +77,15 @@ export function ConfigSchemaFromRegisteredDocument(documents: RegisteredDocument
       if (el.type === 'Catalog.Forms') { result.QueryList = (doc as CatalogForms).QueryList(); }
       return result;
     })];
+}
+
+export async function storedInTablesTypes(): Promise<{ [x: string]: string }> {
+  const allDocs = Global.RegisteredDocuments();
+  const res = {};
+  [...allDocs.values()]
+    .filter(e => (createDocument(e.type).Prop() as DocumentOptions).storedIn === 'table')
+    .forEach(e => res[e.type] = true);
+  return res;
 }
 
 export async function getRegisteredDocuments(): Promise<Map<string, RegisteredDocumentType>> {

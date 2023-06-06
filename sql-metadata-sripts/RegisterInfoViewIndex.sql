@@ -230,10 +230,12 @@
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."AddProp"')) [AddProp]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Object"')) [Object]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytic1"')) [Analytic1]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Analytic2"')) [Analytic2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."ValueRef"')) [ValueRef]
         , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."ValueNumber"')) [ValueNumber]
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."ValueString"')) [ValueString]
-        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."ValueDate"'),127) [ValueDate]
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."ValueDate"'),127) [ValueDate]
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."ValueBoolean"')) [ValueBoolean]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.AdditionalProps';
     GO
@@ -241,6 +243,8 @@
     CREATE UNIQUE CLUSTERED INDEX [Register.Info.AdditionalProps] ON [dbo].[Register.Info.AdditionalProps]([company], [date], [id])
     CREATE NONCLUSTERED INDEX[Register.Info.AdditionalProps.AddProp] ON [Register.Info.AdditionalProps]([AddProp]);
     CREATE NONCLUSTERED INDEX[Register.Info.AdditionalProps.Object] ON [Register.Info.AdditionalProps]([Object]);
+    CREATE NONCLUSTERED INDEX[Register.Info.AdditionalProps.Analytic1] ON [Register.Info.AdditionalProps]([Analytic1]);
+    CREATE NONCLUSTERED INDEX[Register.Info.AdditionalProps.Analytic2] ON [Register.Info.AdditionalProps]([Analytic2]);
     GO
 ------------------------------ END Register.Info.AdditionalProps ------------------------------
 
@@ -340,6 +344,7 @@
     SELECT
       id, date, document, company
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department2"')) [Department2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."company2"')) [company2]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
         , TRY_CONVERT(NVARCHAR(128), JSON_VALUE(data, N'$."TypeFranchise"')) [TypeFranchise]
@@ -351,6 +356,31 @@
     GO
 ------------------------------ END Register.Info.DepartmentCompanyHistory ------------------------------
 
+------------------------------ BEGIN Register.Info.Department.LimitIndicators ------------------------------
+
+    CREATE OR ALTER VIEW [Register.Info.Department.LimitIndicators]
+    WITH SCHEMABINDING
+    AS
+    SELECT
+      id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."currency"')) [currency]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."TermStarts"'),127) [TermStarts]
+        , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."TermEnds"'),127) [TermEnds]
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."TimeStart"'),127) [TimeStart]
+        , TRY_CONVERT(DATETIME, JSON_VALUE(data, N'$."TimeFinish"'),127) [TimeFinish]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."MaxOrderCount"')) [MaxOrderCount]
+        , TRY_CONVERT(MONEY, JSON_VALUE(data, N'$."MaxOrderTotalAmount"')) [MaxOrderTotalAmount]
+      FROM dbo.[Register.Info] WHERE type = N'Register.Info.Department.LimitIndicators';
+    GO
+    GRANT SELECT,DELETE ON [Register.Info.Department.LimitIndicators] TO JETTI;
+    CREATE UNIQUE CLUSTERED INDEX [Register.Info.Department.LimitIndicators] ON [dbo].[Register.Info.Department.LimitIndicators]([company], [date], [id])
+    CREATE NONCLUSTERED INDEX[Register.Info.Department.LimitIndicators.RetailNetwork] ON [Register.Info.Department.LimitIndicators]([RetailNetwork]);
+    CREATE NONCLUSTERED INDEX[Register.Info.Department.LimitIndicators.Department] ON [Register.Info.Department.LimitIndicators]([Department]);
+    GO
+------------------------------ END Register.Info.Department.LimitIndicators ------------------------------
+
 ------------------------------ BEGIN Register.Info.DepartmentStatus ------------------------------
 
     CREATE OR ALTER VIEW [Register.Info.DepartmentStatus]
@@ -358,6 +388,7 @@
     AS
     SELECT
       id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."RetailNetwork"')) [RetailNetwork]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."BeginDate"'),127) [BeginDate]
         , TRY_CONVERT(DATE, JSON_VALUE(data, N'$."EndDate"'),127) [EndDate]
@@ -408,12 +439,15 @@
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Role"')) [Role]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."OperationType"')) [OperationType]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."companyOrGroup"')) [companyOrGroup]
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Department"')) [Department]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Loan"')) [Loan]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) [User]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Person"')) [Person]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."Employee"')) [Employee]
         , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."isActive"')) [isActive]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."GrantSales"')) [GrantSales]
+        , TRY_CONVERT(BIT, JSON_VALUE(data, N'$."GrantPL"')) [GrantPL]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.CompanyResponsiblePersons';
     GO
     GRANT SELECT,DELETE ON [Register.Info.CompanyResponsiblePersons] TO JETTI;
@@ -498,6 +532,7 @@
     AS
     SELECT
       id, date, document, company
+        , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."InvestorGroup"')) [InvestorGroup]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."User"')) [User]
         , TRY_CONVERT(UNIQUEIDENTIFIER, JSON_VALUE(data, N'$."LoanOwner"')) [LoanOwner]
       FROM dbo.[Register.Info] WHERE type = N'Register.Info.LoanOwner';

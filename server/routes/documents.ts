@@ -98,7 +98,10 @@ const viewAction = async (req: Request, res: Response, next: NextFunction) => {
           copyDoc.posted = false; copyDoc.deleted = false; copyDoc.timestamp = null;
           copyDoc.parent = copyDoc.parent;
           if (userID) copyDoc.user = userID;
+          const notCopied = ServerDoc.getPropsWithOption('isNotCopy', true);
+          const emptyDoc = { ...ServerDoc };
           ServerDoc.map(copyDoc);
+          Object.keys(notCopied).forEach(k => ServerDoc[k] = emptyDoc[k]);
           addIncomeParamsIntoDoc(params, ServerDoc);
           ServerDoc.description = 'Copy: ' + ServerDoc.description;
           if (ServerDoc.onCopy) await ServerDoc.onCopy(sdb);
@@ -395,6 +398,13 @@ router.get('/getIndexedOperationType/:operationId', async (req: Request, res: Re
   } catch (err) { next(err); }
 });
 
+router.get('/getIndexedOperationsTypes', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const indexedOperations = (Global.indexedOperations() || new Map);
+    res.json([...indexedOperations.entries()]);
+  } catch (err) { next(err); }
+});
+
 router.post('/getDocPropValuesByType', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { type, propNames } = req.body;
@@ -554,7 +564,7 @@ router.get('/getDescedantsObjects/:id', async (req: Request, res: Response, next
       where id in (${DocSelectText})) res
       left join [Catalog.User] us on us.id = userID
       left join [Catalog.Company] comp on comp.id = companyID
-  order by res.date, res.type, res.description`;
+  order by res.date desc, res.type, res.description`;
 
       let queryDocSelectText = isCatalog ?
         `select distinct TOP ${firstLimit} document

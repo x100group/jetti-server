@@ -18,10 +18,17 @@ import { TypesCompanyOrCounterpartieOrPerson } from './Types.CompanyOrCounterpar
 import { createDocument, RegisteredDocumentsTypes } from '../documents.factory';
 import { DocumentOptions, Type } from 'jetti-middle';
 import { TypesExpenseOrIncome } from './Types.ExpenseOrIncome';
+import { TypesExpenseAnalyticsOrDepartment } from './Types.ExpenseAnalyticsOrDepartment';
 
 export interface IRegisteredTypes {
   type: ComplexTypes;
   Class: typeof TypesBase;
+}
+
+export interface ISimpleTypeMeta {
+  type: AllTypes;
+  description: string;
+  defaultValue?: any;
 }
 
 export function allTypes(): { type: AllTypes, description: string }[] {
@@ -40,20 +47,21 @@ export function documentsTypes(): { type: AllTypes, description: string }[] {
     }));
 }
 
-export function simpleTypes(): { type: AllTypes, description: string, defaultValue?: any }[] {
+export function simpleTypes(): ISimpleTypeMeta[] {
 
-  const result: { type: AllTypes, description: string, defaultValue?: any }[] = [];
-
-  result.push({ type: 'number', description: 'number', defaultValue: 0 });
-  result.push({ type: 'date', description: 'date', defaultValue: null });
-  result.push({ type: 'datetime', description: 'datetime', defaultValue: null });
-  result.push({ type: 'string', description: 'string', defaultValue: '' });
-  result.push({ type: 'boolean', description: 'boolean', defaultValue: false });
-  result.push({ type: 'table', description: 'table', defaultValue: [] });
-  result.push({ type: 'javascript', description: 'javascript', defaultValue: '' });
-  result.push({ type: 'enum', description: 'emum', defaultValue: '' });
-  result.push({ type: 'link', description: 'link', defaultValue: '' });
-  result.push({ type: 'URL', description: 'URL', defaultValue: '' });
+  const result: ISimpleTypeMeta[] = [
+    { type: 'number', description: 'number', defaultValue: 0 },
+    { type: 'date', description: 'date', defaultValue: null },
+    { type: 'datetime', description: 'datetime', defaultValue: null },
+    { type: 'string', description: 'string', defaultValue: '' },
+    { type: 'boolean', description: 'boolean', defaultValue: false },
+    { type: 'table', description: 'table', defaultValue: [] },
+    { type: 'javascript', description: 'javascript', defaultValue: '' },
+    { type: 'enum', description: 'emum', defaultValue: '' },
+    { type: 'link', description: 'link', defaultValue: '' },
+    { type: 'URL', description: 'URL', defaultValue: '' },
+    { type: 'HTML', description: 'HTML', defaultValue: '' }
+  ];
 
   return result;
 }
@@ -75,6 +83,7 @@ export const RegisteredTypes: IRegisteredTypes[] = [
   { type: 'Types.Catalog', Class: TypesCatalog },
   { type: 'Types.Subcount', Class: TypesSubcount },
   { type: 'Types.Object', Class: TypesObject },
+  { type: 'Types.ExpenseAnalyticsOrDepartment', Class: TypesExpenseAnalyticsOrDepartment },
   { type: 'Types.ExpenseOrBalanceOrIncome', Class: TypesExpenseOrBalanceOrIncome },
   { type: 'Types.TypesExpenseOrIncome', Class: TypesExpenseOrIncome },
   { type: 'Types.CashOrBank', Class: TypesCashOrBank },

@@ -11,19 +11,46 @@ import { insertDocument, upsertDocument } from '../../routes/utils/post';
 import { BankStatementUnloader } from '../../fuctions/BankStatementUnloader';
 import { DocumentOperation } from './Document.Operation';
 import { Ref } from 'jetti-middle';
+import { CatalogOperation } from './../Catalogs/Catalog.Operation';
 export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegistry implements IServerDocument {
 
-  async getDynamicModule(tx: MSSQL) {
-    const dynamicModule = await lib.doc.byId('8F58AE90-963C-11EB-B245-F3054AA54AB9', tx);
-    return new Function('', dynamicModule!['module']).bind(this)();
+  private static DynamicOperationId = '8F58AE90-963C-11EB-B245-F3054AA54AB9'; 
+
+  async dynamicOperation(tx: MSSQL) {
+    return (await lib.doc.byId(DocumentCashRequestRegistryServer.DynamicOperationId, tx)) as CatalogOperation;
+  }
+
+  async dynamicPostScript(tx: MSSQL) {
+    const oper = await this.dynamicOperation(tx);
+    if (!oper?.script) return;
+
+    const script = `
+    ${oper?.script
+        .replace(/\$\./g, 'doc.')
+        .replace(/tx\./g, 'await tx.')
+        .replace(/lib\./g, 'await lib.')
+        .replace(/\'doc\./g, '\'$.')}
+    `;
+    const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
+    return new AsyncFunction('doc, Registers, tx, lib', script);
+  }
+
+  async dynamicModule(tx: MSSQL) {
+    const oper = await this.dynamicOperation(tx);
+    if (oper) return new Function('', oper.module || '').bind(this, tx)();
+  }
+
+  async dynamicHandler(eventKey: string, tx: MSSQL, params?: any) {
+    const dynamicModule = await this.dynamicModule(tx);
+    if (!dynamicModule || !dynamicModule[eventKey]) return false;
+    await dynamicModule[eventKey](this, tx, params);
+    return true;
   }
 
   async onCommand(command: string, args: any, tx: MSSQL) {
-    const dynamicModule = await this.getDynamicModule(tx);
-    if (dynamicModule[command]) {
-      await dynamicModule[command](this, tx);
+
+    if (await this.dynamicHandler(command, tx, args))
       return this;
-    }
 
     switch (command) {
       case 'Fill':
@@ -251,11 +278,14 @@ export class DocumentCashRequestRegistryServer extends DocumentCashRequestRegist
 
     if (!['APPROVED', 'PAID'].includes(this.Status) || (await this.isSuperuser(tx))) return this;
 
-    const emptyRows = this.CashRequests
-      .filter(row => !row.LinkedDocument)
-      .map((row, ind) => ind++)
-      .join(',');
-    if (emptyRows) throw new Error(`Не созданы операции в строках: ${emptyRows}`);
+    if (await this.dynamicHandler('beforePost', tx))
+      return this;
+
+    // const emptyRows = this.CashRequests
+    //   .filter(row => !row.LinkedDocument)
+    //   .map((row, ind) => ind++)
+    //   .join(',');
+    // if (emptyRows) throw new Error(`Не созданы операции в строках: ${emptyRows}`);
 
     const operations = this.CashRequests.map(row => `'${row.LinkedDocument}'`).join(',');
     const query = `SELECT amount, posted, id, code FROM [dbo].[Document.Operation.v] WHERE id IN (${operations})`;
@@ -430,6 +460,9 @@ HAVING SUM(Balance.[Amount]) > 0;
 
   async onPost(tx: MSSQL) {
     const Registers: PostResult = { Account: [], Accumulation: [], Info: [] };
+
+    const dynamic = await this.dynamicPostScript(tx);
+    if (dynamic) return await dynamic(this, Registers, tx, lib);
 
     if (['REJECTED', 'APPROVED', 'PAID'].includes(this.Status)) return Registers;
 

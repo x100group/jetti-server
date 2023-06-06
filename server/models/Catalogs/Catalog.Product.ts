@@ -37,7 +37,7 @@ export class CatalogProduct extends DocumentBase {
   @Props({ type: 'Catalog.RetailNetwork', order: 666 })
   RetailNetwork: Ref = null;
 
-  @Props({ type: 'Catalog.Unit', label: 'Unit', order: 666, useIn: 'all' })
+  @Props({ type: 'Catalog.Unit', label: 'Unit', order: 666, required: true })
   Unit: Ref = null;
 
   @Props({ type: 'Catalog.Expense', label: 'Expense', order: 666, useIn: 'all' })
@@ -111,6 +111,9 @@ export class CatalogProduct extends DocumentBase {
 
   @Props({ type: 'boolean', order: 666, useIn: 'all', hiddenInList: true })
   isPromo = false;
+
+  @Props({ type: 'boolean', order: 666, useIn: 'all', hiddenInList: true })
+  isAggregator = false;
 
   @Props({ type: 'boolean', order: 666, useIn: 'all', hiddenInList: true })
   isThermallabelPrinting = false;
