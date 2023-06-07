@@ -5,7 +5,7 @@ WORKDIR /usr/jetti
 
 # Install app dependencies
 COPY package.json ./package.json
-RUN npm i
+RUN npm i && npm uninstall -g typescript && npm install typescript --save-dev
 
 #COPY ngsw-config.json ./ngsw-config.json
 COPY server/ ./server
