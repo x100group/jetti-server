@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:20.2.0
 # Create app directory
 RUN mkdir -p /usr/jetti
 WORKDIR /usr/jetti
